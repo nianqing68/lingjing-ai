@@ -536,6 +536,25 @@ input, textarea { font-family: inherit; }
 .ai-video-card .ai-video-info span { font-size: 12px; color: var(--color-text-muted); }
 .ai-video-card .ai-video-info a { font-size: 12px; color: var(--color-accent); }
 
+/* Video API Key Bar */
+.video-key-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-md); padding: var(--space-sm) var(--space-md);
+  background: #FFF8E1; border: 1px solid #FFE082; border-radius: var(--radius-md);
+  margin-bottom: var(--space-md); flex-wrap: wrap;
+}
+.video-key-bar.key-saved { background: #E8F5E9; border-color: #A5D6A7; }
+.video-key-left { display: flex; align-items: center; gap: var(--space-sm); font-size: 12px; color: #E65100; flex-shrink: 0; }
+.video-key-bar.key-saved .video-key-left { color: #2E7D32; }
+.video-key-left svg { flex-shrink: 0; }
+.video-key-right { display: flex; align-items: center; gap: var(--space-sm); flex: 1; min-width: 240px; }
+.video-key-right input {
+  flex: 1; padding: 6px 12px; font-size: 12px;
+  background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+  color: var(--color-text); outline: none; min-width: 0;
+}
+.video-key-right input:focus { border-color: var(--color-accent); }
+
 .ai-generating {
   display: flex; align-items: center; justify-content: center;
   gap: var(--space-sm); padding: var(--space-xl); color: var(--color-text-muted); font-size: 13px;
@@ -1025,6 +1044,16 @@ input, textarea { font-family: inherit; }
           </div>
           <div class="tool-workspace-title">文字描述或上传素材</div>
           <div class="tool-workspace-desc">输入文案或上传图片素材，AI 将自动生成短视频</div>
+          <div class="video-key-bar" id="videoKeyBar">
+            <div class="video-key-left">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+              <span>视频生成需要 API Key</span>
+            </div>
+            <div class="video-key-right">
+              <input type="text" id="videoKeyInput" placeholder="输入 Pollinations API Key (pk_... 或 sk_...)" onkeydown="if(event.key==='Enter')saveVideoKey()">
+              <button class="btn btn-primary btn-sm" onclick="saveVideoKey()">保存</button>
+            </div>
+          </div>
           <div class="prompt-area">
             <div class="prompt-input-wrap">
               <textarea placeholder="描述你想要的视频内容，例如：春日咖啡店，暖色调，慢镜头..." id="videoPrompt"></textarea>
@@ -1186,6 +1215,16 @@ input, textarea { font-family: inherit; }
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </div>
           <div class="tool-workspace-title">快速生成视频</div>
+          <div class="video-key-bar" id="quickVideoKeyBar">
+            <div class="video-key-left">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+              <span>视频生成需要 API Key</span>
+            </div>
+            <div class="video-key-right">
+              <input type="text" id="quickVideoKeyInput" placeholder="输入 Pollinations API Key (pk_... 或 sk_...)" onkeydown="if(event.key==='Enter')saveVideoKey()">
+              <button class="btn btn-primary btn-sm" onclick="saveVideoKey()">保存</button>
+            </div>
+          </div>
           <div class="prompt-area">
             <div class="prompt-input-wrap">
               <textarea placeholder="描述你想生成的视频内容..." id="quickVideoPrompt"></textarea>
@@ -1503,6 +1542,7 @@ function sendAgentPrompt() {
 // ===== AI CORE FUNCTIONS =====
 const AI_API = 'https://gen.pollinations.ai';
 const IMG_API = 'https://image.pollinations.ai/prompt';
+let VIDEO_API_KEY = localStorage.getItem('pollinations_video_key') || '';
 
 function escapeHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -1617,6 +1657,52 @@ async function sendImagePrompt(page) {
 
 // Send video prompt
 async function sendVideoPrompt(page) {
+
+// Save video API key
+function saveVideoKey() {
+  const inputs = document.querySelectorAll('#videoKeyInput, #quickVideoKeyInput');
+  let key = '';
+  inputs.forEach(function(inp) {
+    if (inp.value.trim()) key = inp.value.trim();
+  });
+  if (!key) { showToast('请输入 API Key'); return; }
+  VIDEO_API_KEY = key;
+  localStorage.setItem('pollinations_video_key', key);
+  inputs.forEach(function(inp) { inp.value = ''; });
+  document.querySelectorAll('.video-key-bar').forEach(function(bar) {
+    bar.classList.add('key-saved');
+    bar.querySelector('.video-key-left span').textContent = 'API Key 已配置';
+    var right = bar.querySelector('.video-key-right');
+    right.innerHTML = '<button class="btn btn-ghost btn-sm" onclick="clearVideoKey()">清除 Key</button>';
+  });
+  showToast('API Key 已保存');
+}
+
+// Clear video API key
+function clearVideoKey() {
+  VIDEO_API_KEY = '';
+  localStorage.removeItem('pollinations_video_key');
+  document.querySelectorAll('.video-key-bar').forEach(function(bar) {
+    bar.classList.remove('key-saved');
+    bar.querySelector('.video-key-left span').textContent = '视频生成需要 API Key';
+    var right = bar.querySelector('.video-key-right');
+    right.innerHTML = '<input type="text" placeholder="输入 Pollinations API Key (pk_... 或 sk_...)" onkeydown="if(event.key===\'Enter\')saveVideoKey()"><button class="btn btn-primary btn-sm" onclick="saveVideoKey()">保存</button>';
+  });
+  showToast('API Key 已清除');
+}
+
+// Init video key bars on page load
+function initVideoKeyBars() {
+  if (VIDEO_API_KEY) {
+    document.querySelectorAll('.video-key-bar').forEach(function(bar) {
+      bar.classList.add('key-saved');
+      bar.querySelector('.video-key-left span').textContent = 'API Key 已配置';
+      var right = bar.querySelector('.video-key-right');
+      right.innerHTML = '<button class="btn btn-ghost btn-sm" onclick="clearVideoKey()">清除 Key</button>';
+    });
+  }
+}
+document.addEventListener('DOMContentLoaded', initVideoKeyBars);
   const ids = { video: { ta: 'videoPrompt', btn: 'videoSendBtn', res: 'videoResult' }, quickVideo: { ta: 'quickVideoPrompt', btn: 'quickVideoSendBtn', res: 'quickVideoResult' } };
   const cfg = ids[page]; if (!cfg) return;
   const ta = document.getElementById(cfg.ta);
@@ -1625,26 +1711,38 @@ async function sendVideoPrompt(page) {
   const res = document.getElementById(cfg.res);
   const btn = document.getElementById(cfg.btn);
 
+  if (!VIDEO_API_KEY) {
+    showToast('请先配置视频 API Key');
+    return;
+  }
+
   btn.disabled = true;
   res.innerHTML = '<div class="ai-generating"><div class="spinner"></div>视频生成中，通常需要 30-60 秒，请耐心等待...</div>';
 
   try {
-    const params = new URLSearchParams({ seed: String(Math.floor(Math.random()*999999)) });
+    const params = new URLSearchParams({ seed: String(Math.floor(Math.random()*999999)), model: 'seedance', key: VIDEO_API_KEY });
     const videoUrl = AI_API + '/video/' + encodeURIComponent(prompt) + '?' + params.toString();
 
-    // Try to fetch as blob to verify it's ready
     const response = await fetch(videoUrl);
-    if (!response.ok) throw new Error('生成失败');
+    if (response.status === 401) throw new Error('API Key 无效或已过期，请检查后重试');
+    if (response.status === 402) throw new Error('API 额度不足，请充值或更换 Key');
+    if (!response.ok) throw new Error('生成失败 (HTTP ' + response.status + ')');
 
     const blob = await response.blob();
+    if (blob.size < 1000) throw new Error('生成结果异常，请重试');
     const localUrl = URL.createObjectURL(blob);
     res.innerHTML = '<div class="ai-video-container"><div class="ai-video-card">' +
       '<video controls playsinline src="' + localUrl + '"></video>' +
-      '<div class="ai-video-info"><span>' + escapeHtml(prompt.substring(0,50)) + '...</span>' +
-      '<a href="' + videoUrl + '" download="lingjing-video.mp4">下载视频</a></div></div></div>';
+      '<div class="ai-video-info"><span>' + escapeHtml(prompt.substring(0,50)) + (prompt.length>50?'...':'') + '</span>' +
+      '<a href="' + localUrl + '" download="lingjing-video.mp4">下载视频</a></div></div></div>';
     showToast('视频生成完成');
   } catch(e) {
-    res.innerHTML = '<div class="ai-generating" style="color:var(--color-danger)">视频生成失败，请尝试更换描述后重试</div>';
+    let msg = e.message || '未知错误';
+    if (msg.includes('API Key')) {
+      res.innerHTML = '<div class="ai-generating" style="color:var(--color-danger)">' + escapeHtml(msg) + '</div>';
+    } else {
+      res.innerHTML = '<div class="ai-generating" style="color:var(--color-danger)">视频生成失败：' + escapeHtml(msg) + '</div>';
+    }
   }
   btn.disabled = false;
 }
