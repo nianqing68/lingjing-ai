@@ -320,30 +320,23 @@ input, textarea { font-family: inherit; }
   letter-spacing: 0.02em; margin-bottom: var(--space-sm); color: var(--color-text);
   line-height: 1.25;
 }
+.hero-avatar-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: -5px;
+}
 .hero-title-avatar {
-  display: inline-block;
-  width: 100px;
+  width: 140px;
   height: auto;
-  vertical-align: bottom;
-  margin: 0 -15px;
-  margin-bottom: -12px;
   cursor: pointer;
   object-fit: contain;
-  position: relative;
-  z-index: 1;
-  opacity: 0.85;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
-  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.4));
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: bottom center;
 }
-.hero-title-avatar.peeking {
-  opacity: 1;
-  transform: translateY(-20px) scale(1.15);
-  filter: drop-shadow(0 4px 16px rgba(94,234,212,0.3)) drop-shadow(0 0 30px rgba(129,140,248,0.2));
-}
-.home-hero-title {
-  position: relative;
-  z-index: 2;
+.hero-title-avatar:hover {
+  transform: translateY(-6px) scale(1.08);
+  filter: drop-shadow(0 8px 24px rgba(94,234,212,0.3)) drop-shadow(0 0 40px rgba(129,140,248,0.2));
 }
 @keyframes hero-avatar-float {
   0%, 100% { transform: translateY(0px); }
@@ -1001,7 +994,10 @@ input, textarea { font-family: inherit; }
 
         <!-- Hero Search -->
         <div class="home-hero">
-          <h1 class="home-hero-title">用 AI 释放你的<img src="https://nianqing68.github.io/lingjing-ai/images/hero-avatar.png" alt="AI创意助手" class="hero-title-avatar" loading="lazy"><span class="accent">无限创意</span></h1>
+          <div class="hero-avatar-wrap">
+          <img src="https://nianqing68.github.io/lingjing-ai/images/hero-avatar.png" alt="AI创意助手" class="hero-title-avatar" loading="lazy">
+        </div>
+        <h1 class="home-hero-title">用 AI 释放你的<span class="accent">无限创意</span></h1>
           <p class="home-hero-desc">从灵感到成稿，只需几秒。灵境为你提供全链路 AI 创作工具——图像、视频、设计、文案，一个平台全部搞定。</p>
           <div class="home-search">
             <input type="text" placeholder="例如：帮我做一张春日美妆产品海报..." id="homeSearchInput">
@@ -2361,24 +2357,20 @@ function showToast(msg) {
 
 // ===== SEARCH =====
 
-// Hero avatar interaction - peek from behind text
+// Hero avatar interaction - sitting rabbit on title
 (function() {
   var avatar = document.querySelector('.hero-title-avatar');
   if (!avatar) return;
 
-  // Start in "hiding" state - only head/ears visible above text
-  avatar.style.transform = 'translateY(30px) scale(0.9)';
-  avatar.style.opacity = '0.7';
-
   var actions = [
-    function() { /* pop up and wave */ avatar.classList.add('peeking'); setTimeout(function(){avatar.classList.remove('peeking');avatar.style.transform='translateY(30px) scale(0.9)';avatar.style.opacity='0.7';},1200); },
-    function() { /* slow rise */ avatar.style.transition='all 0.8s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-15px) scale(1.1) rotate(-3deg)'; avatar.style.opacity='1'; avatar.style.filter='drop-shadow(0 4px 20px rgba(94,234,212,0.4))'; setTimeout(function(){avatar.style.transform='translateY(30px) scale(0.9)';avatar.style.opacity='0.7';avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))';},1500); },
-    function() { /* peek left */ avatar.style.transition='all 0.6s ease'; avatar.style.transform='translateY(10px) translateX(-20px) rotate(-10deg) scale(1)'; avatar.style.opacity='0.95'; setTimeout(function(){avatar.style.transform='translateY(30px) scale(0.9)';avatar.style.opacity='0.7';},1000); },
-    function() /* peek right */ { avatar.style.transition='all 0.6s ease'; avatar.style.transform='translateY(10px) translateX(20px) rotate(10deg) scale(1)'; avatar.style.opacity='0.95'; setTimeout(function(){avatar.style.transform='translateY(30px) scale(0.9)';avatar.style.opacity='0.7';},1000); },
-    function() { /* full reveal spin */ avatar.style.transition='all 0.7s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-25px) scale(1.2) rotate(360deg)'; avatar.style.opacity='1'; avatar.style.filter='drop-shadow(0 6px 24px rgba(167,139,250,0.4)) drop-shadow(0 0 40px rgba(94,234,212,0.3))'; setTimeout(function(){avatar.style.transform='translateY(30px) scale(0.9)';avatar.style.opacity='0.7';avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))';},1800); },
-    function() { /* shy hide deeper */ avatar.style.transition='all 0.4s ease'; avatar.style.transform='translateY(50px) scale(0.8)'; avatar.style.opacity='0.4'; setTimeout(function(){avatar.style.transition='all 0.6s cubic-bezier(0.34,1.56,0.64,1)';avatar.style.transform='translateY(-5px) scale(1.05)';avatar.style.opacity='1';setTimeout(function(){avatar.style.transform='translateY(30px) scale(0.9)';avatar.style.opacity='0.7';},800);},500); },
-    function() { /* bounce peek */ avatar.style.transition='all 0.5s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-10px) scale(1.08)'; avatar.style.opacity='1'; setTimeout(function(){avatar.style.transform='translateY(5px) scale(1.02)';setTimeout(function(){avatar.style.transform='translateY(-15px) scale(1.1)';setTimeout(function(){avatar.style.transform='translateY(30px) scale(0.9)';avatar.style.opacity='0.7';},400);},300);},500); },
-    function() { /* tilt look around */ avatar.style.transition='all 0.8s ease'; avatar.style.transform='translateY(5px) rotate(-12deg) scale(1)'; avatar.style.opacity='0.95'; setTimeout(function(){avatar.style.transform='translateY(5px) rotate(12deg) scale(1)';setTimeout(function(){avatar.style.transform='translateY(30px) scale(0.9)';avatar.style.opacity='0.7';},600);},400); }
+    function() { /* bounce */ avatar.style.transition='transform 0.5s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-20px) scale(1.12)'; setTimeout(function(){avatar.style.transform='translateY(0) scale(1)';},500); },
+    function() { /* wave ears (tilt) */ avatar.style.transition='transform 0.6s ease'; avatar.style.transform='rotate(-8deg) scale(1.05)'; setTimeout(function(){avatar.style.transform='rotate(8deg) scale(1.05)';setTimeout(function(){avatar.style.transform='rotate(0) scale(1)';},300);},400); },
+    function() { /* spin */ avatar.style.transition='transform 0.7s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='rotate(360deg) scale(1.15) translateY(-10px)'; setTimeout(function(){avatar.style.transform='rotate(0) scale(1) translateY(0)';},700); },
+    function() { /* squish */ avatar.style.transition='transform 0.35s ease'; avatar.style.transform='scale(1.25, 0.85)'; setTimeout(function(){avatar.style.transform='scale(0.9, 1.15)';setTimeout(function(){avatar.style.transform='scale(1.05, 0.97)';setTimeout(function(){avatar.style.transform='scale(1)';},120);},120);},350); },
+    function() { /* glow pulse */ avatar.style.filter='drop-shadow(0 4px 30px rgba(94,234,212,0.7)) drop-shadow(0 0 60px rgba(129,140,248,0.4))'; avatar.style.transition='filter 0.4s, transform 0.4s'; avatar.style.transform='scale(1.08) translateY(-4px)'; setTimeout(function(){avatar.style.filter='drop-shadow(0 4px 16px rgba(0,0,0,0.4))';avatar.style.transform='scale(1) translateY(0)';},900); },
+    function() { /* shake head */ avatar.style.transition='transform 0.35s ease'; var i=0; var iv=setInterval(function(){avatar.style.transform=i%2===0?'translateX(-10px) rotate(-5deg)':'translateX(10px) rotate(5deg)';if(++i>=6){clearInterval(iv);avatar.style.transform='';}},55); },
+    function() { /* hop up high */ avatar.style.transition='transform 0.6s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-40px) scale(1.18) rotate(5deg)'; setTimeout(function(){avatar.style.transform='translateY(0) scale(1) rotate(0)';},600); },
+    function() { /* lean left-right */ avatar.style.transition='transform 0.7s ease-in-out'; avatar.style.transform='translateX(-15px) rotate(-12deg)'; setTimeout(function(){avatar.style.transform='translateX(15px) rotate(12deg)';setTimeout(function(){avatar.style.transform='translateX(0) rotate(0)';},350);},350); }
   ];
   var lastAction = -1;
   avatar.addEventListener('click', function(e) {
