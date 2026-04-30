@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>灵境 · AI 创作平台</title>
+<title>灵兔 · AI 创作平台</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -836,43 +836,41 @@ input, textarea { font-family: inherit; }
               <stop offset="0%" stop-color="#5eead4"/>
               <stop offset="100%" stop-color="#a78bfa"/>
             </linearGradient>
-            <radialGradient id="logoGlow" cx="0.5" cy="0.5" r="0.5">
-              <stop offset="0%" stop-color="#818cf8" stop-opacity="0.35"/>
-              <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
-            </radialGradient>
           </defs>
-          <!-- 中心光晕 -->
-          <circle cx="18" cy="18" r="14" fill="url(#logoGlow)"/>
-          <!-- 主六边形 -->
-          <polygon points="18,4 29.6,11 29.6,25 18,32 6.4,25 6.4,11" stroke="url(#logoGrad)" stroke-width="1.6" fill="rgba(129,140,248,0.05)"/>
-          <!-- 内部棱镜三角形 -->
-          <polygon points="18,9 24.8,22 11.2,22" stroke="url(#logoGrad2)" stroke-width="1.2" fill="rgba(94,234,212,0.08)"/>
-          <!-- 中心发光点 -->
-          <circle cx="18" cy="18" r="2.8" fill="url(#logoGrad)"/>
-          <circle cx="18" cy="18" r="4.5" stroke="url(#logoGrad)" stroke-width="0.6" fill="none" opacity="0.4"/>
-          <!-- 折射光束 - 上 -->
-          <line x1="18" y1="9" x2="18" y2="5.5" stroke="#818cf8" stroke-width="0.9" opacity="0.6" stroke-linecap="round"/>
-          <circle cx="18" cy="5" r="1.3" fill="#818cf8" opacity="0.85"/>
-          <!-- 折射光束 - 左下 -->
-          <line x1="11.2" y1="22" x2="7" y2="29" stroke="#5eead4" stroke-width="0.9" opacity="0.6" stroke-linecap="round"/>
-          <circle cx="6.6" cy="29.4" r="1.3" fill="#5eead4" opacity="0.85"/>
-          <!-- 折射光束 - 右下 -->
-          <line x1="24.8" y1="22" x2="29" y2="29" stroke="#a78bfa" stroke-width="0.9" opacity="0.6" stroke-linecap="round"/>
-          <circle cx="29.4" cy="29.4" r="1.3" fill="#a78bfa" opacity="0.85"/>
-          <!-- 六边形顶点节点 -->
-          <circle cx="18" cy="4" r="1.2" fill="#818cf8" opacity="0.85"/>
-          <circle cx="29.6" cy="11" r="1.2" fill="#a78bfa" opacity="0.85"/>
-          <circle cx="29.6" cy="25" r="1.2" fill="#a78bfa" opacity="0.7"/>
-          <circle cx="18" cy="32" r="1.2" fill="#5eead4" opacity="0.85"/>
-          <circle cx="6.4" cy="25" r="1.2" fill="#5eead4" opacity="0.7"/>
-          <circle cx="6.4" cy="11" r="1.2" fill="#818cf8" opacity="0.7"/>
-          <!-- 微妙电路纹 -->
-          <line x1="18" y1="18" x2="29.6" y2="11" stroke="url(#logoGrad)" stroke-width="0.3" opacity="0.2" stroke-dasharray="1.5 3"/>
-          <line x1="18" y1="18" x2="6.4" y2="25" stroke="url(#logoGrad)" stroke-width="0.3" opacity="0.2" stroke-dasharray="1.5 3"/>
-          <line x1="18" y1="18" x2="18" y2="32" stroke="url(#logoGrad)" stroke-width="0.3" opacity="0.15" stroke-dasharray="1.5 3"/>
+          <!-- wireframe rabbit face outline -->
+          <!-- left ear -->
+          <line x1="11" y1="16" x2="7" y2="3" stroke="url(#logoGrad)" stroke-width="1.4" stroke-linecap="round"/>
+          <ellipse cx="7" cy="4" rx="2.5" ry="3.5" stroke="url(#logoGrad)" stroke-width="1.2" fill="none" transform="rotate(-15 7 4)"/>
+          <!-- right ear -->
+          <line x1="25" y1="16" x2="29" y2="3" stroke="url(#logoGrad)" stroke-width="1.4" stroke-linecap="round"/>
+          <ellipse cx="29" cy="4" rx="2.5" ry="3.5" stroke="url(#logoGrad)" stroke-width="1.2" fill="none" transform="rotate(15 29 4)"/>
+          <!-- head outline - rounded rectangle -->
+          <rect x="9" y="14" width="18" height="15" rx="7" stroke="url(#logoGrad)" stroke-width="1.4" fill="none"/>
+          <!-- left eye -->
+          <circle cx="14" cy="20" r="2" stroke="#818cf8" stroke-width="1.2" fill="none"/>
+          <circle cx="14" cy="20" r="0.7" fill="#818cf8"/>
+          <!-- right eye -->
+          <circle cx="22" cy="20" r="2" stroke="#818cf8" stroke-width="1.2" fill="none"/>
+          <circle cx="22" cy="20" r="0.7" fill="#818cf8"/>
+          <!-- nose / snout -->
+          <ellipse cx="18" cy="24" rx="2" ry="1.2" stroke="url(#logoGrad2)" stroke-width="1.2" fill="none"/>
+          <line x1="18" y1="22.5" x2="18" y2="22.5" stroke="url(#logoGrad)" stroke-width="1"/>
+          <!-- mouth -->
+          <path d="M16.5 25.5 Q18 26.5 19.5 25.5" stroke="url(#logoGrad2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+          <!-- whiskers left -->
+          <line x1="9" y1="23" x2="5" y2="22" stroke="url(#logoGrad)" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+          <line x1="9" y1="24" x2="5" y2="24.5" stroke="url(#logoGrad)" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+          <line x1="9" y1="25" x2="5.5" y2="27" stroke="url(#logoGrad)" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+          <!-- whiskers right -->
+          <line x1="27" y1="23" x2="31" y2="22" stroke="url(#logoGrad)" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+          <line x1="27" y1="24" x2="31" y2="24.5" stroke="url(#logoGrad)" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+          <line x1="27" y1="25" x2="30.5" y2="27" stroke="url(#logoGrad)" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+          <!-- cheek marks -->
+          <line x1="10.5" y1="22.5" x2="11.5" y2="22" stroke="#a78bfa" stroke-width="0.6" stroke-linecap="round" opacity="0.5"/>
+          <line x1="25.5" y1="22.5" x2="24.5" y2="22" stroke="#a78bfa" stroke-width="0.6" stroke-linecap="round" opacity="0.5"/>
         </svg>
       </div>
-      <span>灵境</span>
+      <span>灵兔</span>
     </div>
     <ul class="topnav-links">
       <li><a class="topnav-link active" data-page="creation" onclick="switchPage('creation')">创作</a></li>
@@ -1137,42 +1135,42 @@ input, textarea { font-family: inherit; }
         <div class="section-title">灵感推荐</div>
         <div class="inspiration-scroll">
           <div class="inspiration-card" onclick="goToAgent('帮我设计一张春日限定美妆海报')">
-            <img src="https://picsum.photos/seed/lingjing01/400/300" alt="春日限定海报" loading="lazy">
+            <img src="https://picsum.photos/seed/lingtu01/400/300" alt="春日限定海报" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">春日限定美妆海报</div>
               <div class="inspiration-card-meta">by 小艺 &middot; 2.3K 浏览</div>
             </div>
           </div>
           <div class="inspiration-card" onclick="goToAgent('帮我设计一套极简咖啡馆品牌VI')">
-            <img src="https://picsum.photos/seed/lingjing02/400/300" alt="极简品牌VI" loading="lazy">
+            <img src="https://picsum.photos/seed/lingtu02/400/300" alt="极简品牌VI" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">极简咖啡馆 VI</div>
               <div class="inspiration-card-meta">by 设计师阿文 &middot; 1.8K 浏览</div>
             </div>
           </div>
           <div class="inspiration-card" onclick="goToAgent('帮我制作一段15秒产品宣传短视频')">
-            <img src="https://picsum.photos/seed/lingjing03/400/300" alt="产品宣传片" loading="lazy">
+            <img src="https://picsum.photos/seed/lingtu03/400/300" alt="产品宣传片" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">产品 15 秒宣传片</div>
               <div class="inspiration-card-meta">by 视频组 &middot; 4.5K 浏览</div>
             </div>
           </div>
           <div class="inspiration-card" onclick="goToAgent('帮我设计一款护肤品礼盒包装')">
-            <img src="https://picsum.photos/seed/lingjing04/400/300" alt="护肤品礼盒" loading="lazy">
+            <img src="https://picsum.photos/seed/lingtu04/400/300" alt="护肤品礼盒" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">护肤品礼盒设计</div>
               <div class="inspiration-card-meta">by 包包设计 &middot; 3.1K 浏览</div>
             </div>
           </div>
           <div class="inspiration-card" onclick="goToAgent('帮我设计一套零食包装全案')">
-            <img src="https://picsum.photos/seed/lingjing05/400/300" alt="零食包装" loading="lazy">
+            <img src="https://picsum.photos/seed/lingtu05/400/300" alt="零食包装" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">零食包装全案</div>
               <div class="inspiration-card-meta">by 食品设计 &middot; 1.2K 浏览</div>
             </div>
           </div>
           <div class="inspiration-card" onclick="goToAgent('帮我创作一张梦幻写实风格的插画')">
-            <img src="https://picsum.photos/seed/lingjing06/400/300" alt="梦幻插画" loading="lazy">
+            <img src="https://picsum.photos/seed/lingtu06/400/300" alt="梦幻插画" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">梦幻写实插画</div>
               <div class="inspiration-card-meta">by 画画的小鱼 &middot; 5.7K 浏览</div>
@@ -2194,7 +2192,7 @@ async function sendEditPrompt() {
     html += '<div class="edit-compare-panel" style="animation-delay:0.1s"><div class="edit-compare-label gen">AI 生成</div>';
     html += '<img src="' + imgUrl + '" alt="AI 生成" loading="lazy">';
     html += '<div class="edit-compare-actions">';
-    html += '<a href="' + imgUrl + '" download="lingjing-edit-' + Date.now() + '.jpg" style="text-decoration:none"><button class="btn btn-primary btn-sm">下载</button></a>';
+    html += '<a href="' + imgUrl + '" download="lingtu-edit-' + Date.now() + '.jpg" style="text-decoration:none"><button class="btn btn-primary btn-sm">下载</button></a>';
     html += '<button class="btn btn-outline btn-sm" onclick="sendEditPrompt()">重新生成</button>';
     html += '</div></div></div>';
     res.innerHTML = html;
@@ -2291,7 +2289,7 @@ document.addEventListener('DOMContentLoaded', function() { initVideoKeyBars(); i
     res.innerHTML = '<div class="ai-video-container"><div class="ai-video-card">' +
       '<video controls playsinline src="' + localUrl + '"></video>' +
       '<div class="ai-video-info"><span>' + escapeHtml(prompt.substring(0,50)) + (prompt.length>50?'...':'') + '</span>' +
-      '<a href="' + localUrl + '" download="lingjing-video.mp4">下载视频</a></div></div></div>';
+      '<a href="' + localUrl + '" download="lingtu-video.mp4">下载视频</a></div></div></div>';
     showToast('视频生成完成');
   } catch(e) {
     let msg = e.message || '未知错误';
