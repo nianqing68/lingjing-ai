@@ -302,10 +302,16 @@ input, textarea { font-family: inherit; }
   line-height: 1.25;
 }
 .home-hero-title .accent {
-  background: linear-gradient(135deg, var(--color-accent), #818cf8);
+  background: linear-gradient(135deg, var(--color-accent), #818cf8, var(--color-accent), #a78bfa);
+  background-size: 300% 300%;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
   filter: drop-shadow(0 0 12px var(--color-accent-glow));
+  animation: accent-shift 4s ease-in-out infinite;
+}
+@keyframes accent-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
 }
 .home-hero-desc {
   font-size: 15px; color: var(--color-text-secondary); margin-bottom: var(--space-xl);
