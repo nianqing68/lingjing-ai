@@ -2357,28 +2357,43 @@ function showToast(msg) {
 
 // ===== SEARCH =====
 
-// Hero avatar interaction - sitting rabbit on title
+// Hero avatar interaction - wave hello
 (function() {
   var avatar = document.querySelector('.hero-title-avatar');
   if (!avatar) return;
 
-  var actions = [
-    function() { /* bounce */ avatar.style.transition='transform 0.5s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-20px) scale(1.12)'; setTimeout(function(){avatar.style.transform='translateY(0) scale(1)';},500); },
-    function() { /* wave ears (tilt) */ avatar.style.transition='transform 0.6s ease'; avatar.style.transform='rotate(-8deg) scale(1.05)'; setTimeout(function(){avatar.style.transform='rotate(8deg) scale(1.05)';setTimeout(function(){avatar.style.transform='rotate(0) scale(1)';},300);},400); },
-    function() { /* spin */ avatar.style.transition='transform 0.7s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='rotate(360deg) scale(1.15) translateY(-10px)'; setTimeout(function(){avatar.style.transform='rotate(0) scale(1) translateY(0)';},700); },
-    function() { /* squish */ avatar.style.transition='transform 0.35s ease'; avatar.style.transform='scale(1.25, 0.85)'; setTimeout(function(){avatar.style.transform='scale(0.9, 1.15)';setTimeout(function(){avatar.style.transform='scale(1.05, 0.97)';setTimeout(function(){avatar.style.transform='scale(1)';},120);},120);},350); },
-    function() { /* glow pulse */ avatar.style.filter='drop-shadow(0 4px 30px rgba(94,234,212,0.7)) drop-shadow(0 0 60px rgba(129,140,248,0.4))'; avatar.style.transition='filter 0.4s, transform 0.4s'; avatar.style.transform='scale(1.08) translateY(-4px)'; setTimeout(function(){avatar.style.filter='drop-shadow(0 4px 16px rgba(0,0,0,0.4))';avatar.style.transform='scale(1) translateY(0)';},900); },
-    function() { /* shake head */ avatar.style.transition='transform 0.35s ease'; var i=0; var iv=setInterval(function(){avatar.style.transform=i%2===0?'translateX(-10px) rotate(-5deg)':'translateX(10px) rotate(5deg)';if(++i>=6){clearInterval(iv);avatar.style.transform='';}},55); },
-    function() { /* hop up high */ avatar.style.transition='transform 0.6s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-40px) scale(1.18) rotate(5deg)'; setTimeout(function(){avatar.style.transform='translateY(0) scale(1) rotate(0)';},600); },
-    function() { /* lean left-right */ avatar.style.transition='transform 0.7s ease-in-out'; avatar.style.transform='translateX(-15px) rotate(-12deg)'; setTimeout(function(){avatar.style.transform='translateX(15px) rotate(12deg)';setTimeout(function(){avatar.style.transform='translateX(0) rotate(0)';},350);},350); }
-  ];
-  var lastAction = -1;
   avatar.addEventListener('click', function(e) {
     e.preventDefault();
-    var idx;
-    do { idx = Math.floor(Math.random() * actions.length); } while (idx === lastAction && actions.length > 1);
-    lastAction = idx;
-    actions[idx]();
+    // Step 1: Turn face toward viewer (Y-axis rotate from back to front)
+    avatar.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    avatar.style.transform = 'rotateY(15deg) scale(1.08) translateY(-4px)';
+    
+    // Step 2: Raise right arm (simulate with skew/scale on right side via clip-path approach)
+    // Since we can't animate parts of an image, we use creative transforms
+    setTimeout(function() {
+      avatar.style.transition = 'transform 0.4s ease';
+      avatar.style.transform = 'rotateY(5deg) scale(1.12) translateY(-10px) rotate(-5deg)';
+      
+      // Wave arm motion - slight rotation oscillation simulates waving
+      var waves = 0;
+      var maxWaves = 5;
+      var waveInterval = setInterval(function() {
+        waves++;
+        if (waves % 2 === 1) {
+          avatar.style.transform = 'rotateY(5deg) scale(1.12) translateY(-10px) rotate(8deg)';
+        } else {
+          avatar.style.transform = 'rotateY(5deg) scale(1.12) translateY(-10px) rotate(-5deg)';
+        }
+        if (waves >= maxWaves) {
+          clearInterval(waveInterval);
+          // Step 3: Return to normal sitting position
+          setTimeout(function() {
+            avatar.style.transition = 'transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
+            avatar.style.transform = 'rotateY(0) scale(1) translateY(0) rotate(0)';
+          }, 300);
+        }
+      }, 200);
+    }, 600);
   });
 })();
 
