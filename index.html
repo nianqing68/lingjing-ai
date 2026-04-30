@@ -221,9 +221,15 @@ input, textarea { font-family: inherit; }
   text-align: center; padding: var(--space-3xl) 0 var(--space-2xl);
 }
 .home-hero-title {
-  font-family: var(--font-display); font-size: 30px; font-weight: 800;
-  letter-spacing: -0.03em; margin-bottom: var(--space-sm); color: var(--color-text);
-  line-height: 1.2;
+  font-family: var(--font-display); font-size: 38px; font-weight: 800;
+  letter-spacing: 0.02em; margin-bottom: var(--space-sm); color: var(--color-text);
+  line-height: 1.25;
+}
+.home-hero-title .accent {
+  background: linear-gradient(135deg, var(--color-accent), #818cf8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 12px var(--color-accent-glow));
 }
 .home-hero-desc {
   font-size: 15px; color: var(--color-text-secondary); margin-bottom: var(--space-xl);
@@ -644,7 +650,7 @@ input, textarea { font-family: inherit; }
   .recommend-grid { grid-template-columns: repeat(2, 1fr); }
   .tools-grid { grid-template-columns: repeat(2, 1fr); }
   .main-inner { padding: var(--space-md); }
-  .home-hero-title { font-size: 22px; }
+  .home-hero-title { font-size: 26px; }
   .ai-image-grid { grid-template-columns: repeat(2, 1fr); }
   .ai-message { max-width: 92%; }
 }
@@ -779,7 +785,7 @@ input, textarea { font-family: inherit; }
 
         <!-- Hero Search -->
         <div class="home-hero">
-          <h1 class="home-hero-title">用 AI 释放你的<span style="color:var(--color-accent)">无限创意</span></h1>
+          <h1 class="home-hero-title">用 AI 释放你的<span class="accent">无限创意</span></h1>
           <p class="home-hero-desc">从灵感到成稿，只需几秒。灵境为你提供全链路 AI 创作工具——图像、视频、设计、文案，一个平台全部搞定。</p>
           <div class="home-search">
             <input type="text" placeholder="例如：帮我做一张春日美妆产品海报..." id="homeSearchInput">
