@@ -469,7 +469,7 @@ input, textarea { font-family: inherit; }
 
 /* Upload zone */
 .upload-zone {
-  width: 100%; max-width: 440px;
+  display: block; width: 100%; max-width: 440px;
   border: 2px dashed var(--color-border); border-radius: var(--radius-lg);
   padding: var(--space-xl); text-align: center; cursor: pointer;
   transition: all 0.2s var(--ease-out); background: var(--color-bg);
@@ -1388,14 +1388,14 @@ input, textarea { font-family: inherit; }
         <div class="tool-workspace">
           <!-- Step 1: Upload -->
           <div id="editUploadSection">
-            <div class="upload-zone" id="editUploadZone">
-              <input type="file" id="editFileInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+            <input type="file" id="editFileInput" accept="image/jpeg,image/png,image/webp" style="position:absolute;opacity:0;pointer-events:none">
+            <label class="upload-zone" id="editUploadZone" for="editFileInput">
               <div class="upload-zone-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
               </div>
               <div class="upload-zone-text">拖拽或点击上传图片</div>
               <div class="upload-zone-hint">支持 JPG / PNG / WEBP，最大 20MB</div>
-            </div>
+            </label>
           </div>
           <!-- Step 2: Preview + Edit (hidden initially) -->
           <div id="editWorkSection" style="display:none">
@@ -1975,10 +1975,11 @@ function initEditUpload() {
   const zone = document.getElementById('editUploadZone');
   const input = document.getElementById('editFileInput');
   if (!zone || !input) return;
-  // Click to upload
-  zone.addEventListener('click', function() { input.click(); });
-  input.addEventListener('change', function() { if (input.files && input.files[0]) handleEditFile(input.files[0]); });
-  // Drag & drop
+  // File input change is handled by label[for] — just listen for file selection
+  input.addEventListener('change', function() {
+    if (input.files && input.files[0]) handleEditFile(input.files[0]);
+  });
+  // Drag & drop still needs JS
   zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('drag-over'); });
   zone.addEventListener('dragleave', function() { zone.classList.remove('drag-over'); });
   zone.addEventListener('drop', function(e) {
@@ -1991,17 +1992,50 @@ function handleEditFile(file) {
   var allowed = ['image/jpeg', 'image/png', 'image/webp'];
   if (allowed.indexOf(file.type) === -1) { showToast('仅支持 JPG、PNG、WEBP 格式'); return; }
   if (file.size > 20 * 1024 * 1024) { showToast('图片不能超过 20MB'); return; }
+
+  // Compress image to max 1024px on longest side for faster API calls
   var reader = new FileReader();
+  reader.onerror = function() { showToast('文件读取失败，请重试'); };
   reader.onload = function(e) {
-    editImageData = { base64: e.target.result, name: file.name, size: file.size };
-    // Show preview
-    document.getElementById('editPreviewImg').src = e.target.result;
-    document.getElementById('editFileName').textContent = file.name;
-    document.getElementById('editFileSize').textContent = formatBytes(file.size);
-    document.getElementById('editUploadSection').style.display = 'none';
-    document.getElementById('editWorkSection').style.display = 'block';
-    document.getElementById('editResult').innerHTML = '';
-    document.getElementById('editPrompt').value = '';
+    var img = new window.Image();
+    img.onerror = function() {
+      // Canvas compression failed, use original data URL directly
+      editImageData = { base64: e.target.result, name: file.name, size: file.size };
+      document.getElementById('editPreviewImg').src = e.target.result;
+      document.getElementById('editFileName').textContent = file.name;
+      document.getElementById('editFileSize').textContent = formatBytes(file.size);
+      document.getElementById('editUploadSection').style.display = 'none';
+      document.getElementById('editWorkSection').style.display = 'block';
+      document.getElementById('editResult').innerHTML = '';
+      document.getElementById('editPrompt').value = '';
+    };
+    img.onload = function() {
+      var maxDim = 1024;
+      var w = img.width, h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+        else { w = Math.round(w * maxDim / h); h = maxDim; }
+      }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      var base64;
+      try {
+        base64 = canvas.toDataURL('image/jpeg', 0.85);
+      } catch(err) {
+        base64 = e.target.result; // fallback to original if toDataURL fails
+      }
+      editImageData = { base64: base64, name: file.name, size: file.size };
+      document.getElementById('editPreviewImg').src = base64;
+      document.getElementById('editFileName').textContent = file.name;
+      document.getElementById('editFileSize').textContent = formatBytes(file.size);
+      document.getElementById('editUploadSection').style.display = 'none';
+      document.getElementById('editWorkSection').style.display = 'block';
+      document.getElementById('editResult').innerHTML = '';
+      document.getElementById('editPrompt').value = '';
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -2031,6 +2065,59 @@ function setEditMode(mode) {
   ta.setSelectionRange(len, len);
 }
 
+// Vision LLM call with timeout and model fallback
+async function callVisionLLM(imageBase64, userInstruction) {
+  var visionPrompt = 'You are an expert image editor. Analyze the uploaded image and the user\'s edit instruction. ' +
+    'Then output a SINGLE detailed English prompt for an AI image generator that recreates the image with the requested changes applied. ' +
+    'Output ONLY the prompt text, nothing else. No quotes, no explanations. Be specific about composition, style, colors, lighting, and the changes requested.\n\n' +
+    'User instruction: ' + userInstruction;
+
+  var models = ['openai', 'qwen-vision', 'gemini'];
+  for (var i = 0; i < models.length; i++) {
+    try {
+      var llmBody = {
+        model: models[i],
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'text', text: visionPrompt },
+            { type: 'image_url', image_url: { url: imageBase64 } }
+          ]
+        }],
+        max_tokens: 300
+      };
+
+      var controller = new AbortController();
+      var timer = setTimeout(function() { controller.abort(); }, 30000); // 30s timeout
+
+      var llmResponse = await fetch(AI_API + '/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(llmBody),
+        signal: controller.signal
+      });
+      clearTimeout(timer);
+
+      if (!llmResponse.ok) continue;
+
+      var llmData = await llmResponse.json();
+      if (!llmData.choices || !llmData.choices[0] || !llmData.choices[0].message) continue;
+
+      var enrichedPrompt = llmData.choices[0].message.content.trim();
+      // Strip markdown code blocks or quotes
+      enrichedPrompt = enrichedPrompt.replace(/^```[\s\S]*?```\s*$/gm, '').trim();
+      if (enrichedPrompt.startsWith('"') && enrichedPrompt.endsWith('"')) {
+        enrichedPrompt = enrichedPrompt.slice(1, -1);
+      }
+      if (enrichedPrompt.length > 20) return enrichedPrompt;
+    } catch(e) {
+      // timeout or network error, try next model
+      continue;
+    }
+  }
+  return null; // all models failed
+}
+
 async function sendEditPrompt() {
   var ta = document.getElementById('editPrompt');
   var res = document.getElementById('editResult');
@@ -2040,52 +2127,28 @@ async function sendEditPrompt() {
 
   var userInstruction = ta.value.trim();
   btn.disabled = true;
-  res.innerHTML = '<div class="ai-generating"><div class="spinner"></div>AI 正在分析图片并生成新图...</div>';
+  res.innerHTML = '<div class="ai-generating"><div class="spinner"></div>正在分析图片内容...</div>';
 
   try {
     // Step 1: Use Vision LLM to analyze the image and generate an enriched prompt
-    var visionPrompt = 'You are an expert image editor. Analyze the uploaded image and the user\'s edit instruction. ' +
-      'Then output a SINGLE detailed English prompt for an AI image generator that recreates the image with the requested changes applied. ' +
-      'Output ONLY the prompt text, nothing else. Be specific about composition, style, colors, lighting, and the changes requested.\n\n' +
-      'User instruction: ' + userInstruction;
+    var enrichedPrompt = await callVisionLLM(editImageData.base64, userInstruction);
 
-    var llmBody = {
-      model: 'openai',
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'text', text: visionPrompt },
-          { type: 'image_url', image_url: { url: editImageData.base64 } }
-        ]
-      }],
-      max_tokens: 300
-    };
-
-    var llmResponse = await fetch(AI_API + '/v1/chat/completions', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(llmBody)
-    });
-    var llmData = await llmResponse.json();
-
-    if (!llmData.choices || !llmData.choices[0]) {
-      throw new Error('AI 分析失败，请重试');
+    // Fallback: if vision analysis failed, combine user instruction with a generic enhancement
+    if (!enrichedPrompt) {
+      // Try to use the user's instruction directly translated to English
+      enrichedPrompt = userInstruction + ', high quality, detailed, professional';
+      res.innerHTML = '<div class="ai-generating" style="color:var(--color-text-secondary)"><div class="spinner"></div>AI 分析超时，使用直接描述模式生成中...</div>';
+    } else {
+      res.innerHTML = '<div class="ai-generating"><div class="spinner"></div>正在生成新图片（预计 10-30 秒）...</div>';
     }
-
-    var enrichedPrompt = llmData.choices[0].message.content.trim();
-    // Strip quotes if LLM wraps it
-    if (enrichedPrompt.startsWith('"') && enrichedPrompt.endsWith('"')) {
-      enrichedPrompt = enrichedPrompt.slice(1, -1);
-    }
-
-    res.innerHTML = '<div class="ai-generating"><div class="spinner"></div>正在生成新图片...</div>';
 
     // Step 2: Generate image with enriched prompt
     var seed = Math.floor(Math.random() * 999999);
     var imgUrl = generateImageUrl(enrichedPrompt, 1024, 1024, seed);
-    var ok = await preloadImage(imgUrl, 90000, 1);
+    var ok = await preloadImage(imgUrl, 90000, 2);
     if (!ok) {
       imgUrl = generateImageUrlV2(enrichedPrompt, 1024, 1024, seed);
-      ok = await preloadImage(imgUrl, 90000, 1);
+      ok = await preloadImage(imgUrl, 90000, 2);
     }
 
     if (!ok) {
