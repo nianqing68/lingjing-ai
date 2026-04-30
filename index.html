@@ -5,1369 +5,1896 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>灵境 · AI 创作平台</title>
 <style>
-  /* ============================================
-     DESIGN TOKENS
-     ============================================ */
-  :root {
-    /* Color — warm copper/amber accent on dark, not the typical cyan-purple */
-    --color-bg:        oklch(11% 0.008 60);
-    --color-bg-elevated: oklch(16% 0.008 60);
-    --color-surface:   oklch(19% 0.01 60);
-    --color-surface-hover: oklch(24% 0.012 60);
-    --color-border:    oklch(28% 0.01 60);
-
-    --color-accent:    oklch(72% 0.16 55);    /* warm amber */
-    --color-accent-hover: oklch(78% 0.15 55);
-    --color-accent-dim: oklch(45% 0.08 55);
-
-    --color-text:      oklch(93% 0.008 60);
-    --color-text-secondary: oklch(65% 0.015 60);
-    --color-text-muted: oklch(48% 0.012 60);
-
-    --color-success:   oklch(68% 0.14 150);
-    --color-info:      oklch(65% 0.12 240);
-
-    /* Typography */
-    --font-display: 'Outfit', system-ui, sans-serif;
-    --font-body: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-
-    /* Spacing */
-    --space-xs:  4px;
-    --space-sm:  8px;
-    --space-md:  16px;
-    --space-lg:  24px;
-    --space-xl:  40px;
-    --space-2xl: 64px;
-    --space-3xl: 96px;
-    --space-4xl: 128px;
-
-    /* Radius */
-    --radius-sm:  6px;
-    --radius-md:  10px;
-    --radius-lg:  16px;
-    --radius-xl:  24px;
-    --radius-full: 9999px;
-
-    /* Transitions */
-    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-    --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
-
-    /* Layout */
-    --max-width: 1280px;
-    --nav-height: 64px;
-  }
-
-  /* ============================================
-     RESET & BASE
-     ============================================ */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html {
-    scroll-behavior: smooth;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  body {
-    font-family: var(--font-body);
-    background: var(--color-bg);
-    color: var(--color-text);
-    line-height: 1.6;
-    overflow-x: hidden;
-  }
-
-  a { color: inherit; text-decoration: none; }
-  button { border: none; background: none; cursor: pointer; font-family: inherit; }
-  img { display: block; max-width: 100%; }
-
-  /* ============================================
-     UTILITY
-     ============================================ */
-  .container { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--space-lg); }
-  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
-
-  /* ============================================
-     NOISE OVERLAY — gives texture to dark bg
-     ============================================ */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    pointer-events: none;
-    opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-size: 256px 256px;
-  }
-
-  /* ============================================
-     NAVIGATION
-     ============================================ */
-  .nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    height: var(--nav-height);
-    display: flex;
-    align-items: center;
-    background: oklch(11% 0.008 60 / 0.8);
-    backdrop-filter: blur(20px) saturate(1.4);
-    border-bottom: 1px solid oklch(100% 0 0 / 0.05);
-    transition: background 0.3s var(--ease-out-quart);
-  }
-
-  .nav-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 var(--space-lg);
-  }
-
-  .nav-logo {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    font-family: var(--font-display);
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-  }
-
-  .nav-logo-icon {
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, var(--color-accent), oklch(65% 0.18 30));
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    color: oklch(12% 0.01 60);
-  }
-
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    list-style: none;
-  }
-
-  .nav-link {
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    border-radius: var(--radius-full);
-    transition: color 0.2s, background 0.2s;
-  }
-  .nav-link:hover { color: var(--color-text); background: oklch(100% 0 0 / 0.06); }
-  .nav-link.active { color: var(--color-text); background: oklch(100% 0 0 / 0.08); }
-
-  .nav-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: 9px 20px;
-    font-size: 14px;
-    font-weight: 600;
-    border-radius: var(--radius-full);
-    transition: all 0.25s var(--ease-out-quart);
-  }
-
-  .btn-ghost {
-    color: var(--color-text-secondary);
-  }
-  .btn-ghost:hover { color: var(--color-text); background: oklch(100% 0 0 / 0.06); }
-
-  .btn-primary {
-    background: var(--color-accent);
-    color: oklch(12% 0.01 60);
-  }
-  .btn-primary:hover {
-    background: var(--color-accent-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px oklch(72% 0.16 55 / 0.3);
-  }
-
-  .btn-outline {
-    border: 1.5px solid var(--color-border);
-    color: var(--color-text);
-  }
-  .btn-outline:hover {
-    border-color: var(--color-accent-dim);
-    color: var(--color-accent);
-    background: oklch(72% 0.16 55 / 0.06);
-  }
-
-  .btn-lg {
-    padding: 14px 32px;
-    font-size: 16px;
-  }
-
-  /* ============================================
-     HERO SECTION
-     ============================================ */
-  .hero {
-    padding-top: calc(var(--nav-height) + var(--space-4xl));
-    padding-bottom: var(--space-4xl);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -200px;
-    right: -200px;
-    width: 700px;
-    height: 700px;
-    background: radial-gradient(circle, oklch(72% 0.16 55 / 0.08) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .hero::after {
-    content: '';
-    position: absolute;
-    bottom: -100px;
-    left: -100px;
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, oklch(65% 0.12 30 / 0.06) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .hero-content {
-    text-align: center;
-    position: relative;
-    z-index: 1;
-  }
-
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: 6px 16px 6px 8px;
-    background: oklch(100% 0 0 / 0.05);
-    border: 1px solid oklch(100% 0 0 / 0.08);
-    border-radius: var(--radius-full);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    margin-bottom: var(--space-xl);
-    opacity: 0;
-    animation: fadeSlideUp 0.6s var(--ease-out-expo) 0.1s forwards;
-  }
-
-  .hero-badge-dot {
-    width: 8px;
-    height: 8px;
-    background: var(--color-success);
-    border-radius: 50%;
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-
-  .hero-title {
-    font-family: var(--font-display);
-    font-size: clamp(40px, 7vw, 80px);
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-    margin-bottom: var(--space-lg);
-    opacity: 0;
-    animation: fadeSlideUp 0.7s var(--ease-out-expo) 0.2s forwards;
-  }
-
-  .hero-title-accent {
-    background: linear-gradient(135deg, var(--color-accent), oklch(65% 0.18 30), var(--color-accent));
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shimmer 4s ease-in-out infinite;
-  }
-
-  .hero-desc {
-    font-size: clamp(16px, 2vw, 20px);
-    color: var(--color-text-secondary);
-    max-width: 600px;
-    margin: 0 auto var(--space-xl);
-    line-height: 1.7;
-    opacity: 0;
-    animation: fadeSlideUp 0.7s var(--ease-out-expo) 0.35s forwards;
-  }
-
-  .hero-actions {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-md);
-    opacity: 0;
-    animation: fadeSlideUp 0.7s var(--ease-out-expo) 0.5s forwards;
-  }
-
-  .hero-stats {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2xl);
-    margin-top: var(--space-3xl);
-    opacity: 0;
-    animation: fadeSlideUp 0.7s var(--ease-out-expo) 0.65s forwards;
-  }
-
-  .hero-stat {
-    text-align: center;
-  }
-
-  .hero-stat-value {
-    font-family: var(--font-display);
-    font-size: 36px;
-    font-weight: 800;
-    color: var(--color-text);
-    letter-spacing: -0.02em;
-  }
-
-  .hero-stat-label {
-    font-size: 13px;
-    color: var(--color-text-muted);
-    margin-top: 2px;
-  }
-
-  .hero-stat-divider {
-    width: 1px;
-    height: 40px;
-    background: var(--color-border);
-  }
-
-  /* ============================================
-     SHOWCASE GRID — AI tool cards
-     ============================================ */
-  .showcase {
-    padding: var(--space-4xl) 0;
-    position: relative;
-  }
-
-  .section-header {
-    text-align: center;
-    margin-bottom: var(--space-3xl);
-  }
-
-  .section-label {
-    display: inline-block;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-    margin-bottom: var(--space-md);
-  }
-
-  .section-title {
-    font-family: var(--font-display);
-    font-size: clamp(28px, 4vw, 44px);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-    margin-bottom: var(--space-md);
-  }
-
-  .section-desc {
-    font-size: 16px;
-    color: var(--color-text-secondary);
-    max-width: 520px;
-    margin: 0 auto;
-  }
-
-  .showcase-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: var(--space-md);
-  }
-
-  .tool-card {
-    position: relative;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-xl);
-    transition: all 0.35s var(--ease-out-quart);
-    overflow: hidden;
-    cursor: pointer;
-  }
-
-  .tool-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--card-accent, var(--color-accent)), transparent);
-    opacity: 0;
-    transition: opacity 0.35s var(--ease-out-quart);
-  }
-
-  .tool-card:hover {
-    background: var(--color-surface-hover);
-    border-color: oklch(100% 0 0 / 0.1);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px oklch(0% 0 0 / 0.3);
-  }
-
-  .tool-card:hover::before { opacity: 1; }
-
-  .tool-card-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    margin-bottom: var(--space-lg);
-    background: oklch(100% 0 0 / 0.05);
-    border: 1px solid oklch(100% 0 0 / 0.06);
-  }
-
-  .tool-card-name {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: var(--space-sm);
-    letter-spacing: -0.01em;
-  }
-
-  .tool-card-desc {
-    font-size: 14px;
-    color: var(--color-text-secondary);
-    line-height: 1.6;
-  }
-
-  .tool-card-tag {
-    display: inline-block;
-    margin-top: var(--space-md);
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    border-radius: var(--radius-full);
-    background: oklch(72% 0.16 55 / 0.1);
-    color: var(--color-accent);
-  }
-
-  /* Featured card — bigger, first in grid */
-  .tool-card.featured {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-2xl);
-    align-items: center;
-    padding: var(--space-2xl);
-  }
-
-  .tool-card.featured .tool-card-icon {
-    width: 64px;
-    height: 64px;
-    font-size: 28px;
-  }
-
-  .tool-card.featured .tool-card-name {
-    font-size: 24px;
-  }
-
-  .tool-card.featured .tool-card-desc {
-    font-size: 16px;
-  }
-
-  .featured-preview {
-    position: relative;
-    height: 240px;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    background: oklch(100% 0 0 / 0.03);
-    border: 1px solid oklch(100% 0 0 / 0.06);
-  }
-
-  .featured-preview-inner {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    padding: 12px;
-  }
-
-  .preview-tile {
-    border-radius: 6px;
-    animation: previewPulse 3s ease-in-out infinite;
-  }
-  .preview-tile:nth-child(1) { background: oklch(72% 0.16 55 / 0.2); grid-row: 1 / 3; animation-delay: 0s; }
-  .preview-tile:nth-child(2) { background: oklch(65% 0.18 30 / 0.2); animation-delay: 0.4s; }
-  .preview-tile:nth-child(3) { background: oklch(60% 0.14 150 / 0.2); animation-delay: 0.8s; }
-  .preview-tile:nth-child(4) { background: oklch(70% 0.12 240 / 0.2); grid-column: 2 / 4; animation-delay: 1.2s; }
-
-  /* ============================================
-     TEMPLATES / WORKS SECTION
-     ============================================ */
-  .works {
-    padding: var(--space-4xl) 0;
-    background: var(--color-bg-elevated);
-    border-top: 1px solid oklch(100% 0 0 / 0.04);
-    border-bottom: 1px solid oklch(100% 0 0 / 0.04);
-  }
-
-  .works-tabs {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-xs);
-    margin-bottom: var(--space-2xl);
-    flex-wrap: wrap;
-  }
-
-  .works-tab {
-    padding: 8px 18px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-text-muted);
-    border-radius: var(--radius-full);
-    transition: all 0.25s var(--ease-out-quart);
-    border: 1px solid transparent;
-  }
-  .works-tab:hover { color: var(--color-text-secondary); }
-  .works-tab.active {
-    color: var(--color-accent);
-    background: oklch(72% 0.16 55 / 0.08);
-    border-color: oklch(72% 0.16 55 / 0.2);
-  }
-
-  .works-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: var(--space-md);
-  }
-
-  .work-card {
-    position: relative;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    cursor: pointer;
-    group: true;
-    aspect-ratio: 4/3;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    transition: all 0.35s var(--ease-out-quart);
-  }
-
-  .work-card:hover {
-    transform: translateY(-6px) scale(1.01);
-    box-shadow: 0 16px 48px oklch(0% 0 0 / 0.4);
-    border-color: oklch(100% 0 0 / 0.1);
-  }
-
-  .work-card-visual {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 40px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .work-card-visual::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 50%, oklch(0% 0 0 / 0.5) 100%);
-    transition: opacity 0.35s;
-  }
-
-  .work-card:hover .work-card-visual::after {
-    opacity: 0.8;
-  }
-
-  .work-card-info {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: var(--space-lg);
-    z-index: 2;
-    transform: translateY(8px);
-    transition: transform 0.35s var(--ease-out-quart);
-  }
-
-  .work-card:hover .work-card-info { transform: translateY(0); }
-
-  .work-card-title {
-    font-family: var(--font-display);
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-
-  .work-card-meta {
-    font-size: 12px;
-    color: oklch(80% 0.01 60);
-  }
-
-  /* ============================================
-     HOW IT WORKS
-     ============================================ */
-  .how-it-works {
-    padding: var(--space-4xl) 0;
-  }
-
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-xl);
-    margin-top: var(--space-3xl);
-    position: relative;
-  }
-
-  .steps::before {
-    content: '';
-    position: absolute;
-    top: 40px;
-    left: calc(33.33% - var(--space-xl) / 2);
-    right: calc(33.33% - var(--space-xl) / 2);
-    height: 1px;
-    background: linear-gradient(90deg, var(--color-border), oklch(100% 0 0 / 0.04), var(--color-border));
-  }
-
-  .step {
-    text-align: center;
-    position: relative;
-  }
-
-  .step-number {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto var(--space-lg);
-    font-family: var(--font-display);
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--color-accent);
-    background: oklch(72% 0.16 55 / 0.08);
-    border: 1.5px solid oklch(72% 0.16 55 / 0.15);
-    position: relative;
-    z-index: 1;
-  }
-
-  .step-title {
-    font-family: var(--font-display);
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: var(--space-sm);
-    letter-spacing: -0.01em;
-  }
-
-  .step-desc {
-    font-size: 14px;
-    color: var(--color-text-secondary);
-    max-width: 280px;
-    margin: 0 auto;
-    line-height: 1.6;
-  }
-
-  /* ============================================
-     CTA SECTION
-     ============================================ */
-  .cta {
-    padding: var(--space-4xl) 0;
-  }
-
-  .cta-box {
-    position: relative;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
-    padding: var(--space-3xl);
-    text-align: center;
-    overflow: hidden;
-  }
-
-  .cta-box::before {
-    content: '';
-    position: absolute;
-    top: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, oklch(72% 0.16 55 / 0.1) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .cta-title {
-    font-family: var(--font-display);
-    font-size: clamp(28px, 4vw, 40px);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    margin-bottom: var(--space-md);
-    position: relative;
-  }
-
-  .cta-desc {
-    font-size: 16px;
-    color: var(--color-text-secondary);
-    max-width: 440px;
-    margin: 0 auto var(--space-xl);
-    position: relative;
-  }
-
-  .cta-actions {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-md);
-  }
-
-  /* ============================================
-     FOOTER
-     ============================================ */
-  .footer {
-    padding: var(--space-3xl) 0 var(--space-xl);
-    border-top: 1px solid oklch(100% 0 0 / 0.04);
-  }
-
-  .footer-inner {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: var(--space-2xl);
-    margin-bottom: var(--space-2xl);
-  }
-
-  .footer-brand-desc {
-    font-size: 14px;
-    color: var(--color-text-muted);
-    margin-top: var(--space-md);
-    max-width: 280px;
-    line-height: 1.6;
-  }
-
-  .footer-heading {
-    font-family: var(--font-display);
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-text-secondary);
-    margin-bottom: var(--space-lg);
-  }
-
-  .footer-links {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-  }
-
-  .footer-link {
-    font-size: 14px;
-    color: var(--color-text-muted);
-    transition: color 0.2s;
-  }
-  .footer-link:hover { color: var(--color-text); }
-
-  .footer-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: var(--space-xl);
-    border-top: 1px solid oklch(100% 0 0 / 0.04);
-    font-size: 13px;
-    color: var(--color-text-muted);
-  }
-
-  .footer-socials {
-    display: flex;
-    gap: var(--space-md);
-  }
-
-  .footer-social {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-text-muted);
-    transition: all 0.2s;
-    border: 1px solid var(--color-border);
-  }
-  .footer-social:hover {
-    color: var(--color-accent);
-    border-color: var(--color-accent-dim);
-    background: oklch(72% 0.16 55 / 0.06);
-  }
-
-  /* ============================================
-     SCROLL REVEAL
-     ============================================ */
-  .reveal {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
-  }
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .reveal-delay-1 { transition-delay: 0.1s; }
-  .reveal-delay-2 { transition-delay: 0.2s; }
-  .reveal-delay-3 { transition-delay: 0.3s; }
-  .reveal-delay-4 { transition-delay: 0.4s; }
-
-  /* ============================================
-     ANIMATIONS
-     ============================================ */
-  @keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes shimmer {
-    0%, 100% { background-position: 0% center; }
-    50%      { background-position: 200% center; }
-  }
-
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%      { opacity: 0.5; transform: scale(0.8); }
-  }
-
-  @keyframes previewPulse {
-    0%, 100% { opacity: 0.6; }
-    50%      { opacity: 1; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-
-  /* ============================================
-     RESPONSIVE
-     ============================================ */
-  @media (max-width: 768px) {
-    .nav-links { display: none; }
-    .hero-stats { gap: var(--space-xl); }
-    .hero-stat-value { font-size: 28px; }
-    .tool-card.featured { grid-template-columns: 1fr; }
-    .featured-preview { display: none; }
-    .steps { grid-template-columns: 1fr; gap: var(--space-2xl); }
-    .steps::before { display: none; }
-    .footer-inner { grid-template-columns: 1fr 1fr; }
-    .footer-bottom { flex-direction: column; gap: var(--space-md); text-align: center; }
-    .hero-actions { flex-direction: column; }
-  }
-
-  @media (max-width: 480px) {
-    .footer-inner { grid-template-columns: 1fr; }
-    .works-grid { grid-template-columns: 1fr; }
-  }
-
-  /* ============================================
-     MOBILE NAV TOGGLE
-     ============================================ */
-  .nav-toggle {
-    display: none;
-    width: 40px;
-    height: 40px;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-text);
-  }
-
-  @media (max-width: 768px) {
-    .nav-toggle { display: flex; }
-  }
-
-  /* ============================================
-     TOAST
-     ============================================ */
-  .toast {
-    position: fixed;
-    bottom: var(--space-xl);
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-md) var(--space-xl);
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-text);
-    z-index: 10000;
-    opacity: 0;
-    transition: all 0.4s var(--ease-out-expo);
-    box-shadow: 0 8px 32px oklch(0% 0 0 / 0.4);
-  }
-  .toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+/* ============================================
+   DESIGN TOKENS
+   ============================================ */
+:root {
+  --color-bg:          oklch(11% 0.008 60);
+  --color-bg-elevated: oklch(14% 0.008 60);
+  --color-surface:     oklch(17% 0.01 60);
+  --color-surface-hover: oklch(22% 0.012 60);
+  --color-border:      oklch(26% 0.01 60);
+  --color-border-light: oklch(30% 0.01 60);
+
+  --color-accent:      oklch(72% 0.16 55);
+  --color-accent-hover: oklch(78% 0.15 55);
+  --color-accent-dim:  oklch(45% 0.08 55);
+  --color-accent-glow: oklch(72% 0.16 55 / 0.15);
+
+  --color-text:        oklch(93% 0.008 60);
+  --color-text-secondary: oklch(65% 0.015 60);
+  --color-text-muted:  oklch(46% 0.012 60);
+
+  --color-success:     oklch(68% 0.14 150);
+  --color-danger:      oklch(65% 0.15 25);
+  --color-info:        oklch(65% 0.12 240);
+
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-body: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+
+  --nav-height: 56px;
+  --sidebar-width: 72px;
+  --sidebar-expanded: 200px;
+}
+
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font-body);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+button { border: none; background: none; cursor: pointer; font-family: inherit; color: inherit; }
+img { display: block; max-width: 100%; }
+input { font-family: inherit; }
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  transition: all 0.25s var(--ease-out-quart);
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--color-accent);
+  color: oklch(12% 0.01 60);
+}
+.btn-primary:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px oklch(72% 0.16 55 / 0.3);
+}
+.btn-ghost {
+  color: var(--color-text-secondary);
+}
+.btn-ghost:hover {
+  color: var(--color-text);
+  background: oklch(100% 0 0 / 0.06);
+}
+.btn-outline {
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text);
+}
+.btn-outline:hover {
+  border-color: var(--color-accent-dim);
+  color: var(--color-accent);
+  background: oklch(72% 0.16 55 / 0.06);
+}
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn-icon {
+  width: 36px; height: 36px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-md);
+  transition: all 0.2s;
+}
+.btn-icon:hover { background: oklch(100% 0 0 / 0.08); }
+
+/* ============================================
+   TOP NAVIGATION
+   ============================================ */
+.topnav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  background: oklch(13% 0.008 60 / 0.9);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid oklch(100% 0 0 / 0.05);
+  padding: 0 var(--space-md);
+}
+
+.topnav-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex: 0 0 auto;
+}
+
+.topnav-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+}
+.topnav-logo-icon {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--color-accent), oklch(65% 0.18 30));
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: oklch(12% 0.01 60);
+}
+
+.topnav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  list-style: none;
+  margin-left: var(--space-lg);
+}
+.topnav-link {
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-full);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.topnav-link:hover { color: var(--color-text); background: oklch(100% 0 0 / 0.06); }
+.topnav-link.active { color: var(--color-text); background: oklch(100% 0 0 / 0.08); }
+
+.topnav-search {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 var(--space-lg);
+  position: relative;
+}
+.topnav-search input {
+  width: 100%;
+  padding: 7px 14px 7px 36px;
+  font-size: 13px;
+  background: oklch(100% 0 0 / 0.05);
+  border: 1px solid oklch(100% 0 0 / 0.06);
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  outline: none;
+  transition: all 0.25s;
+}
+.topnav-search input::placeholder { color: var(--color-text-muted); }
+.topnav-search input:focus {
+  background: oklch(100% 0 0 / 0.08);
+  border-color: oklch(72% 0.16 55 / 0.3);
+  box-shadow: 0 0 0 3px oklch(72% 0.16 55 / 0.08);
+}
+.topnav-search-icon {
+  position: absolute;
+  left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.topnav-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-left: auto;
+}
+
+/* ============================================
+   MAIN LAYOUT
+   ============================================ */
+.app-layout {
+  display: flex;
+  height: 100vh;
+  padding-top: var(--nav-height);
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--color-bg-elevated);
+  border-right: 1px solid oklch(100% 0 0 / 0.04);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.3s var(--ease-out-quart);
+  z-index: 100;
+  position: relative;
+}
+.sidebar::-webkit-scrollbar { width: 0; }
+
+.sidebar-section {
+  padding: var(--space-sm) var(--space-xs);
+}
+.sidebar-section + .sidebar-section {
+  border-top: 1px solid oklch(100% 0 0 / 0.04);
+  margin-top: var(--space-xs);
+  padding-top: var(--space-md);
+}
+
+.sidebar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 4px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out-quart);
+  position: relative;
+  user-select: none;
+}
+.sidebar-item:hover {
+  background: oklch(100% 0 0 / 0.06);
+}
+.sidebar-item.active {
+  background: oklch(72% 0.16 55 / 0.1);
+}
+.sidebar-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 24px;
+  background: var(--color-accent);
+  border-radius: 0 3px 3px 0;
+}
+
+.sidebar-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  background: oklch(100% 0 0 / 0.04);
+  border: 1px solid oklch(100% 0 0 / 0.05);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.sidebar-item.active .sidebar-icon {
+  background: oklch(72% 0.16 55 / 0.15);
+  border-color: oklch(72% 0.16 55 / 0.2);
+}
+.sidebar-item:hover .sidebar-icon {
+  background: oklch(100% 0 0 / 0.08);
+}
+
+.sidebar-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 64px;
+  transition: color 0.2s;
+}
+.sidebar-item.active .sidebar-label { color: var(--color-accent); }
+.sidebar-item:hover .sidebar-label { color: var(--color-text-secondary); }
+
+/* Sidebar Agent Badge */
+.sidebar-agent {
+  background: linear-gradient(135deg, oklch(72% 0.16 55 / 0.12), oklch(65% 0.18 30 / 0.12));
+  border: 1px solid oklch(72% 0.16 55 / 0.15);
+  border-radius: var(--radius-md);
+  padding: 10px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-out-quart);
+  margin: var(--space-xs);
+}
+.sidebar-agent:hover {
+  background: linear-gradient(135deg, oklch(72% 0.16 55 / 0.18), oklch(65% 0.18 30 / 0.18));
+  border-color: oklch(72% 0.16 55 / 0.25);
+  transform: translateY(-1px);
+}
+.sidebar-agent-icon {
+  width: 36px; height: 36px;
+  margin: 0 auto 4px;
+  background: linear-gradient(135deg, var(--color-accent), oklch(65% 0.18 30));
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: oklch(12% 0.01 60);
+}
+.sidebar-agent-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.02em;
+}
+
+/* Quick Action Buttons */
+.sidebar-quick {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 var(--space-xs);
+}
+.sidebar-quick-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 8px 4px;
+  border-radius: var(--radius-md);
+  background: oklch(72% 0.16 55 / 0.06);
+  border: 1px solid oklch(72% 0.16 55 / 0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.sidebar-quick-btn:hover {
+  background: oklch(72% 0.16 55 / 0.12);
+  border-color: oklch(72% 0.16 55 / 0.2);
+  color: var(--color-accent);
+}
+.sidebar-quick-btn svg {
+  width: 16px; height: 16px; flex-shrink: 0;
+  margin-right: 4px;
+}
+
+/* ============================================
+   MAIN CONTENT AREA
+   ============================================ */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+.main-content::-webkit-scrollbar { width: 6px; }
+.main-content::-webkit-scrollbar-track { background: transparent; }
+.main-content::-webkit-scrollbar-thumb { background: oklch(100% 0 0 / 0.1); border-radius: 3px; }
+.main-content::-webkit-scrollbar-thumb:hover { background: oklch(100% 0 0 / 0.15); }
+
+.main-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-xl);
+}
+
+/* ============================================
+   PAGE VIEWS
+   ============================================ */
+.page-view {
+  display: none;
+  animation: pageFadeIn 0.4s var(--ease-out-expo);
+}
+.page-view.active { display: block; }
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   CREATION PAGE (Home)
+   ============================================ */
+.creation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+.creation-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.creation-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: oklch(100% 0 0 / 0.04);
+  border-radius: var(--radius-full);
+  padding: 3px;
+}
+.creation-tab {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  transition: all 0.25s var(--ease-out-quart);
+  cursor: pointer;
+}
+.creation-tab:hover { color: var(--color-text-secondary); }
+.creation-tab.active {
+  background: oklch(100% 0 0 / 0.08);
+  color: var(--color-text);
+}
+
+/* Feature Cards Grid */
+.feature-section {
+  margin-bottom: var(--space-2xl);
+}
+.feature-section-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.feature-section-title::before {
+  content: '';
+  width: 3px; height: 16px;
+  background: var(--color-accent);
+  border-radius: 2px;
+}
+.feature-section-more {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  display: flex; align-items: center; gap: 4px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.feature-section-more:hover { color: var(--color-accent); }
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-md);
+}
+
+.feature-card {
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-out-quart);
+  group: true;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: oklch(100% 0 0 / 0.1);
+  box-shadow: 0 12px 40px oklch(0% 0 0 / 0.3);
+}
+
+.feature-card-cover {
+  aspect-ratio: 16/10;
+  position: relative;
+  overflow: hidden;
+}
+.feature-card-cover-inner {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.feature-card-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, oklch(0% 0 0 / 0.4) 100%);
+  pointer-events: none;
+}
+
+.feature-card-body {
+  padding: var(--space-md);
+}
+.feature-card-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+.feature-card-desc {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.feature-card-tag {
+  display: inline-block;
+  margin-top: var(--space-sm);
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  background: oklch(72% 0.16 55 / 0.1);
+  color: var(--color-accent);
+}
+
+/* Cover visual patterns */
+.cover-pattern {
+  position: absolute; inset: 0;
+  opacity: 0.7;
+}
+.cover-pattern-ecommerce {
+  background: linear-gradient(135deg, oklch(35% 0.06 55), oklch(20% 0.03 40));
+}
+.cover-pattern-ecommerce::before {
+  content: '';
+  position: absolute;
+  top: 20%; left: 15%; width: 50%; height: 35%;
+  background: oklch(72% 0.16 55 / 0.25);
+  border-radius: var(--radius-md);
+  transform: rotate(-3deg);
+}
+.cover-pattern-ecommerce::after {
+  content: '';
+  position: absolute;
+  bottom: 15%; right: 15%; width: 35%; height: 30%;
+  background: oklch(65% 0.18 30 / 0.2);
+  border-radius: var(--radius-sm);
+}
+
+.cover-pattern-fusion {
+  background: linear-gradient(135deg, oklch(28% 0.06 240), oklch(18% 0.03 270));
+}
+.cover-pattern-fusion::before {
+  content: '';
+  position: absolute;
+  top: 15%; left: 10%; width: 40%; height: 50%;
+  background: oklch(65% 0.12 240 / 0.3);
+  border-radius: 50%;
+}
+.cover-pattern-fusion::after {
+  content: '';
+  position: absolute;
+  bottom: 20%; right: 10%; width: 45%; height: 45%;
+  background: oklch(70% 0.14 300 / 0.2);
+  border-radius: 50%;
+}
+
+.cover-pattern-video {
+  background: linear-gradient(135deg, oklch(22% 0.06 150), oklch(14% 0.03 160));
+}
+.cover-pattern-video::before {
+  content: '';
+  position: absolute;
+  top: 30%; left: 50%; transform: translate(-50%,-50%);
+  width: 48px; height: 48px;
+  background: oklch(100% 0 0 / 0.15);
+  border-radius: 50%;
+  border: 2px solid oklch(100% 0 0 / 0.2);
+}
+.cover-pattern-video::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 54%; transform: translate(-50%,-50%);
+  width: 0; height: 0;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 16px solid oklch(100% 0 0 / 0.3);
+  margin-left: 2px;
+}
+
+.cover-pattern-brand {
+  background: linear-gradient(135deg, oklch(25% 0.05 30), oklch(16% 0.03 20));
+}
+.cover-pattern-brand::before {
+  content: '';
+  position: absolute;
+  top: 25%; left: 50%; transform: translateX(-50%);
+  width: 36px; height: 36px;
+  background: oklch(65% 0.18 30 / 0.3);
+  border-radius: 4px;
+  transform: translateX(-50%) rotate(15deg);
+}
+
+.cover-pattern-photo {
+  background: linear-gradient(135deg, oklch(30% 0.05 90), oklch(18% 0.03 80));
+}
+.cover-pattern-photo::before {
+  content: '';
+  position: absolute;
+  top: 20%; left: 20%; width: 30%; height: 40%;
+  background: oklch(70% 0.14 90 / 0.25);
+  border-radius: var(--radius-sm);
+}
+.cover-pattern-photo::after {
+  content: '';
+  position: absolute;
+  bottom: 15%; right: 20%; width: 35%; height: 35%;
+  background: oklch(60% 0.1 70 / 0.2);
+  border-radius: 50%;
+}
+
+.cover-pattern-copy {
+  background: linear-gradient(135deg, oklch(22% 0.06 330), oklch(14% 0.03 340));
+}
+.cover-pattern-copy::before {
+  content: '';
+  position: absolute;
+  top: 25%; left: 15%; width: 60%; height: 8px;
+  background: oklch(60% 0.14 330 / 0.3);
+  border-radius: 4px;
+}
+.cover-pattern-copy::after {
+  content: '';
+  position: absolute;
+  top: 40%; left: 15%; width: 45%; height: 6px;
+  background: oklch(60% 0.14 330 / 0.15);
+  border-radius: 3px;
+}
+
+.cover-pattern-ip {
+  background: linear-gradient(135deg, oklch(26% 0.05 200), oklch(16% 0.03 210));
+}
+.cover-pattern-ip::before {
+  content: '';
+  position: absolute;
+  top: 20%; left: 25%; width: 30%; height: 30%;
+  background: oklch(62% 0.15 200 / 0.25);
+  border-radius: 50%;
+}
+.cover-pattern-ip::after {
+  content: '';
+  position: absolute;
+  bottom: 20%; right: 25%; width: 40%; height: 25%;
+  background: oklch(66% 0.12 180 / 0.2);
+  border-radius: var(--radius-md);
+}
+
+.cover-pattern-fitment {
+  background: linear-gradient(135deg, oklch(24% 0.04 270), oklch(15% 0.02 280));
+}
+.cover-pattern-fitment::before {
+  content: '';
+  position: absolute;
+  top: 15%; left: 10%; width: 80%; height: 60%;
+  background: oklch(66% 0.13 270 / 0.15);
+  border-radius: var(--radius-md);
+  border: 1px solid oklch(66% 0.13 270 / 0.1);
+}
+
+.cover-pattern-banner {
+  background: linear-gradient(135deg, oklch(32% 0.06 15), oklch(20% 0.04 10));
+}
+
+.cover-emoji {
+  position: relative;
+  z-index: 1;
+  font-size: 36px;
+  filter: drop-shadow(0 4px 8px oklch(0% 0 0 / 0.3));
+}
+
+/* ============================================
+   TOOL PAGES (when clicking sidebar tools)
+   ============================================ */
+.tool-page-header {
+  margin-bottom: var(--space-xl);
+}
+.tool-page-header h2 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: var(--space-sm);
+  letter-spacing: -0.02em;
+}
+.tool-page-header p {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.tool-workspace {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-2xl);
+  text-align: center;
+}
+.tool-workspace-icon {
+  width: 80px; height: 80px;
+  border-radius: var(--radius-lg);
+  background: oklch(100% 0 0 / 0.04);
+  border: 1px solid oklch(100% 0 0 / 0.06);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+}
+.tool-workspace-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+}
+.tool-workspace-desc {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  max-width: 380px;
+  line-height: 1.6;
+}
+
+/* Upload zone */
+.upload-zone {
+  width: 100%;
+  max-width: 480px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-out-quart);
+}
+.upload-zone:hover {
+  border-color: var(--color-accent-dim);
+  background: oklch(72% 0.16 55 / 0.04);
+}
+.upload-zone-icon {
+  font-size: 32px;
+  margin-bottom: var(--space-md);
+}
+.upload-zone-text {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+}
+.upload-zone-hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* Prompt input */
+.prompt-area {
+  width: 100%;
+  max-width: 600px;
+}
+.prompt-input-wrap {
+  position: relative;
+  margin-bottom: var(--space-md);
+}
+.prompt-input-wrap textarea {
+  width: 100%;
+  padding: 14px 50px 14px 18px;
+  font-size: 14px;
+  background: oklch(100% 0 0 / 0.05);
+  border: 1px solid oklch(100% 0 0 / 0.08);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  resize: none;
+  outline: none;
+  min-height: 80px;
+  transition: all 0.25s;
+  font-family: var(--font-body);
+}
+.prompt-input-wrap textarea::placeholder { color: var(--color-text-muted); }
+.prompt-input-wrap textarea:focus {
+  border-color: oklch(72% 0.16 55 / 0.3);
+  box-shadow: 0 0 0 3px oklch(72% 0.16 55 / 0.08);
+}
+.prompt-send-btn {
+  position: absolute;
+  right: 12px; bottom: 12px;
+  width: 32px; height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: oklch(12% 0.01 60);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.prompt-send-btn:hover {
+  background: var(--color-accent-hover);
+  transform: scale(1.05);
+}
+
+.prompt-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+.prompt-suggestion {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  background: oklch(100% 0 0 / 0.04);
+  border: 1px solid oklch(100% 0 0 / 0.06);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.prompt-suggestion:hover {
+  color: var(--color-accent);
+  border-color: oklch(72% 0.16 55 / 0.2);
+  background: oklch(72% 0.16 55 / 0.06);
+}
+
+/* ============================================
+   EXPLORE PAGE
+   ============================================ */
+.explore-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+}
+.explore-filter {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.explore-filter:hover { color: var(--color-text-secondary); }
+.explore-filter.active {
+  color: var(--color-accent);
+  background: oklch(72% 0.16 55 / 0.08);
+  border-color: oklch(72% 0.16 55 / 0.2);
+}
+
+.explore-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.explore-card {
+  aspect-ratio: 3/4;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s var(--ease-out-quart);
+}
+.explore-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px oklch(0% 0 0 / 0.4);
+}
+.explore-card-bg {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+  position: relative;
+}
+.explore-card-bg::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 50%, oklch(0% 0 0 / 0.6) 100%);
+}
+.explore-card-info {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: var(--space-md);
+  z-index: 2;
+}
+.explore-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.explore-card-author {
+  font-size: 12px;
+  color: oklch(80% 0.01 60);
+}
+
+/* ============================================
+   MY PAGE
+   ============================================ */
+.my-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-2xl);
+}
+.my-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-accent), oklch(65% 0.18 30));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; color: oklch(12% 0.01 60);
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+.my-info h3 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.my-info p {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.my-stats {
+  display: flex;
+  gap: var(--space-xl);
+  margin-bottom: var(--space-2xl);
+}
+.my-stat {
+  text-align: center;
+}
+.my-stat-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+.my-stat-label {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.my-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+.my-work {
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-out-quart);
+}
+.my-work:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px oklch(0% 0 0 / 0.3);
+}
+
+/* ============================================
+   TOAST
+   ============================================ */
+.toast {
+  position: fixed;
+  bottom: var(--space-xl);
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-xl);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  z-index: 10000;
+  opacity: 0;
+  transition: all 0.4s var(--ease-out-expo);
+  box-shadow: 0 8px 32px oklch(0% 0 0 / 0.4);
+  display: flex; align-items: center; gap: var(--space-sm);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .topnav-links { display: none; }
+  .topnav-search { display: none; }
+  .sidebar { width: 56px; }
+  .sidebar-label { display: none; }
+  .sidebar-agent-label { display: none; }
+  .sidebar-quick-btn span { display: none; }
+  .sidebar-quick-btn svg { margin-right: 0; }
+  .feature-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .main-inner { padding: var(--space-md); }
+}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <!-- NAVIGATION -->
-  <nav class="nav">
-    <div class="nav-inner">
-      <a href="#" class="nav-logo">
-        <div class="nav-logo-icon">&#9670;</div>
-        <span>灵境</span>
-      </a>
-      <ul class="nav-links">
-        <li><a href="#tools" class="nav-link active">创作工具</a></li>
-        <li><a href="#works" class="nav-link">作品广场</a></li>
-        <li><a href="#how" class="nav-link">使用指南</a></li>
-        <li><a href="#" class="nav-link">价格方案</a></li>
-      </ul>
-      <div class="nav-actions">
-        <button class="btn btn-ghost">登录</button>
-        <button class="btn btn-primary" onclick="showToast('注册功能开发中，敬请期待')">免费体验</button>
-        <button class="nav-toggle" aria-label="菜单" onclick="showToast('移动端菜单开发中')">
-          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h16M3 11h16M3 16h16"/></svg>
+<!-- ==================== TOP NAV ==================== -->
+<nav class="topnav">
+  <div class="topnav-left">
+    <div class="topnav-logo" onclick="switchPage('creation')">
+      <div class="topnav-logo-icon">&#9670;</div>
+      <span>灵境</span>
+    </div>
+    <ul class="topnav-links">
+      <li><a class="topnav-link active" data-page="creation" onclick="switchPage('creation')">创作</a></li>
+      <li><a class="topnav-link" data-page="explore" onclick="switchPage('explore')">发现</a></li>
+      <li><a class="topnav-link" data-page="my" onclick="switchPage('my')">我的</a></li>
+    </ul>
+  </div>
+  <div class="topnav-search">
+    <svg class="topnav-search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3.5-3.5"/></svg>
+    <input type="text" placeholder="搜索创作模板、教程..." id="searchInput">
+  </div>
+  <div class="topnav-right">
+    <button class="btn btn-ghost btn-sm" onclick="showToast('登录功能开发中')">登录</button>
+    <button class="btn btn-primary btn-sm" onclick="showToast('注册功能开发中')">注册</button>
+    <button class="btn btn-outline btn-sm" onclick="showToast('创建新项目')">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 1v12M1 7h12"/></svg>
+      创建
+    </button>
+  </div>
+</nav>
+
+<!-- ==================== APP LAYOUT ==================== -->
+<div class="app-layout">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <!-- Agent Mode -->
+    <div class="sidebar-section">
+      <div class="sidebar-agent" onclick="switchTool('agent')">
+        <div class="sidebar-agent-icon">&#10024;</div>
+        <div class="sidebar-agent-label">Agent</div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="sidebar-section">
+      <div class="sidebar-quick">
+        <button class="sidebar-quick-btn" onclick="switchTool('image-gen')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M6 10l2-3 2 2 2-4"/></svg>
+          <span>图片生成</span>
+        </button>
+        <button class="sidebar-quick-btn" onclick="switchTool('video-gen')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6,3 14,8 6,13"/></svg>
+          <span>视频生成</span>
         </button>
       </div>
     </div>
-  </nav>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container hero-content">
-      <div class="hero-badge">
-        <span class="hero-badge-dot"></span>
-        全新 3.0 版本已上线
+    <!-- Tool List -->
+    <div class="sidebar-section" style="flex:1;">
+      <div class="sidebar-item" onclick="switchTool('canvas')" data-tool="canvas">
+        <div class="sidebar-icon">&#9999;</div>
+        <div class="sidebar-label">AI 画布</div>
       </div>
-      <h1 class="hero-title">
-        用 AI 释放你的<br><span class="hero-title-accent">无限创意</span>
-      </h1>
-      <p class="hero-desc">
-        从灵感到成稿，只需几秒。灵境为你提供全链路 AI 创作工具——图像、视频、设计、文案，一个平台全部搞定。
-      </p>
-      <div class="hero-actions">
-        <button class="btn btn-primary btn-lg" onclick="showToast('即将进入创作空间')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 2v14M2 9h14"/></svg>
-          开始创作
-        </button>
-        <button class="btn btn-outline btn-lg" onclick="showToast('演示视频即将上线')">
-          观看演示
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l7 5-7 5V3z"/></svg>
-        </button>
+      <div class="sidebar-item" onclick="switchTool('skillhub')" data-tool="skillhub">
+        <div class="sidebar-icon">&#9883;</div>
+        <div class="sidebar-label">Skill Hub</div>
       </div>
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="hero-stat-value">2M+</div>
-          <div class="hero-stat-label">创作者</div>
-        </div>
-        <div class="hero-stat-divider"></div>
-        <div class="hero-stat">
-          <div class="hero-stat-value">50M+</div>
-          <div class="hero-stat-label">作品生成</div>
-        </div>
-        <div class="hero-stat-divider"></div>
-        <div class="hero-stat">
-          <div class="hero-stat-value">98%</div>
-          <div class="hero-stat-label">好评率</div>
-        </div>
+      <div class="sidebar-item" onclick="switchTool('ecommerce')" data-tool="ecommerce">
+        <div class="sidebar-icon">&#128722;</div>
+        <div class="sidebar-label">AI 电商</div>
+      </div>
+      <div class="sidebar-item" onclick="switchTool('video')" data-tool="video">
+        <div class="sidebar-icon">&#127909;</div>
+        <div class="sidebar-label">AI 视频</div>
+      </div>
+      <div class="sidebar-item" onclick="switchTool('image')" data-tool="image">
+        <div class="sidebar-icon">&#127912;</div>
+        <div class="sidebar-label">AI 图像</div>
+      </div>
+      <div class="sidebar-item" onclick="switchTool('portrait')" data-tool="portrait">
+        <div class="sidebar-icon">&#128100;</div>
+        <div class="sidebar-label">AI 形象照</div>
+      </div>
+      <div class="sidebar-item" onclick="switchTool('edit')" data-tool="edit">
+        <div class="sidebar-icon">&#9998;</div>
+        <div class="sidebar-label">AI 改图</div>
+      </div>
+      <div class="sidebar-item" onclick="switchTool('text')" data-tool="text">
+        <div class="sidebar-icon">&#128221;</div>
+        <div class="sidebar-label">AI 改字</div>
       </div>
     </div>
-  </section>
+  </aside>
 
-  <!-- AI TOOLS SHOWCASE -->
-  <section class="showcase" id="tools">
-    <div class="container">
-      <div class="section-header reveal">
-        <div class="section-label">AI 创作工具</div>
-        <h2 class="section-title">一个平台，覆盖全创作链路</h2>
-        <p class="section-desc">从商品图到品牌设计，从短视频到形象照，专业级 AI 工具触手可及</p>
-      </div>
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
 
-      <div class="showcase-grid">
-        <!-- Featured Card -->
-        <div class="tool-card featured reveal" style="--card-accent: oklch(72% 0.16 55)">
-          <div>
-            <div class="tool-card-icon">&#9881;</div>
-            <h3 class="tool-card-name">Agent 智能体</h3>
-            <p class="tool-card-desc">描述你的需求，AI Agent 自动理解意图、拆解任务、调配工具链，一站式完成从构思到成品的全部流程。无需专业技能，人人都是创作者。</p>
-            <span class="tool-card-tag">核心能力</span>
+    <!-- ===== CREATION PAGE ===== -->
+    <div class="page-view active" id="page-creation">
+      <div class="main-inner">
+        <div class="creation-header">
+          <h1 class="creation-title">创作中心</h1>
+          <div class="creation-tabs">
+            <div class="creation-tab active" onclick="filterCreation('all', this)">推荐</div>
+            <div class="creation-tab" onclick="filterCreation('ecom', this)">电商</div>
+            <div class="creation-tab" onclick="filterCreation('brand', this)">品牌</div>
+            <div class="creation-tab" onclick="filterCreation('social', this)">社交</div>
+            <div class="creation-tab" onclick="filterCreation('creative', this)">创意</div>
           </div>
-          <div class="featured-preview">
-            <div class="featured-preview-inner">
-              <div class="preview-tile"></div>
-              <div class="preview-tile"></div>
-              <div class="preview-tile"></div>
-              <div class="preview-tile"></div>
+        </div>
+
+        <!-- Section 1: E-commerce -->
+        <div class="feature-section" data-category="ecom">
+          <div class="feature-section-title">
+            全能商品精修
+            <span class="feature-section-more" onclick="showToast('查看更多商品精修')">
+              更多
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l4 4-4 4"/></svg>
+            </span>
+          </div>
+          <div class="feature-grid">
+            <div class="feature-card" onclick="switchTool('ecommerce')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-ecommerce"></div>
+                  <span class="cover-emoji">&#128247;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">一键质感精修</div>
+                <div class="feature-card-desc">随手拍秒变高级商拍，AI 自动优化光影和质感</div>
+                <span class="feature-card-tag">热门</span>
+              </div>
+            </div>
+            <div class="feature-card" onclick="switchTool('ecommerce')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-photo"></div>
+                  <span class="cover-emoji">&#127793;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">春暖花开，商品上新图</div>
+                <div class="feature-card-desc">大牌场景复刻，春夏氛围感拿捏</div>
+                <span class="feature-card-tag">季节限定</span>
+              </div>
+            </div>
+            <div class="feature-card" onclick="switchTool('ecommerce')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-fusion"></div>
+                  <span class="cover-emoji">&#128640;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">多图融合，电商出图新玩法</div>
+                <div class="feature-card-desc">多图融合，快速产出高点击电商图</div>
+              </div>
+            </div>
+            <div class="feature-card" onclick="switchTool('ecommerce')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-banner"></div>
+                  <span class="cover-emoji">&#128142;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">AI 电商，设计效率翻倍</div>
+                <div class="feature-card-desc">零基础也能做出专业级电商视觉方案</div>
+                <span class="feature-card-tag">推荐</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Tool Cards -->
-        <div class="tool-card reveal reveal-delay-1" style="--card-accent: oklch(68% 0.14 150)">
-          <div class="tool-card-icon" style="color: oklch(68% 0.14 150)">&#9733;</div>
-          <h3 class="tool-card-name">AI 图像生成</h3>
-          <p class="tool-card-desc">文字描述即刻生成高清图像，支持多种风格——写实、插画、3D、国风，精准还原你的想象力</p>
-          <span class="tool-card-tag">热门</span>
-        </div>
-
-        <div class="tool-card reveal reveal-delay-2" style="--card-accent: oklch(65% 0.12 240)">
-          <div class="tool-card-icon" style="color: oklch(65% 0.12 240)">&#9654;</div>
-          <h3 class="tool-card-name">AI 视频创作</h3>
-          <p class="tool-card-desc">一键生成短视频和动画，支持图文生视频、视频续写、风格迁移，轻松产出爆款内容</p>
-          <span class="tool-card-tag">新品</span>
-        </div>
-
-        <div class="tool-card reveal reveal-delay-3" style="--card-accent: oklch(65% 0.18 30)">
-          <div class="tool-card-icon" style="color: oklch(65% 0.18 30)">&#9830;</div>
-          <h3 class="tool-card-name">AI 商品摄影</h3>
-          <p class="tool-card-desc">告别传统拍摄。上传商品图，AI 自动生成多角度、多场景的高质量商业摄影图</p>
-        </div>
-
-        <div class="tool-card reveal reveal-delay-1" style="--card-accent: oklch(60% 0.14 330)">
-          <div class="tool-card-icon" style="color: oklch(60% 0.14 330)">&#9786;</div>
-          <h3 class="tool-card-name">AI 形象照</h3>
-          <p class="tool-card-desc">一张自拍，生成百种风格的专业形象照——商务、艺术、证件照，应有尽有</p>
-        </div>
-
-        <div class="tool-card reveal reveal-delay-2" style="--card-accent: oklch(70% 0.16 90)">
-          <div class="tool-card-icon" style="color: oklch(70% 0.16 90)">&#9998;</div>
-          <h3 class="tool-card-name">AI 智能改字</h3>
-          <p class="tool-card-desc">识别图片中的文字并智能替换，字体、风格、光影自动适配，完美融入原图</p>
-        </div>
-
-        <div class="tool-card reveal reveal-delay-3" style="--card-accent: oklch(62% 0.15 200)">
-          <div class="tool-card-icon" style="color: oklch(62% 0.15 200)">&#9874;</div>
-          <h3 class="tool-card-name">AI 品牌设计</h3>
-          <p class="tool-card-desc">快速生成品牌 Logo、IP 形象、视觉系统，从概念到落地一站搞定</p>
-        </div>
-
-        <div class="tool-card reveal reveal-delay-1" style="--card-accent: oklch(66% 0.13 270)">
-          <div class="tool-card-icon" style="color: oklch(66% 0.13 270)">&#9733;</div>
-          <h3 class="tool-card-name">AI 海报复刻</h3>
-          <p class="tool-card-desc">上传参考海报，AI 学习布局和风格，替换图文内容生成同款设计，效率提升 10 倍</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- WORKS / TEMPLATES -->
-  <section class="works" id="works">
-    <div class="container">
-      <div class="section-header reveal">
-        <div class="section-label">作品广场</div>
-        <h2 class="section-title">灵感就在身边</h2>
-        <p class="section-desc">探索来自全球创作者的优秀作品，找到属于你的风格</p>
-      </div>
-
-      <div class="works-tabs reveal">
-        <button class="works-tab active" data-filter="all">全部</button>
-        <button class="works-tab" data-filter="ecom">电商设计</button>
-        <button class="works-tab" data-filter="brand">品牌视觉</button>
-        <button class="works-tab" data-filter="social">社交媒体</button>
-        <button class="works-tab" data-filter="video">短视频</button>
-      </div>
-
-      <div class="works-grid">
-        <div class="work-card reveal reveal-delay-1" data-category="ecom"
-          style="--card-bg: oklch(72% 0.16 55 / 0.12)">
-          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(30% 0.04 55), oklch(18% 0.02 55))">
-            <span style="font-size: 56px; opacity: 0.6;">&#127912;</span>
+        <!-- Section 2: Creative Tools -->
+        <div class="feature-section" data-category="creative brand social">
+          <div class="feature-section-title">
+            AI 创意工具
+            <span class="feature-section-more" onclick="showToast('查看更多创意工具')">
+              更多
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l4 4-4 4"/></svg>
+            </span>
           </div>
-          <div class="work-card-info">
-            <div class="work-card-title">春日限定美妆海报</div>
-            <div class="work-card-meta">电商设计 · AI 图像生成</div>
+          <div class="feature-grid">
+            <div class="feature-card" onclick="switchTool('text')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-copy"></div>
+                  <span class="cover-emoji">&#9998;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">AI 改字 & 海报复刻</div>
+                <div class="feature-card-desc">改字换图不求人，轻松还原大牌海报效果</div>
+                <span class="feature-card-tag">爆款</span>
+              </div>
+            </div>
+            <div class="feature-card" onclick="switchTool('image')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-video"></div>
+                  <span class="cover-emoji">&#10024;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">全网都在玩的 AI 爆款效果</div>
+                <div class="feature-card-desc">精选当下最火的 AI 创意玩法，跟做即出片</div>
+                <span class="feature-card-tag">热门</span>
+              </div>
+            </div>
+            <div class="feature-card" onclick="switchTool('ecommerce')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-photo"></div>
+                  <span class="cover-emoji">&#128248;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">AI 商品摄影</div>
+                <div class="feature-card-desc">0 成本出大片，AI 一键生成多角度商品美图</div>
+              </div>
+            </div>
+            <div class="feature-card" onclick="switchTool('brand')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-ip"></div>
+                  <span class="cover-emoji">&#127917;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">品牌形象不将就</div>
+                <div class="feature-card-desc">AI 快速生成品牌 IP 形象、周边物料与延展应用</div>
+                <span class="feature-card-tag">新品</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="work-card reveal reveal-delay-2" data-category="brand"
-          style="--card-bg: oklch(65% 0.12 240 / 0.12)">
-          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(25% 0.04 240), oklch(15% 0.02 260))">
-            <span style="font-size: 56px; opacity: 0.6;">&#9830;</span>
+        <!-- Section 3: Scene Design -->
+        <div class="feature-section" data-category="brand creative">
+          <div class="feature-section-title">
+            场景设计
+            <span class="feature-section-more" onclick="showToast('查看更多场景设计')">
+              更多
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l4 4-4 4"/></svg>
+            </span>
           </div>
-          <div class="work-card-info">
-            <div class="work-card-title">科技品牌 VI 系统</div>
-            <div class="work-card-meta">品牌视觉 · AI 品牌设计</div>
-          </div>
-        </div>
-
-        <div class="work-card reveal reveal-delay-3" data-category="social"
-          style="--card-bg: oklch(65% 0.18 30 / 0.12)">
-          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(28% 0.05 30), oklch(16% 0.03 20))">
-            <span style="font-size: 56px; opacity: 0.6;">&#128247;</span>
-          </div>
-          <div class="work-card-info">
-            <div class="work-card-title">小红书种草图文</div>
-            <div class="work-card-meta">社交媒体 · AI 图文</div>
-          </div>
-        </div>
-
-        <div class="work-card reveal reveal-delay-4" data-category="video"
-          style="--card-bg: oklch(60% 0.14 150 / 0.12)">
-          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(22% 0.04 150), oklch(14% 0.02 160))">
-            <span style="font-size: 56px; opacity: 0.6;">&#9654;</span>
-          </div>
-          <div class="work-card-info">
-            <div class="work-card-title">产品宣传短视频</div>
-            <div class="work-card-meta">短视频 · AI 视频创作</div>
-          </div>
-        </div>
-
-        <div class="work-card reveal reveal-delay-1" data-category="ecom"
-          style="--card-bg: oklch(70% 0.16 90 / 0.12)">
-          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(26% 0.04 90), oklch(16% 0.02 80))">
-            <span style="font-size: 56px; opacity: 0.6;">&#128722;</span>
-          </div>
-          <div class="work-card-info">
-            <div class="work-card-title">食品包装设计</div>
-            <div class="work-card-meta">电商设计 · AI 包装</div>
-          </div>
-        </div>
-
-        <div class="work-card reveal reveal-delay-2" data-category="brand"
-          style="--card-bg: oklch(62% 0.15 200 / 0.12)">
-          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(24% 0.04 200), oklch(14% 0.02 210))">
-            <span style="font-size: 56px; opacity: 0.6;">&#127968;</span>
-          </div>
-          <div class="work-card-info">
-            <div class="work-card-title">咖啡品牌全案</div>
-            <div class="work-card-meta">品牌视觉 · AI 海报复刻</div>
-          </div>
-        </div>
-
-        <div class="work-card reveal reveal-delay-3" data-category="social"
-          style="--card-bg: oklch(66% 0.13 270 / 0.12)">
-          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(20% 0.04 270), oklch(12% 0.02 280))">
-            <span style="font-size: 56px; opacity: 0.6;">&#128227;</span>
-          </div>
-          <div class="work-card-info">
-            <div class="work-card-title">公众号长图文排版</div>
-            <div class="work-card-meta">社交媒体 · AI 智能改字</div>
-          </div>
-        </div>
-
-        <div class="work-card reveal reveal-delay-4" data-category="ecom"
-          style="--card-bg: oklch(60% 0.14 330 / 0.12)">
-          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(26% 0.04 330), oklch(14% 0.02 340))">
-            <span style="font-size: 56px; opacity: 0.6;">&#128084;</span>
-          </div>
-          <div class="work-card-info">
-            <div class="work-card-title">服饰商品精修</div>
-            <div class="work-card-meta">电商设计 · AI 商品摄影</div>
+          <div class="feature-grid">
+            <div class="feature-card" onclick="switchTool('fitment')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-fitment"></div>
+                  <span class="cover-emoji">&#127970;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">展位设计 + 店铺装修</div>
+                <div class="feature-card-desc">从空间规划到视觉呈现，AI 一站式搞定</div>
+              </div>
+            </div>
+            <div class="feature-card" onclick="switchTool('ecommerce')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-banner"></div>
+                  <span class="cover-emoji">&#127873;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">节日营销大屏</div>
+                <div class="feature-card-desc">618 / 双11 活动页、大促主视觉一键生成</div>
+                <span class="feature-card-tag">大促必备</span>
+              </div>
+            </div>
+            <div class="feature-card" onclick="switchTool('ecommerce')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-ecommerce"></div>
+                  <span class="cover-emoji">&#128230;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">包装设计全案</div>
+                <div class="feature-card-desc">食品、美妆、数码，AI 根据品牌调性定制包装</div>
+              </div>
+            </div>
+            <div class="feature-card" onclick="switchTool('video')">
+              <div class="feature-card-cover">
+                <div class="feature-card-cover-inner">
+                  <div class="cover-pattern cover-pattern-video"></div>
+                  <span class="cover-emoji">&#127916;</span>
+                </div>
+              </div>
+              <div class="feature-card-body">
+                <div class="feature-card-title">产品展示短视频</div>
+                <div class="feature-card-desc">AI 自动剪辑 + 特效，快速出产品宣传片</div>
+                <span class="feature-card-tag">新品</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- HOW IT WORKS -->
-  <section class="how-it-works" id="how">
-    <div class="container">
-      <div class="section-header reveal">
-        <div class="section-label">使用指南</div>
-        <h2 class="section-title">三步开始你的创作</h2>
-        <p class="section-desc">零门槛，零学习成本。从想法到作品，只需要几分钟</p>
-      </div>
-
-      <div class="steps">
-        <div class="step reveal reveal-delay-1">
-          <div class="step-number">1</div>
-          <h3 class="step-title">描述你的需求</h3>
-          <p class="step-desc">用自然语言告诉 AI 你想要什么——一段文字、一个参考图、或者一个模糊的想法都可以</p>
+    <!-- ===== AGENT PAGE ===== -->
+    <div class="page-view" id="page-agent">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>Agent 智能体</h2>
+          <p>描述你的需求，AI Agent 自动理解意图、拆解任务、调配工具链，一站式完成创作</p>
         </div>
-        <div class="step reveal reveal-delay-2">
-          <div class="step-number">2</div>
-          <h3 class="step-title">AI 智能生成</h3>
-          <p class="step-desc">Agent 自动拆解任务、选择工具、生成多个方案，你只需挑选最喜欢的那个</p>
-        </div>
-        <div class="step reveal reveal-delay-3">
-          <div class="step-number">3</div>
-          <h3 class="step-title">精修并导出</h3>
-          <p class="step-desc">在线微调细节，一键导出高清文件。支持 PSD、PNG、MP4 等主流格式</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="cta">
-    <div class="container">
-      <div class="cta-box reveal">
-        <h2 class="cta-title">准备好释放你的创意了吗？</h2>
-        <p class="cta-desc">加入 200 万创作者的行列，用 AI 让你的想法变成现实</p>
-        <div class="cta-actions">
-          <button class="btn btn-primary btn-lg" onclick="showToast('正在为你准备创作空间')">
-            免费开始创作
-          </button>
-          <button class="btn btn-outline btn-lg" onclick="showToast('即将跳转到价格页面')">
-            查看价格方案
-          </button>
+        <div class="tool-workspace" style="background: linear-gradient(180deg, var(--color-surface), var(--color-bg));">
+          <div class="tool-workspace-icon">&#10024;</div>
+          <div class="tool-workspace-title">你好，我是灵境 Agent</div>
+          <div class="tool-workspace-desc">告诉我你想创作什么，我会帮你自动选择合适的工具完成任务</div>
+          <div class="prompt-area">
+            <div class="prompt-input-wrap">
+              <textarea placeholder="描述你的创作需求，例如：帮我做一张春日美妆产品海报..." id="agentPrompt"></textarea>
+              <button class="prompt-send-btn" onclick="sendAgentPrompt()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
+              </button>
+            </div>
+            <div class="prompt-suggestions">
+              <div class="prompt-suggestion" onclick="fillPrompt('帮我设计一张春季美妆产品海报')">春季美妆海报</div>
+              <div class="prompt-suggestion" onclick="fillPrompt('生成一个科技感品牌Logo')">品牌Logo</div>
+              <div class="prompt-suggestion" onclick="fillPrompt('制作一段15秒产品宣传短视频')">产品短视频</div>
+              <div class="prompt-suggestion" onclick="fillPrompt('帮我精修一张商品图')">商品精修</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-inner">
-        <div>
-          <a href="#" class="nav-logo">
-            <div class="nav-logo-icon">&#9670;</div>
-            <span>灵境</span>
-          </a>
-          <p class="footer-brand-desc">用 AI 释放无限创意。灵境是一个全链路 AI 创作平台，为设计师、创作者和品牌提供专业级的智能创作工具。</p>
+    <!-- ===== AI CANVAS PAGE ===== -->
+    <div class="page-view" id="page-canvas">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>AI 画布</h2>
+          <p>智能画布编辑器，融合 AI 生成与手动编辑，从创意到成品一气呵成</p>
         </div>
-        <div>
-          <h4 class="footer-heading">产品</h4>
-          <ul class="footer-links">
-            <li><a href="#" class="footer-link">AI 图像生成</a></li>
-            <li><a href="#" class="footer-link">AI 视频创作</a></li>
-            <li><a href="#" class="footer-link">AI 商品摄影</a></li>
-            <li><a href="#" class="footer-link">AI 品牌设计</a></li>
-            <li><a href="#" class="footer-link">价格方案</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="footer-heading">资源</h4>
-          <ul class="footer-links">
-            <li><a href="#" class="footer-link">帮助中心</a></li>
-            <li><a href="#" class="footer-link">教程指南</a></li>
-            <li><a href="#" class="footer-link">创作者社区</a></li>
-            <li><a href="#" class="footer-link">API 文档</a></li>
-            <li><a href="#" class="footer-link">更新日志</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4 class="footer-heading">关于</h4>
-          <ul class="footer-links">
-            <li><a href="#" class="footer-link">关于我们</a></li>
-            <li><a href="#" class="footer-link">加入团队</a></li>
-            <li><a href="#" class="footer-link">用户协议</a></li>
-            <li><a href="#" class="footer-link">隐私政策</a></li>
-            <li><a href="#" class="footer-link">联系我们</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <span>&copy; 2026 灵境科技. All rights reserved.</span>
-        <div class="footer-socials">
-          <a href="#" class="footer-social" aria-label="微博" onclick="showToast('即将跳转微博')">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>
-          </a>
-          <a href="#" class="footer-social" aria-label="小红书" onclick="showToast('即将跳转小红书')">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>
-          </a>
-          <a href="#" class="footer-social" aria-label="抖音" onclick="showToast('即将跳转抖音')">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v10a3 3 0 11-2-2.83V8h8v9a5 5 0 11-2-4V5z"/></svg>
-          </a>
+        <div class="tool-workspace">
+          <div class="tool-workspace-icon">&#9999;</div>
+          <div class="tool-workspace-title">选择画布尺寸开始创作</div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:8px;">
+            <button class="btn btn-outline btn-sm" onclick="showToast('已选择 1080x1920 竖版画布')">1080 x 1920 竖版</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('已选择 1920x1080 横版画布')">1920 x 1080 横版</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('已选择 1080x1080 方形画布')">1080 x 1080 方形</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('自定义尺寸')">自定义尺寸</button>
+          </div>
         </div>
       </div>
     </div>
-  </footer>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
+    <!-- ===== SKILL HUB PAGE ===== -->
+    <div class="page-view" id="page-skillhub">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>Skill Hub</h2>
+          <p>技能中心，发现和使用丰富的 AI 技能插件，扩展你的创作能力</p>
+        </div>
+        <div class="explore-filters">
+          <div class="explore-filter active">全部</div>
+          <div class="explore-filter">热门</div>
+          <div class="explore-filter">新品</div>
+          <div class="explore-filter">电商</div>
+          <div class="explore-filter">设计</div>
+        </div>
+        <div class="explore-grid">
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(30% 0.06 55), oklch(18% 0.03 40))" onclick="showToast('技能详情页开发中')">
+            <div class="explore-card-bg"><span>&#128247;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">商品图消除</div><div class="explore-card-author">官方 · 12.8K 使用</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(25% 0.05 240), oklch(15% 0.03 260))" onclick="showToast('技能详情页开发中')">
+            <div class="explore-card-bg"><span>&#127752;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">背景替换</div><div class="explore-card-author">官方 · 9.2K 使用</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(28% 0.05 30), oklch(16% 0.03 20))" onclick="showToast('技能详情页开发中')">
+            <div class="explore-card-bg"><span>&#128293;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">光影重构</div><div class="explore-card-author">官方 · 7.5K 使用</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(22% 0.06 150), oklch(14% 0.03 160))" onclick="showToast('技能详情页开发中')">
+            <div class="explore-card-bg"><span>&#127912;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">风格迁移</div><div class="explore-card-author">社区 · 5.1K 使用</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(26% 0.04 90), oklch(16% 0.02 80))" onclick="showToast('技能详情页开发中')">
+            <div class="explore-card-bg"><span>&#127968;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">场景生成</div><div class="explore-card-author">官方 · 8.3K 使用</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(24% 0.04 200), oklch(14% 0.02 210))" onclick="showToast('技能详情页开发中')">
+            <div class="explore-card-bg"><span>&#128230;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">包装设计</div><div class="explore-card-author">社区 · 3.4K 使用</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <script>
-    // ===== SCROLL REVEAL =====
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    <!-- ===== AI E-COMMERCE PAGE ===== -->
+    <div class="page-view" id="page-ecommerce">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>AI 电商</h2>
+          <p>专为电商场景打造的 AI 设计工具，覆盖商品图、场景图、详情页全链路</p>
+        </div>
+        <div class="tool-workspace">
+          <div class="upload-zone" onclick="showToast('图片上传功能开发中')">
+            <div class="upload-zone-icon">&#128228;</div>
+            <div class="upload-zone-text">拖拽或点击上传商品图片</div>
+            <div class="upload-zone-hint">支持 JPG / PNG / WEBP，最大 20MB</div>
+          </div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:12px;">
+            <button class="btn btn-outline btn-sm" onclick="showToast('商品精修')">商品精修</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('场景替换')">场景替换</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('模特换衣')">模特换衣</button>
+            <button class="btn btn-primary btn-sm" onclick="showToast('一键生成')">一键生成</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+    <!-- ===== AI VIDEO PAGE ===== -->
+    <div class="page-view" id="page-video">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>AI 视频</h2>
+          <p>从文案到视频，AI 自动完成分镜、画面生成、配音配乐，快速产出专业短视频</p>
+        </div>
+        <div class="tool-workspace" style="background: linear-gradient(180deg, var(--color-surface), var(--color-bg));">
+          <div class="tool-workspace-icon">&#127909;</div>
+          <div class="tool-workspace-title">文字描述或上传素材</div>
+          <div class="tool-workspace-desc">输入文案或上传图片素材，AI 将自动生成短视频</div>
+          <div class="prompt-area">
+            <div class="prompt-input-wrap">
+              <textarea placeholder="描述你想要的视频内容，例如：春日咖啡店，暖色调，慢镜头..." id="videoPrompt"></textarea>
+              <button class="prompt-send-btn" onclick="showToast('视频生成功能开发中')">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
+              </button>
+            </div>
+            <div class="prompt-suggestions">
+              <div class="prompt-suggestion" onclick="fillPrompt('制作一段15秒产品展示视频')">产品展示</div>
+              <div class="prompt-suggestion" onclick="fillPrompt('生成一段品牌故事短片')">品牌故事</div>
+              <div class="prompt-suggestion" onclick="fillPrompt('制作一段社交媒体短视频')">社媒短片</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    // ===== WORKS TABS =====
-    const tabs = document.querySelectorAll('.works-tab');
-    const cards = document.querySelectorAll('.work-card');
+    <!-- ===== AI IMAGE PAGE ===== -->
+    <div class="page-view" id="page-image">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>AI 图像</h2>
+          <p>文字描述即刻生成高清图像，支持多种风格精准还原你的想象力</p>
+        </div>
+        <div class="tool-workspace" style="background: linear-gradient(180deg, var(--color-surface), var(--color-bg));">
+          <div class="tool-workspace-icon">&#127912;</div>
+          <div class="tool-workspace-title">描述你想要的画面</div>
+          <div class="tool-workspace-desc">支持写实、插画、3D、国风等多种风格</div>
+          <div class="prompt-area">
+            <div class="prompt-input-wrap">
+              <textarea placeholder="描述你想要的图像，例如：一只柴犬穿着宇航服在月球上..." id="imagePrompt"></textarea>
+              <button class="prompt-send-btn" onclick="showToast('图像生成功能开发中')">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
+              </button>
+            </div>
+            <div class="prompt-suggestions">
+              <div class="prompt-suggestion" onclick="fillPrompt('写实风格：一杯拉花咖啡，暖光')">写实</div>
+              <div class="prompt-suggestion" onclick="fillPrompt('插画风：春天的小镇，樱花飘落')">插画</div>
+              <div class="prompt-suggestion" onclick="fillPrompt('3D 风格：一个可爱的小机器人')">3D</div>
+              <div class="prompt-suggestion" onclick="fillPrompt('国风：水墨山水画，云雾缭绕')">国风</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        const filter = tab.dataset.filter;
+    <!-- ===== AI PORTRAIT PAGE ===== -->
+    <div class="page-view" id="page-portrait">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>AI 形象照</h2>
+          <p>一张自拍生成百种风格的专业形象照——商务、艺术、证件照应有尽有</p>
+        </div>
+        <div class="tool-workspace">
+          <div class="upload-zone" onclick="showToast('照片上传功能开发中')">
+            <div class="upload-zone-icon">&#128247;</div>
+            <div class="upload-zone-text">上传一张正面自拍</div>
+            <div class="upload-zone-hint">建议使用清晰的正面照，效果更佳</div>
+          </div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:12px;">
+            <button class="btn btn-outline btn-sm" onclick="showToast('商务风格')">商务形象</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('艺术风格')">艺术写真</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('证件照')">证件照</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('更多风格')">更多风格</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        cards.forEach(card => {
-          if (filter === 'all' || card.dataset.category === filter) {
-            card.style.display = '';
-            requestAnimationFrame(() => {
-              card.style.opacity = '1';
-              card.style.transform = 'translateY(0) scale(1)';
-            });
-          } else {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(12px) scale(0.97)';
-            setTimeout(() => { card.style.display = 'none'; }, 300);
-          }
-        });
-      });
-    });
+    <!-- ===== AI EDIT PAGE ===== -->
+    <div class="page-view" id="page-edit">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>AI 改图</h2>
+          <p>智能图片编辑——背景替换、局部修改、风格转换、画质增强一键搞定</p>
+        </div>
+        <div class="tool-workspace">
+          <div class="upload-zone" onclick="showToast('图片上传功能开发中')">
+            <div class="upload-zone-icon">&#128444;</div>
+            <div class="upload-zone-text">上传需要编辑的图片</div>
+            <div class="upload-zone-hint">支持 JPG / PNG / WEBP，最大 20MB</div>
+          </div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:12px;">
+            <button class="btn btn-outline btn-sm" onclick="showToast('背景替换')">背景替换</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('局部修改')">局部修改</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('风格转换')">风格转换</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('画质增强')">画质增强</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    // ===== TOAST =====
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.classList.add('show');
-      clearTimeout(toast._timer);
-      toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
+    <!-- ===== AI TEXT PAGE ===== -->
+    <div class="page-view" id="page-text">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>AI 改字</h2>
+          <p>识别图片中的文字并智能替换，字体、风格、光影自动适配，完美融入原图</p>
+        </div>
+        <div class="tool-workspace">
+          <div class="upload-zone" onclick="showToast('图片上传功能开发中')">
+            <div class="upload-zone-icon">&#128221;</div>
+            <div class="upload-zone-text">上传含文字的图片</div>
+            <div class="upload-zone-hint">支持海报、Banner、包装等设计稿</div>
+          </div>
+          <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:12px;">
+            <button class="btn btn-outline btn-sm" onclick="showToast('文字识别')">文字识别</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('智能替换')">智能替换</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('海报复刻')">海报复刻</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== IMAGE GEN (Quick) PAGE ===== -->
+    <div class="page-view" id="page-image-gen">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>图片生成</h2>
+          <p>快速生成 AI 图片，输入描述即可获得高清大图</p>
+        </div>
+        <div class="tool-workspace" style="background: linear-gradient(180deg, var(--color-surface), var(--color-bg));">
+          <div class="tool-workspace-icon">&#128248;</div>
+          <div class="tool-workspace-title">快速生成图片</div>
+          <div class="prompt-area">
+            <div class="prompt-input-wrap">
+              <textarea placeholder="描述你想生成的图片..." id="quickImagePrompt"></textarea>
+              <button class="prompt-send-btn" onclick="showToast('图片生成功能开发中')">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== VIDEO GEN (Quick) PAGE ===== -->
+    <div class="page-view" id="page-video-gen">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>视频生成</h2>
+          <p>快速生成 AI 短视频，支持多种风格和主题</p>
+        </div>
+        <div class="tool-workspace" style="background: linear-gradient(180deg, var(--color-surface), var(--color-bg));">
+          <div class="tool-workspace-icon">&#127916;</div>
+          <div class="tool-workspace-title">快速生成视频</div>
+          <div class="prompt-area">
+            <div class="prompt-input-wrap">
+              <textarea placeholder="描述你想生成的视频内容..." id="quickVideoPrompt"></textarea>
+              <button class="prompt-send-btn" onclick="showToast('视频生成功能开发中')">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== EXPLORE PAGE ===== -->
+    <div class="page-view" id="page-explore">
+      <div class="main-inner">
+        <div class="creation-header">
+          <h1 class="creation-title">发现</h1>
+        </div>
+        <div class="explore-filters" style="margin-bottom: var(--space-xl);">
+          <div class="explore-filter active">全部</div>
+          <div class="explore-filter">电商设计</div>
+          <div class="explore-filter">品牌视觉</div>
+          <div class="explore-filter">社交媒体</div>
+          <div class="explore-filter">短视频</div>
+          <div class="explore-filter">插画艺术</div>
+        </div>
+        <div class="explore-grid">
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(32% 0.06 55), oklch(18% 0.03 40))" onclick="showToast('作品详情页开发中')">
+            <div class="explore-card-bg"><span>&#127912;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">春日限定美妆海报</div><div class="explore-card-author">by 小艺 · 2.3K 浏览</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(22% 0.06 150), oklch(14% 0.03 160))" onclick="showToast('作品详情页开发中')">
+            <div class="explore-card-bg"><span>&#127968;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">极简咖啡馆 VI</div><div class="explore-card-author">by 设计师阿文 · 1.8K 浏览</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(28% 0.05 30), oklch(16% 0.03 20))" onclick="showToast('作品详情页开发中')">
+            <div class="explore-card-bg"><span>&#127916;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">产品 15 秒宣传片</div><div class="explore-card-author">by 视频组 · 4.5K 浏览</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(24% 0.04 200), oklch(14% 0.02 210))" onclick="showToast('作品详情页开发中')">
+            <div class="explore-card-bg"><span>&#128142;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">护肤品礼盒设计</div><div class="explore-card-author">by 包包设计 · 3.1K 浏览</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(26% 0.04 90), oklch(16% 0.02 80))" onclick="showToast('作品详情页开发中')">
+            <div class="explore-card-bg"><span>&#128230;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">零食包装全案</div><div class="explore-card-author">by 食品设计 · 1.2K 浏览</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(20% 0.06 270), oklch(12% 0.02 280))" onclick="showToast('作品详情页开发中')">
+            <div class="explore-card-bg"><span>&#127752;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">梦幻写实插画</div><div class="explore-card-author">by 画画的小鱼 · 5.7K 浏览</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(30% 0.05 15), oklch(18% 0.03 10))" onclick="showToast('作品详情页开发中')">
+            <div class="explore-card-bg"><span>&#128142;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">618 大促主视觉</div><div class="explore-card-author">by 电商设计组 · 8.9K 浏览</div></div>
+          </div>
+          <div class="explore-card" style="background:linear-gradient(135deg, oklch(25% 0.05 240), oklch(15% 0.03 260))" onclick="showToast('作品详情页开发中')">
+            <div class="explore-card-bg"><span>&#128736;</span></div>
+            <div class="explore-card-info"><div class="explore-card-title">科技品牌 Logo</div><div class="explore-card-author">by Brand Lab · 2.6K 浏览</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MY PAGE ===== -->
+    <div class="page-view" id="page-my">
+      <div class="main-inner">
+        <div class="my-header">
+          <div class="my-avatar">U</div>
+          <div class="my-info">
+            <h3>创作者</h3>
+            <p>登录后查看你的作品和数据</p>
+          </div>
+          <div style="margin-left:auto;">
+            <button class="btn btn-primary btn-sm" onclick="showToast('登录功能开发中')">登录 / 注册</button>
+          </div>
+        </div>
+        <div class="my-stats">
+          <div class="my-stat">
+            <div class="my-stat-value">0</div>
+            <div class="my-stat-label">作品</div>
+          </div>
+          <div class="my-stat">
+            <div class="my-stat-value">0</div>
+            <div class="my-stat-label">收藏</div>
+          </div>
+          <div class="my-stat">
+            <div class="my-stat-value">0</div>
+            <div class="my-stat-label">获赞</div>
+          </div>
+        </div>
+        <div class="feature-section-title" style="margin-top: var(--space-xl);">我的作品</div>
+        <div class="my-grid">
+          <div class="my-work" style="background:linear-gradient(135deg, var(--color-surface), var(--color-bg)); border:2px dashed var(--color-border); cursor:pointer;" onclick="showToast('创建新作品')">
+            <div style="text-align:center;">
+              <div style="font-size:32px; margin-bottom:8px;">&#43;</div>
+              <div style="font-size:13px; color:var(--color-text-muted);">创建作品</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FITMENT PAGE ===== -->
+    <div class="page-view" id="page-fitment">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>展位 & 店铺设计</h2>
+          <p>从空间规划到视觉呈现，AI 一站式生成展位和店铺装修方案</p>
+        </div>
+        <div class="tool-workspace">
+          <div class="upload-zone" onclick="showToast('平面图上传功能开发中')">
+            <div class="upload-zone-icon">&#127970;</div>
+            <div class="upload-zone-text">上传店铺平面图或展位尺寸</div>
+            <div class="upload-zone-hint">AI 将根据空间自动生成装修方案</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== BRAND PAGE ===== -->
+    <div class="page-view" id="page-brand">
+      <div class="main-inner">
+        <div class="tool-page-header">
+          <h2>品牌设计</h2>
+          <p>快速生成品牌 Logo、IP 形象、视觉系统，从概念到落地一站搞定</p>
+        </div>
+        <div class="tool-workspace" style="background: linear-gradient(180deg, var(--color-surface), var(--color-bg));">
+          <div class="tool-workspace-icon">&#127917;</div>
+          <div class="tool-workspace-title">描述你的品牌</div>
+          <div class="tool-workspace-desc">输入品牌名称、行业和风格偏好，AI 将生成完整的品牌设计方案</div>
+          <div class="prompt-area">
+            <div class="prompt-input-wrap">
+              <textarea placeholder="品牌名称、行业、风格偏好，例如：灵境咖啡，精品咖啡品牌，极简风格..." id="brandPrompt"></textarea>
+              <button class="prompt-send-btn" onclick="showToast('品牌设计功能开发中')">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== PAGE SWITCHING =====
+let currentPage = 'creation';
+
+function switchPage(page) {
+  // Hide all pages
+  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+  // Show target page
+  const target = document.getElementById('page-' + page);
+  if (target) target.classList.add('active');
+
+  // Update nav links
+  document.querySelectorAll('.topnav-link').forEach(l => l.classList.remove('active'));
+  const navLink = document.querySelector('.topnav-link[data-page="' + page + '"]');
+  if (navLink) navLink.classList.add('active');
+
+  // Clear sidebar active
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+
+  // Scroll to top
+  document.querySelector('.main-content').scrollTop = 0;
+  currentPage = page;
+}
+
+// ===== TOOL SIDEBAR SWITCHING =====
+function switchTool(tool) {
+  // Map tool to page
+  const toolMap = {
+    'agent': 'agent',
+    'canvas': 'canvas',
+    'skillhub': 'skillhub',
+    'ecommerce': 'ecommerce',
+    'video': 'video',
+    'image': 'image',
+    'portrait': 'portrait',
+    'edit': 'edit',
+    'text': 'text',
+    'image-gen': 'image-gen',
+    'video-gen': 'video-gen',
+    'fitment': 'fitment',
+    'brand': 'brand'
+  };
+
+  const page = toolMap[tool];
+  if (!page) return;
+
+  switchPage(page);
+
+  // Set sidebar active
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  const sidebarItem = document.querySelector('.sidebar-item[data-tool="' + tool + '"]');
+  if (sidebarItem) sidebarItem.classList.add('active');
+}
+
+// ===== CREATION TAB FILTER =====
+function filterCreation(category, el) {
+  // Update active tab
+  document.querySelectorAll('.creation-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  // Filter sections
+  document.querySelectorAll('.feature-section').forEach(section => {
+    const cats = section.dataset.category || '';
+    if (category === 'all' || cats.includes(category)) {
+      section.style.display = '';
+      section.style.animation = 'fadeSlideUp 0.4s var(--ease-out-expo)';
+    } else {
+      section.style.display = 'none';
     }
+  });
+}
 
-    // ===== SMOOTH SCROLL FOR NAV LINKS =====
-    document.querySelectorAll('.nav-link[href^="#"]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        const target = document.querySelector(link.getAttribute('href'));
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
+// ===== EXPLORE FILTER =====
+document.querySelectorAll('.explore-filters').forEach(filterGroup => {
+  filterGroup.querySelectorAll('.explore-filter').forEach(filter => {
+    filter.addEventListener('click', () => {
+      filterGroup.querySelectorAll('.explore-filter').forEach(f => f.classList.remove('active'));
+      filter.classList.add('active');
     });
+  });
+});
 
-    // ===== NAV SCROLL STATE =====
-    let lastScroll = 0;
-    const nav = document.querySelector('.nav');
+// ===== PROMPT HELPERS =====
+function fillPrompt(text) {
+  // Find the visible textarea
+  const activePage = document.querySelector('.page-view.active');
+  if (!activePage) return;
+  const textarea = activePage.querySelector('textarea');
+  if (textarea) {
+    textarea.value = text;
+    textarea.focus();
+  }
+}
 
-    window.addEventListener('scroll', () => {
-      const currentScroll = window.scrollY;
-      if (currentScroll > 100) {
-        nav.style.background = 'oklch(11% 0.008 60 / 0.95)';
-      } else {
-        nav.style.background = 'oklch(11% 0.008 60 / 0.8)';
-      }
-      lastScroll = currentScroll;
-    }, { passive: true });
-  </script>
+function sendAgentPrompt() {
+  const textarea = document.getElementById('agentPrompt');
+  if (!textarea || !textarea.value.trim()) {
+    showToast('请输入你的创作需求');
+    return;
+  }
+  showToast('Agent 正在理解你的需求...');
+  setTimeout(() => {
+    showToast('正在调用 AI 工具链，请稍候...');
+  }, 1500);
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ===== SEARCH =====
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && this.value.trim()) {
+    showToast('搜索：' + this.value.trim());
+  }
+});
+</script>
 </body>
 </html>
