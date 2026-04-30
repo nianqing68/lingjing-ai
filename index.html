@@ -1825,17 +1825,35 @@ function generateImageUrl(prompt, w, h, seed) {
   });
   return IMG_API + '/' + encodeURIComponent(prompt) + '?' + params.toString();
 }
+function generateImageUrlV2(prompt, w, h, seed) {
+  const params = new URLSearchParams({
+    width: w || 1024, height: h || 1024, nologo: 'true', enhance: 'true',
+    seed: seed || Math.floor(Math.random()*999999)
+  });
+  return 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?' + params.toString();
+}
 
-// Preload a single image with timeout
-function preloadImage(url, timeoutMs) {
-  return new Promise((resolve) => {
-    let settled = false;
-    const done = (ok) => { if (!settled) { settled = true; resolve(ok); } };
-    const timer = setTimeout(() => done(false), timeoutMs || 60000);
-    const img = new Image();
-    img.onload = () => { clearTimeout(timer); done(true); };
-    img.onerror = () => { clearTimeout(timer); done(false); };
-    img.src = url;
+// Preload a single image with timeout and retry
+function preloadImage(url, timeoutMs, retries) {
+  retries = retries || 1;
+  return new Promise(async (resolve) => {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        const ok = await new Promise((res) => {
+          const timer = setTimeout(() => res(false), timeoutMs || 90000);
+          fetch(url, { mode: 'cors' }).then(r => {
+            if (!r.ok) { clearTimeout(timer); res(false); return; }
+            return r.blob();
+          }).then(blob => {
+            clearTimeout(timer);
+            res(blob && blob.size > 5000 && blob.type.startsWith('image/'));
+          }).catch(() => { clearTimeout(timer); res(false); });
+        });
+        if (ok) { resolve(true); return; }
+        if (attempt < retries) await new Promise(r => setTimeout(r, 2000));
+      } catch(e) { /* retry */ }
+    }
+    resolve(false);
   });
 }
 
@@ -1856,16 +1874,23 @@ async function sendImagePrompt(page) {
   const images = [];
   const results = [];
   for (let i = 0; i < count; i++) {
+    res.innerHTML = '<div class="ai-generating"><div class="spinner"></div>正在生成第 ' + (i+1) + '/' + count + ' 张图片，请稍候...</div>';
     const seed = Math.floor(Math.random() * 999999);
-    const url = generateImageUrl(prompt, 1024, 1024, seed);
+    // Try primary URL first, fallback to V2 if needed
+    let url = generateImageUrl(prompt, 1024, 1024, seed);
+    let ok = await preloadImage(url, 90000, 1);
+    if (!ok) {
+      // Fallback: try without model param
+      url = generateImageUrlV2(prompt, 1024, 1024, seed);
+      ok = await preloadImage(url, 90000, 1);
+    }
     images.push(url);
-    const ok = await preloadImage(url, 60000);
     results.push(ok);
   }
 
   let successCount = results.filter(Boolean).length;
   if (successCount === 0) {
-    res.innerHTML = '<div class="ai-generating" style="color:var(--color-danger)">图片生成失败，请尝试更换描述后重试（建议使用英文描述效果更好）</div>';
+    res.innerHTML = '<div class="ai-generating" style="color:var(--color-danger)">图片生成失败，请检查网络连接后重试。<br><small style="color:var(--color-text-muted)">建议：使用英文描述效果更好，或稍后再试</small></div>';
     btn.disabled = false;
     return;
   }
