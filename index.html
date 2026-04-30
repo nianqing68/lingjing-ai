@@ -1047,6 +1047,152 @@ input { font-family: inherit; }
   .feature-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
   .main-inner { padding: var(--space-md); }
 }
+
+/* ============================================
+   AI RESULT COMPONENTS
+   ============================================ */
+.ai-chat-container {
+  margin-top: var(--space-lg);
+  max-height: 500px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+.ai-chat-container::-webkit-scrollbar { width: 4px; }
+.ai-chat-container::-webkit-scrollbar-track { background: transparent; }
+.ai-chat-container::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+
+.ai-message {
+  display: flex;
+  gap: var(--space-sm);
+  max-width: 85%;
+  animation: fadeSlideUp 0.35s var(--ease-out-expo);
+}
+.ai-message.user { align-self: flex-end; flex-direction: row-reverse; }
+.ai-message .ai-avatar {
+  width: 32px; height: 32px; border-radius: var(--radius-full);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.ai-message.user .ai-avatar { background: var(--color-accent); color: oklch(12% 0.01 60); }
+.ai-message.ai .ai-avatar { background: var(--color-surface); border: 1px solid var(--color-border); }
+.ai-message .ai-bubble {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-lg);
+  font-size: 13.5px; line-height: 1.7;
+  white-space: pre-wrap; word-break: break-word;
+}
+.ai-message.user .ai-bubble {
+  background: var(--color-accent);
+  color: oklch(12% 0.01 60);
+  border-bottom-right-radius: var(--radius-sm);
+}
+.ai-message.ai .ai-bubble {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.ai-loading-dots { display: inline-flex; gap: 4px; padding: 4px 0; }
+.ai-loading-dots span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--color-text-muted);
+  animation: dotPulse 1.4s infinite ease-in-out;
+}
+.ai-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.ai-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotPulse {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+
+.ai-image-grid {
+  margin-top: var(--space-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+.ai-image-card {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: all 0.3s var(--ease-out-quart);
+  animation: fadeSlideUp 0.5s var(--ease-out-expo);
+}
+.ai-image-card:hover { border-color: var(--color-accent-dim); transform: translateY(-2px); box-shadow: 0 8px 24px oklch(0% 0 0 / 0.3); }
+.ai-image-card img {
+  width: 100%; aspect-ratio: 1; object-fit: cover;
+  display: block; background: var(--color-bg);
+}
+.ai-image-card .ai-image-actions {
+  padding: var(--space-sm);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.ai-image-card .ai-image-actions span { font-size: 11px; color: var(--color-text-muted); }
+.ai-image-card .ai-image-actions button {
+  font-size: 11px; color: var(--color-text-secondary); padding: 4px 10px;
+  border-radius: var(--radius-full); border: 1px solid var(--color-border);
+  transition: all 0.2s;
+}
+.ai-image-card .ai-image-actions button:hover {
+  border-color: var(--color-accent); color: var(--color-accent);
+}
+
+.ai-video-container {
+  margin-top: var(--space-lg);
+  animation: fadeSlideUp 0.5s var(--ease-out-expo);
+}
+.ai-video-card {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  max-width: 640px;
+}
+.ai-video-card video { width: 100%; display: block; background: #000; }
+.ai-video-card .ai-video-info {
+  padding: var(--space-sm) var(--space-md);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.ai-video-card .ai-video-info span { font-size: 12px; color: var(--color-text-muted); }
+.ai-video-card .ai-video-info a {
+  font-size: 12px; color: var(--color-accent);
+}
+
+.ai-generating {
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--space-sm); padding: var(--space-xl);
+  color: var(--color-text-muted); font-size: 13px;
+}
+.ai-generating .spinner {
+  width: 20px; height: 20px; border: 2px solid var(--color-border);
+  border-top-color: var(--color-accent); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.ai-brand-output {
+  margin-top: var(--space-lg); animation: fadeSlideUp 0.5s var(--ease-out-expo);
+}
+.ai-brand-output .ai-brand-text {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-md); padding: var(--space-md);
+  font-size: 13.5px; line-height: 1.8; white-space: pre-wrap;
+}
+.ai-brand-output .ai-brand-images {
+  margin-top: var(--space-md);
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+@media (max-width: 768px) {
+  .ai-image-grid { grid-template-columns: repeat(2, 1fr); }
+  .ai-message { max-width: 92%; }
+}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1368,7 +1514,7 @@ input { font-family: inherit; }
           <div class="prompt-area">
             <div class="prompt-input-wrap">
               <textarea placeholder="描述你的创作需求，例如：帮我做一张春日美妆产品海报..." id="agentPrompt"></textarea>
-              <button class="prompt-send-btn" onclick="sendAgentPrompt()">
+              <button class="prompt-send-btn" id="agentSendBtn" onclick="sendAgentPrompt()">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
               </button>
             </div>
@@ -1379,6 +1525,7 @@ input { font-family: inherit; }
               <div class="prompt-suggestion" onclick="fillPrompt('帮我精修一张商品图')">商品精修</div>
             </div>
           </div>
+          <div class="ai-chat-container" id="agentChat"></div>
         </div>
       </div>
     </div>
@@ -1483,7 +1630,7 @@ input { font-family: inherit; }
           <div class="prompt-area">
             <div class="prompt-input-wrap">
               <textarea placeholder="描述你想要的视频内容，例如：春日咖啡店，暖色调，慢镜头..." id="videoPrompt"></textarea>
-              <button class="prompt-send-btn" onclick="showToast('视频生成功能开发中')">
+              <button class="prompt-send-btn" id="videoSendBtn" onclick="sendVideoPrompt('video')">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
               </button>
             </div>
@@ -1493,6 +1640,7 @@ input { font-family: inherit; }
               <div class="prompt-suggestion" onclick="fillPrompt('制作一段社交媒体短视频')">社媒短片</div>
             </div>
           </div>
+          <div id="videoResult"></div>
         </div>
       </div>
     </div>
@@ -1511,7 +1659,7 @@ input { font-family: inherit; }
           <div class="prompt-area">
             <div class="prompt-input-wrap">
               <textarea placeholder="描述你想要的图像，例如：一只柴犬穿着宇航服在月球上..." id="imagePrompt"></textarea>
-              <button class="prompt-send-btn" onclick="showToast('图像生成功能开发中')">
+              <button class="prompt-send-btn" id="imageSendBtn" onclick="sendImagePrompt('image')">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
               </button>
             </div>
@@ -1522,6 +1670,7 @@ input { font-family: inherit; }
               <div class="prompt-suggestion" onclick="fillPrompt('国风：水墨山水画，云雾缭绕')">国风</div>
             </div>
           </div>
+          <div id="imageResult"></div>
         </div>
       </div>
     </div>
@@ -1607,11 +1756,12 @@ input { font-family: inherit; }
           <div class="prompt-area">
             <div class="prompt-input-wrap">
               <textarea placeholder="描述你想生成的图片..." id="quickImagePrompt"></textarea>
-              <button class="prompt-send-btn" onclick="showToast('图片生成功能开发中')">
+              <button class="prompt-send-btn" id="quickImageSendBtn" onclick="sendImagePrompt('quickImage')">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
               </button>
             </div>
           </div>
+          <div id="quickImageResult"></div>
         </div>
       </div>
     </div>
@@ -1629,11 +1779,12 @@ input { font-family: inherit; }
           <div class="prompt-area">
             <div class="prompt-input-wrap">
               <textarea placeholder="描述你想生成的视频内容..." id="quickVideoPrompt"></textarea>
-              <button class="prompt-send-btn" onclick="showToast('视频生成功能开发中')">
+              <button class="prompt-send-btn" id="quickVideoSendBtn" onclick="sendVideoPrompt('quickVideo')">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
               </button>
             </div>
           </div>
+          <div id="quickVideoResult"></div>
         </div>
       </div>
     </div>
@@ -1759,11 +1910,12 @@ input { font-family: inherit; }
           <div class="prompt-area">
             <div class="prompt-input-wrap">
               <textarea placeholder="品牌名称、行业、风格偏好，例如：灵境咖啡，精品咖啡品牌，极简风格..." id="brandPrompt"></textarea>
-              <button class="prompt-send-btn" onclick="showToast('品牌设计功能开发中')">
+              <button class="prompt-send-btn" id="brandSendBtn" onclick="sendBrandPrompt()">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
               </button>
             </div>
           </div>
+          <div id="brandResult"></div>
         </div>
       </div>
     </div>
@@ -1874,10 +2026,226 @@ function sendAgentPrompt() {
     showToast('请输入你的创作需求');
     return;
   }
-  showToast('Agent 正在理解你的需求...');
-  setTimeout(() => {
-    showToast('正在调用 AI 工具链，请稍候...');
-  }, 1500);
+  const prompt = textarea.value.trim();
+  textarea.value = '';
+  const chat = document.getElementById('agentChat');
+  const sendBtn = document.getElementById('agentSendBtn');
+
+  // Add user message
+  chat.innerHTML += '<div class="ai-message user"><div class="ai-avatar">U</div><div class="ai-bubble">' + escapeHtml(prompt) + '</div></div>';
+
+  // Add loading bubble
+  const loadingId = 'loading-' + Date.now();
+  chat.innerHTML += '<div class="ai-message ai" id="' + loadingId + '"><div class="ai-avatar">&#10024;</div><div class="ai-bubble"><div class="ai-loading-dots"><span></span><span></span><span></span></div></div></div>';
+  chat.scrollTop = chat.scrollHeight;
+
+  // Disable send
+  if (sendBtn) sendBtn.disabled = true;
+
+  // Build messages for context
+  const history = [];
+  chat.querySelectorAll('.ai-message').forEach(msg => {
+    const role = msg.classList.contains('user') ? 'user' : 'assistant';
+    const text = msg.querySelector('.ai-bubble');
+    if (text && !msg.id.startsWith('loading')) {
+      history.push({ role, content: text.textContent });
+    }
+  });
+
+  callLLM([
+    { role: 'system', content: '你是灵境 AI 创作平台的智能助手。你擅长理解用户的创作需求，并提供专业的创意建议。你会分析需求、推荐合适的工具和创作方向。回复简洁有重点，使用中文。' },
+    ...history.slice(-10)
+  ], function(chunk) {
+    // onChunk: append text to loading bubble
+    const el = document.getElementById(loadingId);
+    if (el) {
+      const bubble = el.querySelector('.ai-bubble');
+      if (bubble.querySelector('.ai-loading-dots')) bubble.innerHTML = '';
+      bubble.textContent += chunk;
+      chat.scrollTop = chat.scrollHeight;
+    }
+  }, function() {
+    // onDone: re-enable send
+    if (sendBtn) sendBtn.disabled = false;
+  }, function(err) {
+    // onError
+    const el = document.getElementById(loadingId);
+    if (el) el.querySelector('.ai-bubble').textContent = '抱歉，生成失败了，请重试。';
+    if (sendBtn) sendBtn.disabled = false;
+  });
+}
+
+// ===== AI CORE FUNCTIONS =====
+const AI_API = 'https://gen.pollinations.ai';
+const IMG_API = 'https://image.pollinations.ai/prompt';
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Text generation with streaming
+async function callLLM(messages, onChunk, onDone, onError) {
+  try {
+    const res = await fetch(AI_API + '/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'openai', messages, stream: true, temperature: 0.7 })
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith('data: ')) continue;
+        const data = trimmed.slice(6);
+        if (data === '[DONE]') break;
+        try {
+          const json = JSON.parse(data);
+          const content = json.choices?.[0]?.delta?.content;
+          if (content) onChunk(content);
+        } catch(e) {}
+      }
+    }
+    if (onDone) onDone();
+  } catch(e) {
+    if (onError) onError(e);
+    else showToast('AI 请求失败：' + e.message);
+  }
+}
+
+// Image generation
+function generateImageUrl(prompt, w, h, seed) {
+  const params = new URLSearchParams({
+    width: w || 1024, height: h || 1024, nologo: 'true', seed: seed || Math.floor(Math.random()*999999)
+  });
+  return IMG_API + '/' + encodeURIComponent(prompt) + '?' + params.toString();
+}
+
+// Send image prompt
+async function sendImagePrompt(page) {
+  const ids = { image: { ta: 'imagePrompt', btn: 'imageSendBtn', res: 'imageResult' }, quickImage: { ta: 'quickImagePrompt', btn: 'quickImageSendBtn', res: 'quickImageResult' } };
+  const cfg = ids[page]; if (!cfg) return;
+  const ta = document.getElementById(cfg.ta);
+  if (!ta || !ta.value.trim()) { showToast('请输入图像描述'); return; }
+  const prompt = ta.value.trim();
+  const res = document.getElementById(cfg.res);
+  const btn = document.getElementById(cfg.btn);
+  const count = page === 'quickImage' ? 2 : 4;
+
+  btn.disabled = true;
+  res.innerHTML = '<div class="ai-generating"><div class="spinner"></div>正在生成 ' + count + ' 张图片，请稍候...</div>';
+
+  const images = [];
+  const promises = [];
+  for (let i = 0; i < count; i++) {
+    const seed = Math.floor(Math.random() * 999999);
+    const url = generateImageUrl(prompt, 1024, 1024, seed);
+    images.push(url);
+    promises.push(new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    }));
+  }
+  await Promise.all(promises);
+  btn.disabled = false;
+
+  let html = '<div class="ai-image-grid">';
+  images.forEach((url, i) => {
+    html += '<div class="ai-image-card" style="animation-delay:' + (i*0.1) + 's">';
+    html += '<img src="' + url + '" alt="AI 生成图片" loading="lazy">';
+    html += '<div class="ai-image-actions"><span>变体 #' + (i+1) + '</span>';
+    html += '<a href="' + url + '" download="lingjing-ai-' + Date.now() + '-' + i + '.jpg" style="text-decoration:none"><button>下载</button></a></div></div>';
+  });
+  html += '</div>';
+  res.innerHTML = html;
+  showToast('图片生成完成');
+}
+
+// Send video prompt
+async function sendVideoPrompt(page) {
+  const ids = { video: { ta: 'videoPrompt', btn: 'videoSendBtn', res: 'videoResult' }, quickVideo: { ta: 'quickVideoPrompt', btn: 'quickVideoSendBtn', res: 'quickVideoResult' } };
+  const cfg = ids[page]; if (!cfg) return;
+  const ta = document.getElementById(cfg.ta);
+  if (!ta || !ta.value.trim()) { showToast('请输入视频描述'); return; }
+  const prompt = ta.value.trim();
+  const res = document.getElementById(cfg.res);
+  const btn = document.getElementById(cfg.btn);
+
+  btn.disabled = true;
+  res.innerHTML = '<div class="ai-generating"><div class="spinner"></div>视频生成中，通常需要 30-60 秒，请耐心等待...</div>';
+
+  try {
+    const params = new URLSearchParams({ seed: String(Math.floor(Math.random()*999999)) });
+    const videoUrl = AI_API + '/video/' + encodeURIComponent(prompt) + '?' + params.toString();
+
+    // Try to fetch as blob to verify it's ready
+    const response = await fetch(videoUrl);
+    if (!response.ok) throw new Error('生成失败');
+
+    const blob = await response.blob();
+    const localUrl = URL.createObjectURL(blob);
+    res.innerHTML = '<div class="ai-video-container"><div class="ai-video-card">' +
+      '<video controls playsinline src="' + localUrl + '"></video>' +
+      '<div class="ai-video-info"><span>' + escapeHtml(prompt.substring(0,50)) + '...</span>' +
+      '<a href="' + videoUrl + '" download="lingjing-video.mp4">下载视频</a></div></div></div>';
+    showToast('视频生成完成');
+  } catch(e) {
+    res.innerHTML = '<div class="ai-generating" style="color:var(--color-danger)">视频生成失败，请尝试更换描述后重试</div>';
+  }
+  btn.disabled = false;
+}
+
+// Send brand design prompt
+async function sendBrandPrompt() {
+  const ta = document.getElementById('brandPrompt');
+  if (!ta || !ta.value.trim()) { showToast('请输入品牌信息'); return; }
+  const prompt = ta.value.trim();
+  const res = document.getElementById('brandResult');
+  const btn = document.getElementById('brandSendBtn');
+
+  btn.disabled = true;
+  res.innerHTML = '<div class="ai-brand-output"><div class="ai-generating"><div class="spinner"></div>正在分析品牌需求，生成设计方案...</div></div>';
+
+  // Step 1: Generate brand text plan via LLM
+  const planId = 'brand-plan-' + Date.now();
+  let brandPlan = '';
+  await callLLM([
+    { role: 'system', content: '你是一位资深品牌设计师。根据用户提供的品牌信息，生成一个完整的品牌设计方案，包括：\n1. 品牌定位（一句话）\n2. 品牌色彩建议（主色、辅色、点缀色）\n3. 字体风格建议\n4. Logo 设计方向（2-3个方向）\n5. 品牌应用场景建议\n\n请简洁专业，使用中文。' },
+    { role: 'user', content: prompt }
+  ], function(chunk) {
+    brandPlan += chunk;
+    res.innerHTML = '<div class="ai-brand-output"><div class="ai-brand-text">' + escapeHtml(brandPlan) + '</div><div class="ai-brand-images"><div class="ai-generating"><div class="spinner"></div>正在生成 Logo 方案...</div></div></div>';
+  }, function() {
+    // Step 2: Generate Logo images
+    const imgContainer = res.querySelector('.ai-brand-images');
+    const logoPrompts = [
+      'Professional minimalist logo design for "' + prompt.substring(0,30) + '", clean modern style, vector art, white background',
+      'Creative brand logo for "' + prompt.substring(0,30) + '", unique design, elegant typography, white background'
+    ];
+    let loaded = 0;
+    let imgHtml = '';
+    logoPrompts.forEach((lp, i) => {
+      const url = generateImageUrl(lp, 512, 512);
+      imgHtml += '<div class="ai-image-card" style="animation-delay:' + (i*0.15) + 's"><img src="' + url + '" alt="Logo 方案"><div class="ai-image-actions"><span>方案 ' + (i+1) + '</span><a href="' + url + '" download="logo-' + (i+1) + '.jpg" style="text-decoration:none"><button>下载</button></a></div></div>';
+    });
+    imgContainer.innerHTML = imgHtml;
+    showToast('品牌设计方案生成完成');
+  }, function(err) {
+    res.querySelector('.ai-brand-text').textContent = '生成失败，请重试。';
+    const ic = res.querySelector('.ai-brand-images');
+    if (ic) ic.innerHTML = '';
+    btn.disabled = false;
+  });
+  btn.disabled = false;
 }
 
 // ===== TOAST =====
