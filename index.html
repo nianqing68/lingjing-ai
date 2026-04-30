@@ -1877,7 +1877,7 @@ async function callLLM(messages, onChunk, onDone, onError) {
 function generateImageUrl(prompt, w, h, seed) {
   const params = new URLSearchParams({
     width: w || 1024, height: h || 1024, nologo: 'true', enhance: 'true',
-    seed: seed || Math.floor(Math.random()*999999), model: 'flux'
+    seed: seed || Math.floor(Math.random()*999999), model: 'flux-schnell'
   });
   return IMG_API + '/' + encodeURIComponent(prompt) + '?' + params.toString();
 }
@@ -1889,24 +1889,21 @@ function generateImageUrlV2(prompt, w, h, seed) {
   return 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?' + params.toString();
 }
 
-// Preload a single image with timeout and retry
+// Preload image via <img> tag (no CORS restriction)
 function preloadImage(url, timeoutMs, retries) {
   retries = retries || 1;
   return new Promise(async (resolve) => {
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
         const ok = await new Promise((res) => {
-          const timer = setTimeout(() => res(false), timeoutMs || 90000);
-          fetch(url, { mode: 'cors' }).then(r => {
-            if (!r.ok) { clearTimeout(timer); res(false); return; }
-            return r.blob();
-          }).then(blob => {
-            clearTimeout(timer);
-            res(blob && blob.size > 5000 && blob.type.startsWith('image/'));
-          }).catch(() => { clearTimeout(timer); res(false); });
+          const timer = setTimeout(() => res(false), timeoutMs || 60000);
+          const img = new Image();
+          img.onload = () => { clearTimeout(timer); res(true); };
+          img.onerror = () => { clearTimeout(timer); res(false); };
+          img.src = url;
         });
         if (ok) { resolve(true); return; }
-        if (attempt < retries) await new Promise(r => setTimeout(r, 2000));
+        if (attempt < retries) await new Promise(r => setTimeout(r, 3000));
       } catch(e) { /* retry */ }
     }
     resolve(false);
