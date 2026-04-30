@@ -479,6 +479,36 @@ input, textarea { font-family: inherit; }
 .upload-zone-icon svg { width: 32px; height: 32px; }
 .upload-zone-text { font-size: 14px; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
 .upload-zone-hint { font-size: 12px; color: var(--color-text-muted); }
+.upload-zone.drag-over { border-color: var(--color-accent); background: rgba(94,234,212,0.08); }
+.upload-zone.has-file { border-style: solid; border-color: var(--color-accent); }
+
+/* Edit page */
+.edit-preview-card {
+  width: 100%; max-width: 480px; border-radius: var(--radius-lg);
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  overflow: hidden; animation: fadeUp 0.3s var(--ease-out);
+}
+.edit-preview-card img { width: 100%; max-height: 300px; object-fit: contain; background: var(--color-bg); display: block; }
+.edit-preview-info { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+.edit-preview-name { font-size: 13px; color: var(--color-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 240px; }
+.edit-preview-size { font-size: 11px; color: var(--color-text-muted); }
+
+.edit-compare { display: flex; gap: var(--space-md); width: 100%; margin-top: var(--space-lg); }
+.edit-compare-panel { flex: 1; min-width: 0; border-radius: var(--radius-lg); background: var(--color-surface); border: 1px solid var(--color-border); overflow: hidden; animation: fadeUp 0.4s var(--ease-out); }
+.edit-compare-label { padding: 8px 14px; font-size: 12px; font-weight: 600; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.5px; background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
+.edit-compare-label.gen { color: var(--color-accent); }
+.edit-compare-panel img { width: 100%; max-height: 400px; object-fit: contain; display: block; background: var(--color-bg); }
+.edit-compare-actions { padding: 12px 14px; display: flex; gap: 8px; }
+
+.edit-mode-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: var(--space-md); }
+.edit-mode-btns .btn { font-size: 12px; padding: 6px 14px; }
+
+.edit-result-bar { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: var(--space-md); }
+
+@media (max-width: 640px) {
+  .edit-compare { flex-direction: column; }
+  .edit-preview-card img { max-height: 200px; }
+}
 
 /* Prompt input */
 .prompt-area { width: 100%; max-width: 560px; }
@@ -1353,21 +1383,47 @@ input, textarea { font-family: inherit; }
       <div class="main-inner">
         <div class="tool-page-header">
           <h2>AI 改图</h2>
-          <p>智能图片编辑——背景替换、局部修改、风格转换、画质增强一键搞定</p>
+          <p>上传图片，用文字描述你想要的修改，AI 帮你重新生成</p>
         </div>
         <div class="tool-workspace">
-          <div class="upload-zone" onclick="showToast('图片上传功能开发中')">
-            <div class="upload-zone-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <!-- Step 1: Upload -->
+          <div id="editUploadSection">
+            <div class="upload-zone" id="editUploadZone">
+              <input type="file" id="editFileInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+              <div class="upload-zone-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+              <div class="upload-zone-text">拖拽或点击上传图片</div>
+              <div class="upload-zone-hint">支持 JPG / PNG / WEBP，最大 20MB</div>
             </div>
-            <div class="upload-zone-text">上传需要编辑的图片</div>
-            <div class="upload-zone-hint">支持 JPG / PNG / WEBP，最大 20MB</div>
           </div>
-          <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:12px;">
-            <button class="btn btn-outline btn-sm" onclick="showToast('背景替换')">背景替换</button>
-            <button class="btn btn-outline btn-sm" onclick="showToast('局部修改')">局部修改</button>
-            <button class="btn btn-outline btn-sm" onclick="showToast('风格转换')">风格转换</button>
-            <button class="btn btn-outline btn-sm" onclick="showToast('画质增强')">画质增强</button>
+          <!-- Step 2: Preview + Edit (hidden initially) -->
+          <div id="editWorkSection" style="display:none">
+            <div class="edit-preview-card">
+              <img id="editPreviewImg" src="" alt="原图预览">
+              <div class="edit-preview-info">
+                <div>
+                  <div class="edit-preview-name" id="editFileName">image.jpg</div>
+                  <div class="edit-preview-size" id="editFileSize">0 KB</div>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="resetEditUpload()">重新上传</button>
+              </div>
+            </div>
+            <div class="edit-mode-btns">
+              <button class="btn btn-outline btn-sm" onclick="setEditMode('bg')">背景替换</button>
+              <button class="btn btn-outline btn-sm" onclick="setEditMode('style')">风格转换</button>
+              <button class="btn btn-outline btn-sm" onclick="setEditMode('enhance')">画质增强</button>
+              <button class="btn btn-outline btn-sm" onclick="setEditMode('free')">自由描述</button>
+            </div>
+            <div class="prompt-area" style="margin-top:var(--space-md)">
+              <div class="prompt-input-wrap">
+                <textarea placeholder="描述你想要的修改，例如：把背景换成海边夕阳..." id="editPrompt"></textarea>
+                <button class="prompt-send-btn" id="editSendBtn" onclick="sendEditPrompt()">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
+                </button>
+              </div>
+            </div>
+            <div id="editResult"></div>
           </div>
         </div>
       </div>
@@ -1912,6 +1968,158 @@ async function sendImagePrompt(page) {
   showToast('成功生成 ' + successCount + ' 张图片');
 }
 
+// ===== AI EDIT FUNCTIONS =====
+let editImageData = null; // { base64: 'data:image/...', name: '...', size: 0 }
+
+function initEditUpload() {
+  const zone = document.getElementById('editUploadZone');
+  const input = document.getElementById('editFileInput');
+  if (!zone || !input) return;
+  // Click to upload
+  zone.addEventListener('click', function() { input.click(); });
+  input.addEventListener('change', function() { if (input.files && input.files[0]) handleEditFile(input.files[0]); });
+  // Drag & drop
+  zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', function() { zone.classList.remove('drag-over'); });
+  zone.addEventListener('drop', function(e) {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) handleEditFile(e.dataTransfer.files[0]);
+  });
+}
+
+function handleEditFile(file) {
+  var allowed = ['image/jpeg', 'image/png', 'image/webp'];
+  if (allowed.indexOf(file.type) === -1) { showToast('仅支持 JPG、PNG、WEBP 格式'); return; }
+  if (file.size > 20 * 1024 * 1024) { showToast('图片不能超过 20MB'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    editImageData = { base64: e.target.result, name: file.name, size: file.size };
+    // Show preview
+    document.getElementById('editPreviewImg').src = e.target.result;
+    document.getElementById('editFileName').textContent = file.name;
+    document.getElementById('editFileSize').textContent = formatBytes(file.size);
+    document.getElementById('editUploadSection').style.display = 'none';
+    document.getElementById('editWorkSection').style.display = 'block';
+    document.getElementById('editResult').innerHTML = '';
+    document.getElementById('editPrompt').value = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetEditUpload() {
+  editImageData = null;
+  document.getElementById('editUploadSection').style.display = 'block';
+  document.getElementById('editWorkSection').style.display = 'none';
+  document.getElementById('editResult').innerHTML = '';
+  document.getElementById('editPrompt').value = '';
+  var input = document.getElementById('editFileInput');
+  if (input) input.value = '';
+}
+
+function setEditMode(mode) {
+  var ta = document.getElementById('editPrompt');
+  if (!ta) return;
+  var templates = {
+    bg: '将这张图片的背景替换为：',
+    style: '将这张图片的风格转换为：',
+    enhance: '提升这张图片的画质，',
+    free: ''
+  };
+  ta.value = templates[mode] || '';
+  ta.focus();
+  var len = ta.value.length;
+  ta.setSelectionRange(len, len);
+}
+
+async function sendEditPrompt() {
+  var ta = document.getElementById('editPrompt');
+  var res = document.getElementById('editResult');
+  var btn = document.getElementById('editSendBtn');
+  if (!ta || !ta.value.trim()) { showToast('请描述你想要的修改'); return; }
+  if (!editImageData) { showToast('请先上传图片'); return; }
+
+  var userInstruction = ta.value.trim();
+  btn.disabled = true;
+  res.innerHTML = '<div class="ai-generating"><div class="spinner"></div>AI 正在分析图片并生成新图...</div>';
+
+  try {
+    // Step 1: Use Vision LLM to analyze the image and generate an enriched prompt
+    var visionPrompt = 'You are an expert image editor. Analyze the uploaded image and the user\'s edit instruction. ' +
+      'Then output a SINGLE detailed English prompt for an AI image generator that recreates the image with the requested changes applied. ' +
+      'Output ONLY the prompt text, nothing else. Be specific about composition, style, colors, lighting, and the changes requested.\n\n' +
+      'User instruction: ' + userInstruction;
+
+    var llmBody = {
+      model: 'openai',
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'text', text: visionPrompt },
+          { type: 'image_url', image_url: { url: editImageData.base64 } }
+        ]
+      }],
+      max_tokens: 300
+    };
+
+    var llmResponse = await fetch(AI_API + '/v1/chat/completions', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(llmBody)
+    });
+    var llmData = await llmResponse.json();
+
+    if (!llmData.choices || !llmData.choices[0]) {
+      throw new Error('AI 分析失败，请重试');
+    }
+
+    var enrichedPrompt = llmData.choices[0].message.content.trim();
+    // Strip quotes if LLM wraps it
+    if (enrichedPrompt.startsWith('"') && enrichedPrompt.endsWith('"')) {
+      enrichedPrompt = enrichedPrompt.slice(1, -1);
+    }
+
+    res.innerHTML = '<div class="ai-generating"><div class="spinner"></div>正在生成新图片...</div>';
+
+    // Step 2: Generate image with enriched prompt
+    var seed = Math.floor(Math.random() * 999999);
+    var imgUrl = generateImageUrl(enrichedPrompt, 1024, 1024, seed);
+    var ok = await preloadImage(imgUrl, 90000, 1);
+    if (!ok) {
+      imgUrl = generateImageUrlV2(enrichedPrompt, 1024, 1024, seed);
+      ok = await preloadImage(imgUrl, 90000, 1);
+    }
+
+    if (!ok) {
+      res.innerHTML = '<div class="ai-generating" style="color:var(--color-danger)">图片生成失败，请检查网络后重试</div>';
+      btn.disabled = false;
+      return;
+    }
+
+    // Step 3: Render comparison
+    var html = '<div class="edit-compare">';
+    html += '<div class="edit-compare-panel"><div class="edit-compare-label">原图</div>';
+    html += '<img src="' + editImageData.base64 + '" alt="原图">';
+    html += '</div>';
+    html += '<div class="edit-compare-panel" style="animation-delay:0.1s"><div class="edit-compare-label gen">AI 生成</div>';
+    html += '<img src="' + imgUrl + '" alt="AI 生成" loading="lazy">';
+    html += '<div class="edit-compare-actions">';
+    html += '<a href="' + imgUrl + '" download="lingjing-edit-' + Date.now() + '.jpg" style="text-decoration:none"><button class="btn btn-primary btn-sm">下载</button></a>';
+    html += '<button class="btn btn-outline btn-sm" onclick="sendEditPrompt()">重新生成</button>';
+    html += '</div></div></div>';
+    res.innerHTML = html;
+    showToast('改图完成');
+
+  } catch(e) {
+    res.innerHTML = '<div class="ai-generating" style="color:var(--color-danger)">处理失败：' + escapeHtml(e.message) + '</div>';
+  }
+  btn.disabled = false;
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
 // Send video prompt
 async function sendVideoPrompt(page) {
 
@@ -1959,7 +2167,7 @@ function initVideoKeyBars() {
     });
   }
 }
-document.addEventListener('DOMContentLoaded', initVideoKeyBars);
+document.addEventListener('DOMContentLoaded', function() { initVideoKeyBars(); initEditUpload(); });
   const ids = { video: { ta: 'videoPrompt', btn: 'videoSendBtn', res: 'videoResult' }, quickVideo: { ta: 'quickVideoPrompt', btn: 'quickVideoSendBtn', res: 'quickVideoResult' } };
   const cfg = ids[page]; if (!cfg) return;
   const ta = document.getElementById(cfg.ta);
