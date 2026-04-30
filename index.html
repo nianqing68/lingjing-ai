@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lingjing · AI Creation Platform</title>
+<title>灵境 · AI 创作平台</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -943,7 +943,7 @@ input, textarea { font-family: inherit; }
         <!-- Hero Search -->
         <div class="home-hero">
           <h1 class="home-hero-title">用 AI 释放你的<span class="accent">无限创意</span></h1>
-          <p class="home-hero-desc">从灵感到成稿，只需几秒。Lingjing 为你提供全链路 AI 创作工具——图像、视频、设计、文案，一个平台全部搞定。</p>
+          <p class="home-hero-desc">从灵感到成稿，只需几秒。灵境为你提供全链路 AI 创作工具——图像、视频、设计、文案，一个平台全部搞定。</p>
           <div class="home-search">
             <input type="text" placeholder="例如：帮我做一张春日美妆产品海报..." id="homeSearchInput">
             <button class="home-search-btn" onclick="handleHomeSearch()">
@@ -1139,7 +1139,7 @@ input, textarea { font-family: inherit; }
           <div class="tool-workspace-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6l-.7.5V18a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2.5l-.7-.5A7 7 0 0 1 12 2z"/><path d="M9 22h6"/></svg>
           </div>
-          <div class="tool-workspace-title">你好，我是 Lingjing Agent</div>
+          <div class="tool-workspace-title">你好，我是灵境 Agent</div>
           <div class="tool-workspace-desc">告诉我你想创作什么，我会帮你自动选择合适的工具完成任务</div>
           <div class="prompt-area">
             <div class="prompt-input-wrap">
@@ -1573,7 +1573,7 @@ input, textarea { font-family: inherit; }
           <div class="tool-workspace-desc">输入品牌名称、行业和风格偏好，AI 将生成完整的品牌设计方案</div>
           <div class="prompt-area">
             <div class="prompt-input-wrap">
-              <textarea placeholder="品牌名称、行业、风格偏好，例如：Lingjing 咖啡，精品咖啡品牌，极简风格..." id="brandPrompt"></textarea>
+              <textarea placeholder="品牌名称、行业、风格偏好，例如：灵境咖啡，精品咖啡品牌，极简风格..." id="brandPrompt"></textarea>
               <button class="prompt-send-btn" id="brandSendBtn" onclick="sendBrandPrompt()">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
               </button>
@@ -1736,7 +1736,7 @@ function sendAgentPrompt() {
   });
 
   callLLM([
-    { role: 'system', content: '你是 Lingjing AI 创作平台的智能助手。你擅长理解用户的创作需求，并提供专业的创意建议。你会分析需求、推荐合适的工具和创作方向。回复简洁有重点，使用中文。' },
+    { role: 'system', content: '你是灵境 AI 创作平台的智能助手。你擅长理解用户的创作需求，并提供专业的创意建议。你会分析需求、推荐合适的工具和创作方向。回复简洁有重点，使用中文。' },
     ...history.slice(-10)
   ], function(chunk) {
     // onChunk: append text to loading bubble
