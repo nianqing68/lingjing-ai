@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>灵境 · AI 创作平台</title>
+<style>
+  /* ============================================
+     DESIGN TOKENS
+     ============================================ */
+  :root {
+    /* Color — warm copper/amber accent on dark, not the typical cyan-purple */
+    --color-bg:        oklch(11% 0.008 60);
+    --color-bg-elevated: oklch(16% 0.008 60);
+    --color-surface:   oklch(19% 0.01 60);
+    --color-surface-hover: oklch(24% 0.012 60);
+    --color-border:    oklch(28% 0.01 60);
+
+    --color-accent:    oklch(72% 0.16 55);    /* warm amber */
+    --color-accent-hover: oklch(78% 0.15 55);
+    --color-accent-dim: oklch(45% 0.08 55);
+
+    --color-text:      oklch(93% 0.008 60);
+    --color-text-secondary: oklch(65% 0.015 60);
+    --color-text-muted: oklch(48% 0.012 60);
+
+    --color-success:   oklch(68% 0.14 150);
+    --color-info:      oklch(65% 0.12 240);
+
+    /* Typography */
+    --font-display: 'Outfit', system-ui, sans-serif;
+    --font-body: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Spacing */
+    --space-xs:  4px;
+    --space-sm:  8px;
+    --space-md:  16px;
+    --space-lg:  24px;
+    --space-xl:  40px;
+    --space-2xl: 64px;
+    --space-3xl: 96px;
+    --space-4xl: 128px;
+
+    /* Radius */
+    --radius-sm:  6px;
+    --radius-md:  10px;
+    --radius-lg:  16px;
+    --radius-xl:  24px;
+    --radius-full: 9999px;
+
+    /* Transitions */
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Layout */
+    --max-width: 1280px;
+    --nav-height: 64px;
+  }
+
+  /* ============================================
+     RESET & BASE
+     ============================================ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  button { border: none; background: none; cursor: pointer; font-family: inherit; }
+  img { display: block; max-width: 100%; }
+
+  /* ============================================
+     UTILITY
+     ============================================ */
+  .container { max-width: var(--max-width); margin: 0 auto; padding: 0 var(--space-lg); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+  /* ============================================
+     NOISE OVERLAY — gives texture to dark bg
+     ============================================ */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  /* ============================================
+     NAVIGATION
+     ============================================ */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+    background: oklch(11% 0.008 60 / 0.8);
+    backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom: 1px solid oklch(100% 0 0 / 0.05);
+    transition: background 0.3s var(--ease-out-quart);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .nav-logo-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--color-accent), oklch(65% 0.18 30));
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: oklch(12% 0.01 60);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    list-style: none;
+  }
+
+  .nav-link {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-full);
+    transition: color 0.2s, background 0.2s;
+  }
+  .nav-link:hover { color: var(--color-text); background: oklch(100% 0 0 / 0.06); }
+  .nav-link.active { color: var(--color-text); background: oklch(100% 0 0 / 0.08); }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 9px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+    transition: all 0.25s var(--ease-out-quart);
+  }
+
+  .btn-ghost {
+    color: var(--color-text-secondary);
+  }
+  .btn-ghost:hover { color: var(--color-text); background: oklch(100% 0 0 / 0.06); }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: oklch(12% 0.01 60);
+  }
+  .btn-primary:hover {
+    background: var(--color-accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px oklch(72% 0.16 55 / 0.3);
+  }
+
+  .btn-outline {
+    border: 1.5px solid var(--color-border);
+    color: var(--color-text);
+  }
+  .btn-outline:hover {
+    border-color: var(--color-accent-dim);
+    color: var(--color-accent);
+    background: oklch(72% 0.16 55 / 0.06);
+  }
+
+  .btn-lg {
+    padding: 14px 32px;
+    font-size: 16px;
+  }
+
+  /* ============================================
+     HERO SECTION
+     ============================================ */
+  .hero {
+    padding-top: calc(var(--nav-height) + var(--space-4xl));
+    padding-bottom: var(--space-4xl);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, oklch(72% 0.16 55 / 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -100px;
+    left: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, oklch(65% 0.12 30 / 0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 6px 16px 6px 8px;
+    background: oklch(100% 0 0 / 0.05);
+    border: 1px solid oklch(100% 0 0 / 0.08);
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-xl);
+    opacity: 0;
+    animation: fadeSlideUp 0.6s var(--ease-out-expo) 0.1s forwards;
+  }
+
+  .hero-badge-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-success);
+    border-radius: 50%;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(40px, 7vw, 80px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: var(--space-lg);
+    opacity: 0;
+    animation: fadeSlideUp 0.7s var(--ease-out-expo) 0.2s forwards;
+  }
+
+  .hero-title-accent {
+    background: linear-gradient(135deg, var(--color-accent), oklch(65% 0.18 30), var(--color-accent));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s ease-in-out infinite;
+  }
+
+  .hero-desc {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--color-text-secondary);
+    max-width: 600px;
+    margin: 0 auto var(--space-xl);
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeSlideUp 0.7s var(--ease-out-expo) 0.35s forwards;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    opacity: 0;
+    animation: fadeSlideUp 0.7s var(--ease-out-expo) 0.5s forwards;
+  }
+
+  .hero-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2xl);
+    margin-top: var(--space-3xl);
+    opacity: 0;
+    animation: fadeSlideUp 0.7s var(--ease-out-expo) 0.65s forwards;
+  }
+
+  .hero-stat {
+    text-align: center;
+  }
+
+  .hero-stat-value {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+  }
+
+  .hero-stat-label {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-top: 2px;
+  }
+
+  .hero-stat-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--color-border);
+  }
+
+  /* ============================================
+     SHOWCASE GRID — AI tool cards
+     ============================================ */
+  .showcase {
+    padding: var(--space-4xl) 0;
+    position: relative;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: var(--space-3xl);
+  }
+
+  .section-label {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: var(--space-md);
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: var(--space-md);
+  }
+
+  .section-desc {
+    font-size: 16px;
+    color: var(--color-text-secondary);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-md);
+  }
+
+  .tool-card {
+    position: relative;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    transition: all 0.35s var(--ease-out-quart);
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--card-accent, var(--color-accent)), transparent);
+    opacity: 0;
+    transition: opacity 0.35s var(--ease-out-quart);
+  }
+
+  .tool-card:hover {
+    background: var(--color-surface-hover);
+    border-color: oklch(100% 0 0 / 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px oklch(0% 0 0 / 0.3);
+  }
+
+  .tool-card:hover::before { opacity: 1; }
+
+  .tool-card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: var(--space-lg);
+    background: oklch(100% 0 0 / 0.05);
+    border: 1px solid oklch(100% 0 0 / 0.06);
+  }
+
+  .tool-card-name {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+    letter-spacing: -0.01em;
+  }
+
+  .tool-card-desc {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+
+  .tool-card-tag {
+    display: inline-block;
+    margin-top: var(--space-md);
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border-radius: var(--radius-full);
+    background: oklch(72% 0.16 55 / 0.1);
+    color: var(--color-accent);
+  }
+
+  /* Featured card — bigger, first in grid */
+  .tool-card.featured {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2xl);
+    align-items: center;
+    padding: var(--space-2xl);
+  }
+
+  .tool-card.featured .tool-card-icon {
+    width: 64px;
+    height: 64px;
+    font-size: 28px;
+  }
+
+  .tool-card.featured .tool-card-name {
+    font-size: 24px;
+  }
+
+  .tool-card.featured .tool-card-desc {
+    font-size: 16px;
+  }
+
+  .featured-preview {
+    position: relative;
+    height: 240px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: oklch(100% 0 0 / 0.03);
+    border: 1px solid oklch(100% 0 0 / 0.06);
+  }
+
+  .featured-preview-inner {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .preview-tile {
+    border-radius: 6px;
+    animation: previewPulse 3s ease-in-out infinite;
+  }
+  .preview-tile:nth-child(1) { background: oklch(72% 0.16 55 / 0.2); grid-row: 1 / 3; animation-delay: 0s; }
+  .preview-tile:nth-child(2) { background: oklch(65% 0.18 30 / 0.2); animation-delay: 0.4s; }
+  .preview-tile:nth-child(3) { background: oklch(60% 0.14 150 / 0.2); animation-delay: 0.8s; }
+  .preview-tile:nth-child(4) { background: oklch(70% 0.12 240 / 0.2); grid-column: 2 / 4; animation-delay: 1.2s; }
+
+  /* ============================================
+     TEMPLATES / WORKS SECTION
+     ============================================ */
+  .works {
+    padding: var(--space-4xl) 0;
+    background: var(--color-bg-elevated);
+    border-top: 1px solid oklch(100% 0 0 / 0.04);
+    border-bottom: 1px solid oklch(100% 0 0 / 0.04);
+  }
+
+  .works-tabs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-2xl);
+    flex-wrap: wrap;
+  }
+
+  .works-tab {
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    border-radius: var(--radius-full);
+    transition: all 0.25s var(--ease-out-quart);
+    border: 1px solid transparent;
+  }
+  .works-tab:hover { color: var(--color-text-secondary); }
+  .works-tab.active {
+    color: var(--color-accent);
+    background: oklch(72% 0.16 55 / 0.08);
+    border-color: oklch(72% 0.16 55 / 0.2);
+  }
+
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-md);
+  }
+
+  .work-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    group: true;
+    aspect-ratio: 4/3;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    transition: all 0.35s var(--ease-out-quart);
+  }
+
+  .work-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 16px 48px oklch(0% 0 0 / 0.4);
+    border-color: oklch(100% 0 0 / 0.1);
+  }
+
+  .work-card-visual {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .work-card-visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, oklch(0% 0 0 / 0.5) 100%);
+    transition: opacity 0.35s;
+  }
+
+  .work-card:hover .work-card-visual::after {
+    opacity: 0.8;
+  }
+
+  .work-card-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: var(--space-lg);
+    z-index: 2;
+    transform: translateY(8px);
+    transition: transform 0.35s var(--ease-out-quart);
+  }
+
+  .work-card:hover .work-card-info { transform: translateY(0); }
+
+  .work-card-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .work-card-meta {
+    font-size: 12px;
+    color: oklch(80% 0.01 60);
+  }
+
+  /* ============================================
+     HOW IT WORKS
+     ============================================ */
+  .how-it-works {
+    padding: var(--space-4xl) 0;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl);
+    margin-top: var(--space-3xl);
+    position: relative;
+  }
+
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 40px;
+    left: calc(33.33% - var(--space-xl) / 2);
+    right: calc(33.33% - var(--space-xl) / 2);
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-border), oklch(100% 0 0 / 0.04), var(--color-border));
+  }
+
+  .step {
+    text-align: center;
+    position: relative;
+  }
+
+  .step-number {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--space-lg);
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--color-accent);
+    background: oklch(72% 0.16 55 / 0.08);
+    border: 1.5px solid oklch(72% 0.16 55 / 0.15);
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+    letter-spacing: -0.01em;
+  }
+
+  .step-desc {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    max-width: 280px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ============================================
+     CTA SECTION
+     ============================================ */
+  .cta {
+    padding: var(--space-4xl) 0;
+  }
+
+  .cta-box {
+    position: relative;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-3xl);
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .cta-box::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, oklch(72% 0.16 55 / 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 40px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--space-md);
+    position: relative;
+  }
+
+  .cta-desc {
+    font-size: 16px;
+    color: var(--color-text-secondary);
+    max-width: 440px;
+    margin: 0 auto var(--space-xl);
+    position: relative;
+  }
+
+  .cta-actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+  }
+
+  /* ============================================
+     FOOTER
+     ============================================ */
+  .footer {
+    padding: var(--space-3xl) 0 var(--space-xl);
+    border-top: 1px solid oklch(100% 0 0 / 0.04);
+  }
+
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: var(--space-2xl);
+    margin-bottom: var(--space-2xl);
+  }
+
+  .footer-brand-desc {
+    font-size: 14px;
+    color: var(--color-text-muted);
+    margin-top: var(--space-md);
+    max-width: 280px;
+    line-height: 1.6;
+  }
+
+  .footer-heading {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-lg);
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .footer-link {
+    font-size: 14px;
+    color: var(--color-text-muted);
+    transition: color 0.2s;
+  }
+  .footer-link:hover { color: var(--color-text); }
+
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--space-xl);
+    border-top: 1px solid oklch(100% 0 0 / 0.04);
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+
+  .footer-socials {
+    display: flex;
+    gap: var(--space-md);
+  }
+
+  .footer-social {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-muted);
+    transition: all 0.2s;
+    border: 1px solid var(--color-border);
+  }
+  .footer-social:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent-dim);
+    background: oklch(72% 0.16 55 / 0.06);
+  }
+
+  /* ============================================
+     SCROLL REVEAL
+     ============================================ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% center; }
+    50%      { background-position: 200% center; }
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  @keyframes previewPulse {
+    0%, 100% { opacity: 0.6; }
+    50%      { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hero-stats { gap: var(--space-xl); }
+    .hero-stat-value { font-size: 28px; }
+    .tool-card.featured { grid-template-columns: 1fr; }
+    .featured-preview { display: none; }
+    .steps { grid-template-columns: 1fr; gap: var(--space-2xl); }
+    .steps::before { display: none; }
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .footer-bottom { flex-direction: column; gap: var(--space-md); text-align: center; }
+    .hero-actions { flex-direction: column; }
+  }
+
+  @media (max-width: 480px) {
+    .footer-inner { grid-template-columns: 1fr; }
+    .works-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ============================================
+     MOBILE NAV TOGGLE
+     ============================================ */
+  .nav-toggle {
+    display: none;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text);
+  }
+
+  @media (max-width: 768px) {
+    .nav-toggle { display: flex; }
+  }
+
+  /* ============================================
+     TOAST
+     ============================================ */
+  .toast {
+    position: fixed;
+    bottom: var(--space-xl);
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md) var(--space-xl);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text);
+    z-index: 10000;
+    opacity: 0;
+    transition: all 0.4s var(--ease-out-expo);
+    box-shadow: 0 8px 32px oklch(0% 0 0 / 0.4);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-icon">&#9670;</div>
+        <span>灵境</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#tools" class="nav-link active">创作工具</a></li>
+        <li><a href="#works" class="nav-link">作品广场</a></li>
+        <li><a href="#how" class="nav-link">使用指南</a></li>
+        <li><a href="#" class="nav-link">价格方案</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="btn btn-ghost">登录</button>
+        <button class="btn btn-primary" onclick="showToast('注册功能开发中，敬请期待')">免费体验</button>
+        <button class="nav-toggle" aria-label="菜单" onclick="showToast('移动端菜单开发中')">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h16M3 11h16M3 16h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-content">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        全新 3.0 版本已上线
+      </div>
+      <h1 class="hero-title">
+        用 AI 释放你的<br><span class="hero-title-accent">无限创意</span>
+      </h1>
+      <p class="hero-desc">
+        从灵感到成稿，只需几秒。灵境为你提供全链路 AI 创作工具——图像、视频、设计、文案，一个平台全部搞定。
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" onclick="showToast('即将进入创作空间')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 2v14M2 9h14"/></svg>
+          开始创作
+        </button>
+        <button class="btn btn-outline btn-lg" onclick="showToast('演示视频即将上线')">
+          观看演示
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3l7 5-7 5V3z"/></svg>
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-value">2M+</div>
+          <div class="hero-stat-label">创作者</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">50M+</div>
+          <div class="hero-stat-label">作品生成</div>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <div class="hero-stat-value">98%</div>
+          <div class="hero-stat-label">好评率</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI TOOLS SHOWCASE -->
+  <section class="showcase" id="tools">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label">AI 创作工具</div>
+        <h2 class="section-title">一个平台，覆盖全创作链路</h2>
+        <p class="section-desc">从商品图到品牌设计，从短视频到形象照，专业级 AI 工具触手可及</p>
+      </div>
+
+      <div class="showcase-grid">
+        <!-- Featured Card -->
+        <div class="tool-card featured reveal" style="--card-accent: oklch(72% 0.16 55)">
+          <div>
+            <div class="tool-card-icon">&#9881;</div>
+            <h3 class="tool-card-name">Agent 智能体</h3>
+            <p class="tool-card-desc">描述你的需求，AI Agent 自动理解意图、拆解任务、调配工具链，一站式完成从构思到成品的全部流程。无需专业技能，人人都是创作者。</p>
+            <span class="tool-card-tag">核心能力</span>
+          </div>
+          <div class="featured-preview">
+            <div class="featured-preview-inner">
+              <div class="preview-tile"></div>
+              <div class="preview-tile"></div>
+              <div class="preview-tile"></div>
+              <div class="preview-tile"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool Cards -->
+        <div class="tool-card reveal reveal-delay-1" style="--card-accent: oklch(68% 0.14 150)">
+          <div class="tool-card-icon" style="color: oklch(68% 0.14 150)">&#9733;</div>
+          <h3 class="tool-card-name">AI 图像生成</h3>
+          <p class="tool-card-desc">文字描述即刻生成高清图像，支持多种风格——写实、插画、3D、国风，精准还原你的想象力</p>
+          <span class="tool-card-tag">热门</span>
+        </div>
+
+        <div class="tool-card reveal reveal-delay-2" style="--card-accent: oklch(65% 0.12 240)">
+          <div class="tool-card-icon" style="color: oklch(65% 0.12 240)">&#9654;</div>
+          <h3 class="tool-card-name">AI 视频创作</h3>
+          <p class="tool-card-desc">一键生成短视频和动画，支持图文生视频、视频续写、风格迁移，轻松产出爆款内容</p>
+          <span class="tool-card-tag">新品</span>
+        </div>
+
+        <div class="tool-card reveal reveal-delay-3" style="--card-accent: oklch(65% 0.18 30)">
+          <div class="tool-card-icon" style="color: oklch(65% 0.18 30)">&#9830;</div>
+          <h3 class="tool-card-name">AI 商品摄影</h3>
+          <p class="tool-card-desc">告别传统拍摄。上传商品图，AI 自动生成多角度、多场景的高质量商业摄影图</p>
+        </div>
+
+        <div class="tool-card reveal reveal-delay-1" style="--card-accent: oklch(60% 0.14 330)">
+          <div class="tool-card-icon" style="color: oklch(60% 0.14 330)">&#9786;</div>
+          <h3 class="tool-card-name">AI 形象照</h3>
+          <p class="tool-card-desc">一张自拍，生成百种风格的专业形象照——商务、艺术、证件照，应有尽有</p>
+        </div>
+
+        <div class="tool-card reveal reveal-delay-2" style="--card-accent: oklch(70% 0.16 90)">
+          <div class="tool-card-icon" style="color: oklch(70% 0.16 90)">&#9998;</div>
+          <h3 class="tool-card-name">AI 智能改字</h3>
+          <p class="tool-card-desc">识别图片中的文字并智能替换，字体、风格、光影自动适配，完美融入原图</p>
+        </div>
+
+        <div class="tool-card reveal reveal-delay-3" style="--card-accent: oklch(62% 0.15 200)">
+          <div class="tool-card-icon" style="color: oklch(62% 0.15 200)">&#9874;</div>
+          <h3 class="tool-card-name">AI 品牌设计</h3>
+          <p class="tool-card-desc">快速生成品牌 Logo、IP 形象、视觉系统，从概念到落地一站搞定</p>
+        </div>
+
+        <div class="tool-card reveal reveal-delay-1" style="--card-accent: oklch(66% 0.13 270)">
+          <div class="tool-card-icon" style="color: oklch(66% 0.13 270)">&#9733;</div>
+          <h3 class="tool-card-name">AI 海报复刻</h3>
+          <p class="tool-card-desc">上传参考海报，AI 学习布局和风格，替换图文内容生成同款设计，效率提升 10 倍</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKS / TEMPLATES -->
+  <section class="works" id="works">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label">作品广场</div>
+        <h2 class="section-title">灵感就在身边</h2>
+        <p class="section-desc">探索来自全球创作者的优秀作品，找到属于你的风格</p>
+      </div>
+
+      <div class="works-tabs reveal">
+        <button class="works-tab active" data-filter="all">全部</button>
+        <button class="works-tab" data-filter="ecom">电商设计</button>
+        <button class="works-tab" data-filter="brand">品牌视觉</button>
+        <button class="works-tab" data-filter="social">社交媒体</button>
+        <button class="works-tab" data-filter="video">短视频</button>
+      </div>
+
+      <div class="works-grid">
+        <div class="work-card reveal reveal-delay-1" data-category="ecom"
+          style="--card-bg: oklch(72% 0.16 55 / 0.12)">
+          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(30% 0.04 55), oklch(18% 0.02 55))">
+            <span style="font-size: 56px; opacity: 0.6;">&#127912;</span>
+          </div>
+          <div class="work-card-info">
+            <div class="work-card-title">春日限定美妆海报</div>
+            <div class="work-card-meta">电商设计 · AI 图像生成</div>
+          </div>
+        </div>
+
+        <div class="work-card reveal reveal-delay-2" data-category="brand"
+          style="--card-bg: oklch(65% 0.12 240 / 0.12)">
+          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(25% 0.04 240), oklch(15% 0.02 260))">
+            <span style="font-size: 56px; opacity: 0.6;">&#9830;</span>
+          </div>
+          <div class="work-card-info">
+            <div class="work-card-title">科技品牌 VI 系统</div>
+            <div class="work-card-meta">品牌视觉 · AI 品牌设计</div>
+          </div>
+        </div>
+
+        <div class="work-card reveal reveal-delay-3" data-category="social"
+          style="--card-bg: oklch(65% 0.18 30 / 0.12)">
+          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(28% 0.05 30), oklch(16% 0.03 20))">
+            <span style="font-size: 56px; opacity: 0.6;">&#128247;</span>
+          </div>
+          <div class="work-card-info">
+            <div class="work-card-title">小红书种草图文</div>
+            <div class="work-card-meta">社交媒体 · AI 图文</div>
+          </div>
+        </div>
+
+        <div class="work-card reveal reveal-delay-4" data-category="video"
+          style="--card-bg: oklch(60% 0.14 150 / 0.12)">
+          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(22% 0.04 150), oklch(14% 0.02 160))">
+            <span style="font-size: 56px; opacity: 0.6;">&#9654;</span>
+          </div>
+          <div class="work-card-info">
+            <div class="work-card-title">产品宣传短视频</div>
+            <div class="work-card-meta">短视频 · AI 视频创作</div>
+          </div>
+        </div>
+
+        <div class="work-card reveal reveal-delay-1" data-category="ecom"
+          style="--card-bg: oklch(70% 0.16 90 / 0.12)">
+          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(26% 0.04 90), oklch(16% 0.02 80))">
+            <span style="font-size: 56px; opacity: 0.6;">&#128722;</span>
+          </div>
+          <div class="work-card-info">
+            <div class="work-card-title">食品包装设计</div>
+            <div class="work-card-meta">电商设计 · AI 包装</div>
+          </div>
+        </div>
+
+        <div class="work-card reveal reveal-delay-2" data-category="brand"
+          style="--card-bg: oklch(62% 0.15 200 / 0.12)">
+          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(24% 0.04 200), oklch(14% 0.02 210))">
+            <span style="font-size: 56px; opacity: 0.6;">&#127968;</span>
+          </div>
+          <div class="work-card-info">
+            <div class="work-card-title">咖啡品牌全案</div>
+            <div class="work-card-meta">品牌视觉 · AI 海报复刻</div>
+          </div>
+        </div>
+
+        <div class="work-card reveal reveal-delay-3" data-category="social"
+          style="--card-bg: oklch(66% 0.13 270 / 0.12)">
+          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(20% 0.04 270), oklch(12% 0.02 280))">
+            <span style="font-size: 56px; opacity: 0.6;">&#128227;</span>
+          </div>
+          <div class="work-card-info">
+            <div class="work-card-title">公众号长图文排版</div>
+            <div class="work-card-meta">社交媒体 · AI 智能改字</div>
+          </div>
+        </div>
+
+        <div class="work-card reveal reveal-delay-4" data-category="ecom"
+          style="--card-bg: oklch(60% 0.14 330 / 0.12)">
+          <div class="work-card-visual" style="background: linear-gradient(135deg, oklch(26% 0.04 330), oklch(14% 0.02 340))">
+            <span style="font-size: 56px; opacity: 0.6;">&#128084;</span>
+          </div>
+          <div class="work-card-info">
+            <div class="work-card-title">服饰商品精修</div>
+            <div class="work-card-meta">电商设计 · AI 商品摄影</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-it-works" id="how">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label">使用指南</div>
+        <h2 class="section-title">三步开始你的创作</h2>
+        <p class="section-desc">零门槛，零学习成本。从想法到作品，只需要几分钟</p>
+      </div>
+
+      <div class="steps">
+        <div class="step reveal reveal-delay-1">
+          <div class="step-number">1</div>
+          <h3 class="step-title">描述你的需求</h3>
+          <p class="step-desc">用自然语言告诉 AI 你想要什么——一段文字、一个参考图、或者一个模糊的想法都可以</p>
+        </div>
+        <div class="step reveal reveal-delay-2">
+          <div class="step-number">2</div>
+          <h3 class="step-title">AI 智能生成</h3>
+          <p class="step-desc">Agent 自动拆解任务、选择工具、生成多个方案，你只需挑选最喜欢的那个</p>
+        </div>
+        <div class="step reveal reveal-delay-3">
+          <div class="step-number">3</div>
+          <h3 class="step-title">精修并导出</h3>
+          <p class="step-desc">在线微调细节，一键导出高清文件。支持 PSD、PNG、MP4 等主流格式</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <div class="cta-box reveal">
+        <h2 class="cta-title">准备好释放你的创意了吗？</h2>
+        <p class="cta-desc">加入 200 万创作者的行列，用 AI 让你的想法变成现实</p>
+        <div class="cta-actions">
+          <button class="btn btn-primary btn-lg" onclick="showToast('正在为你准备创作空间')">
+            免费开始创作
+          </button>
+          <button class="btn btn-outline btn-lg" onclick="showToast('即将跳转到价格页面')">
+            查看价格方案
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div>
+          <a href="#" class="nav-logo">
+            <div class="nav-logo-icon">&#9670;</div>
+            <span>灵境</span>
+          </a>
+          <p class="footer-brand-desc">用 AI 释放无限创意。灵境是一个全链路 AI 创作平台，为设计师、创作者和品牌提供专业级的智能创作工具。</p>
+        </div>
+        <div>
+          <h4 class="footer-heading">产品</h4>
+          <ul class="footer-links">
+            <li><a href="#" class="footer-link">AI 图像生成</a></li>
+            <li><a href="#" class="footer-link">AI 视频创作</a></li>
+            <li><a href="#" class="footer-link">AI 商品摄影</a></li>
+            <li><a href="#" class="footer-link">AI 品牌设计</a></li>
+            <li><a href="#" class="footer-link">价格方案</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">资源</h4>
+          <ul class="footer-links">
+            <li><a href="#" class="footer-link">帮助中心</a></li>
+            <li><a href="#" class="footer-link">教程指南</a></li>
+            <li><a href="#" class="footer-link">创作者社区</a></li>
+            <li><a href="#" class="footer-link">API 文档</a></li>
+            <li><a href="#" class="footer-link">更新日志</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-heading">关于</h4>
+          <ul class="footer-links">
+            <li><a href="#" class="footer-link">关于我们</a></li>
+            <li><a href="#" class="footer-link">加入团队</a></li>
+            <li><a href="#" class="footer-link">用户协议</a></li>
+            <li><a href="#" class="footer-link">隐私政策</a></li>
+            <li><a href="#" class="footer-link">联系我们</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 灵境科技. All rights reserved.</span>
+        <div class="footer-socials">
+          <a href="#" class="footer-social" aria-label="微博" onclick="showToast('即将跳转微博')">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>
+          </a>
+          <a href="#" class="footer-social" aria-label="小红书" onclick="showToast('即将跳转小红书')">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>
+          </a>
+          <a href="#" class="footer-social" aria-label="抖音" onclick="showToast('即将跳转抖音')">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v10a3 3 0 11-2-2.83V8h8v9a5 5 0 11-2-4V5z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ===== SCROLL REVEAL =====
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // ===== WORKS TABS =====
+    const tabs = document.querySelectorAll('.works-tab');
+    const cards = document.querySelectorAll('.work-card');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const filter = tab.dataset.filter;
+
+        cards.forEach(card => {
+          if (filter === 'all' || card.dataset.category === filter) {
+            card.style.display = '';
+            requestAnimationFrame(() => {
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0) scale(1)';
+            });
+          } else {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(12px) scale(0.97)';
+            setTimeout(() => { card.style.display = 'none'; }, 300);
+          }
+        });
+      });
+    });
+
+    // ===== TOAST =====
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ===== SMOOTH SCROLL FOR NAV LINKS =====
+    document.querySelectorAll('.nav-link[href^="#"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // ===== NAV SCROLL STATE =====
+    let lastScroll = 0;
+    const nav = document.querySelector('.nav');
+
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.scrollY;
+      if (currentScroll > 100) {
+        nav.style.background = 'oklch(11% 0.008 60 / 0.95)';
+      } else {
+        nav.style.background = 'oklch(11% 0.008 60 / 0.8)';
+      }
+      lastScroll = currentScroll;
+    }, { passive: true });
+  </script>
+</body>
+</html>
