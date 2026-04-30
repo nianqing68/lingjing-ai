@@ -1081,42 +1081,42 @@ input, textarea { font-family: inherit; }
         <!-- Inspiration -->
         <div class="section-title">灵感推荐</div>
         <div class="inspiration-scroll">
-          <div class="inspiration-card" onclick="showToast('作品详情页开发中')">
+          <div class="inspiration-card" onclick="goToAgent('帮我设计一张春日限定美妆海报')">
             <img src="https://picsum.photos/seed/lingjing01/400/300" alt="春日限定海报" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">春日限定美妆海报</div>
               <div class="inspiration-card-meta">by 小艺 &middot; 2.3K 浏览</div>
             </div>
           </div>
-          <div class="inspiration-card" onclick="showToast('作品详情页开发中')">
+          <div class="inspiration-card" onclick="goToAgent('帮我设计一套极简咖啡馆品牌VI')">
             <img src="https://picsum.photos/seed/lingjing02/400/300" alt="极简品牌VI" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">极简咖啡馆 VI</div>
               <div class="inspiration-card-meta">by 设计师阿文 &middot; 1.8K 浏览</div>
             </div>
           </div>
-          <div class="inspiration-card" onclick="showToast('作品详情页开发中')">
+          <div class="inspiration-card" onclick="goToAgent('帮我制作一段15秒产品宣传短视频')">
             <img src="https://picsum.photos/seed/lingjing03/400/300" alt="产品宣传片" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">产品 15 秒宣传片</div>
               <div class="inspiration-card-meta">by 视频组 &middot; 4.5K 浏览</div>
             </div>
           </div>
-          <div class="inspiration-card" onclick="showToast('作品详情页开发中')">
+          <div class="inspiration-card" onclick="goToAgent('帮我设计一款护肤品礼盒包装')">
             <img src="https://picsum.photos/seed/lingjing04/400/300" alt="护肤品礼盒" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">护肤品礼盒设计</div>
               <div class="inspiration-card-meta">by 包包设计 &middot; 3.1K 浏览</div>
             </div>
           </div>
-          <div class="inspiration-card" onclick="showToast('作品详情页开发中')">
+          <div class="inspiration-card" onclick="goToAgent('帮我设计一套零食包装全案')">
             <img src="https://picsum.photos/seed/lingjing05/400/300" alt="零食包装" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">零食包装全案</div>
               <div class="inspiration-card-meta">by 食品设计 &middot; 1.2K 浏览</div>
             </div>
           </div>
-          <div class="inspiration-card" onclick="showToast('作品详情页开发中')">
+          <div class="inspiration-card" onclick="goToAgent('帮我创作一张梦幻写实风格的插画')">
             <img src="https://picsum.photos/seed/lingjing06/400/300" alt="梦幻插画" loading="lazy">
             <div class="inspiration-card-info">
               <div class="inspiration-card-title">梦幻写实插画</div>
@@ -1645,6 +1645,14 @@ function switchTool(tool) {
 }
 
 // ===== HOME SEARCH =====
+function goToAgent(text) {
+  switchTool('agent');
+  setTimeout(function() {
+    var agentPrompt = document.getElementById('agentPrompt');
+    if (agentPrompt) { agentPrompt.value = text; agentPrompt.focus(); }
+  }, 100);
+}
+
 function fillHomeSearch(text) {
   var input = document.getElementById('homeSearchInput');
   if (input) { input.value = text; input.focus(); }
@@ -1653,13 +1661,18 @@ function fillHomeSearch(text) {
 function handleHomeSearch() {
   var input = document.getElementById('homeSearchInput');
   if (input && input.value.trim()) {
-    showToast('搜索：' + input.value.trim());
+    var text = input.value.trim();
+    switchTool('agent');
+    setTimeout(function() {
+      var agentPrompt = document.getElementById('agentPrompt');
+      if (agentPrompt) { agentPrompt.value = text; agentPrompt.focus(); }
+    }, 100);
   }
 }
 
 document.getElementById('homeSearchInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && this.value.trim()) {
-    showToast('搜索：' + this.value.trim());
+    handleHomeSearch();
   }
 });
 
