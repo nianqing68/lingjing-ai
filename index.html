@@ -320,6 +320,22 @@ input, textarea { font-family: inherit; }
   letter-spacing: 0.02em; margin-bottom: var(--space-sm); color: var(--color-text);
   line-height: 1.25;
 }
+.hero-title-avatar {
+  display: inline-block;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  vertical-align: middle;
+  margin: 0 6px;
+  box-shadow: 0 4px 16px rgba(94,234,212,0.25), 0 0 0 2px rgba(94,234,212,0.3);
+  border: 2px solid rgba(94,234,212,0.4);
+  object-fit: cover;
+  animation: hero-avatar-float 3s ease-in-out infinite;
+}
+@keyframes hero-avatar-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
 .home-hero-title .accent {
   background: linear-gradient(135deg, var(--color-accent), #818cf8, var(--color-accent), #a78bfa);
   background-size: 300% 300%;
@@ -972,7 +988,7 @@ input, textarea { font-family: inherit; }
 
         <!-- Hero Search -->
         <div class="home-hero">
-          <h1 class="home-hero-title">用 AI 释放你的<span class="accent">无限创意</span></h1>
+          <h1 class="home-hero-title">用 AI 释放你的<img src="https://nianqing68.github.io/lingjing-ai/images/hero-avatar.png" alt="AI创意助手" class="hero-title-avatar" loading="lazy"><span class="accent">无限创意</span></h1>
           <p class="home-hero-desc">从灵感到成稿，只需几秒。灵境为你提供全链路 AI 创作工具——图像、视频、设计、文案，一个平台全部搞定。</p>
           <div class="home-search">
             <input type="text" placeholder="例如：帮我做一张春日美妆产品海报..." id="homeSearchInput">
