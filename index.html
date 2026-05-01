@@ -4018,7 +4018,7 @@ const CA = {
 };
 
 // 导出到全局
-window.CA = CAV;
+window.CA = CA;
 
 // 画布尺寸选择对话框
 function showSizeDialog() {
@@ -4087,7 +4087,7 @@ function showSizeDialog() {
     if (window.CA && CA._inited) {
       CA.setCanvasSize(selectedW, selectedH);
     } else {
-      if (CAV) {
+      if (CA) {
         CA.canvasWidth = selectedW;
         CA.canvasHeight = selectedH;
         CA.init();
@@ -4112,9 +4112,9 @@ function showToast(msg) {
 document.addEventListener('DOMContentLoaded', () => {
   // 当切换到画布页面时显示尺寸选择
   const canvasPage = document.getElementById('page-canvas');
-  if (canvasPage && !CAV?._inited) {
+  if (canvasPage && !CA?._inited) {
     setTimeout(() => {
-      if (!CAV?._inited) {
+      if (!CA?._inited) {
         showSizeDialog();
       }
     }, 300);
