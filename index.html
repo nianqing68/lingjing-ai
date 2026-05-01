@@ -2068,7 +2068,7 @@ async function callLLM(messages, onChunk, onDone, onError) {
   try {
     const res = await fetch(AI_API + '/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer sk_GYAgahMqMeaS9GPc5RPTXUZ0G6iyKdss' },
       body: JSON.stringify({ model: 'openai', messages, stream: true, temperature: 0.7 })
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
