@@ -870,9 +870,9 @@ input, textarea { font-family: inherit; }
 
         /* AI画布 */
         .canvas-workspace{display:flex;height:100vh;background:#1e1e1e;overflow:hidden}
-        .canvas-toolbar{width:72px;background:#2d2d2d;border-right:1px solid #404040;display:flex;flex-direction:column;justify-content:flex-start;padding:8px 0;gap:2px;overflow-y:auto;flex-shrink:0;position:sticky;top:0;align-self:flex-start}
+        .canvas-toolbar{width:56px;background:#1e1e28;border-radius:12px;padding:8px 4px;display:flex;flex-direction:column;gap:4px;max-height:calc(100vh - 80px);overflow-y:auto;overflow-x:hidden;flex-shrink:0;align-self:flex-start}
         .tool-group{display:flex;flex-direction:column;gap:2px;width:100%;padding:0 6px}
-        .tool-btn{width:48px;height:48px;border:none;background:transparent;border-radius:8px;cursor:pointer;color:#ccc;display:flex;align-items:center;justify-content:center;transition:all .15s}
+        .tool-btn{width:40px;height:40px;min-height:40px;border:none;border-radius:10px;background:rgba(255,255,255,0.08);color:#ccc;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all 0.15s;flex-shrink:0}
         .tool-btn:hover{background:#3d3d3d;color:#fff}
         .tool-btn.active{background:#3B82F6;color:#fff}
         .tool-divider{width:40px;height:1px;background:#404040;margin:4px 0}
@@ -889,7 +889,7 @@ input, textarea { font-family: inherit; }
         .canvas-container{position:relative;box-shadow:0 4px 20px rgba(0,0,0,.5)}
         .layer-canvas{position:absolute;top:0;left:0;cursor:crosshair}
         .layer-canvas.eraser-cursor{cursor:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="white" stroke="black" stroke-width="1"/></svg>') 12 12,crosshair}
-        .layer-panel{width:200px;background:#252526;border-left:1px solid #404040;display:flex;flex-direction:column;flex-shrink:0}
+        .layer-panel{width:180px;background:rgba(25,25,35,0.95);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;flex-shrink:0;max-height:calc(100vh - 80px);overflow-y:auto}
         .layer-header {
                 display: flex;
                 justify-content: space-between;
@@ -913,7 +913,7 @@ input, textarea { font-family: inherit; }
         .layer-item .layer-name{flex:1;font-size:11px;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         .layer-item .layer-del{background:transparent;border:none;color:#888;cursor:pointer;font-size:14px;padding:0 2px}
         .layer-item .layer-del:hover{color:#f55}
-        .layer-footer{padding:8px;border-top:1px solid #333;display:flex;flex-direction:column;gap:4px}
+        .layer-footer{display:flex;flex-direction:column;gap:6px;margin-top:auto;position:sticky;bottom:0;background:rgba(25,25,35,0.98);padding-top:6px;z-index:10}
         .export-btn{width:100%;padding:8px;background:#3B82F6;border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600}
         .export-btn:hover{background:#2563EB}
         .export-jpg{background:#059669}
