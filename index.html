@@ -1819,6 +1819,7 @@ function sendAgentPrompt() {
 
 // ===== AI CORE FUNCTIONS =====
 const AI_API = 'https://gen.pollinations.ai';
+const LLM_API_KEY = 'sk_cvjqCXL8Wp56Ys7AwDj85p2FiE9z9ZOH';
 const IMG_API = 'https://image.pollinations.ai/prompt';
 let VIDEO_API_KEY = localStorage.getItem('pollinations_video_key') || '';
 
@@ -1831,7 +1832,10 @@ async function callLLM(messages, onChunk, onDone, onError) {
   try {
     const res = await fetch(AI_API + '/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': typeof LLM_API_KEY !== 'undefined' && LLM_API_KEY ? 'Bearer ' + LLM_API_KEY : ''
+      },
       body: JSON.stringify({ model: 'openai', messages, stream: true, temperature: 0.7 })
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -2086,7 +2090,10 @@ async function callVisionLLM(imageBase64, userInstruction) {
 
       var llmResponse = await fetch(AI_API + '/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': typeof LLM_API_KEY !== 'undefined' && LLM_API_KEY ? 'Bearer ' + LLM_API_KEY : ''
+      },
         body: JSON.stringify(llmBody),
         signal: controller.signal
       });
