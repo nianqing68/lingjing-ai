@@ -868,8 +868,8 @@ input, textarea { font-family: inherit; }
 }
 
         /* AI画布 */
-        .canvas-workspace{display:flex;height:calc(100vh - 120px);background:#1e1e1e;overflow:hidden}
-        .canvas-toolbar{width:72px;background:#2d2d2d;border-right:1px solid #404040;display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:2px;overflow-y:auto;flex-shrink:0}
+        .canvas-workspace{display:flex;height:calc(100vh - 70px);background:#1e1e1e;overflow:hidden}
+        .canvas-toolbar{width:72px;background:#2d2d2d;border-right:1px solid #404040;display:flex;flex-direction:column;justify-content:flex-start;padding:8px 0;gap:2px;overflow-y:auto;flex-shrink:0}
         .tool-group{display:flex;flex-direction:column;gap:2px;width:100%;padding:0 6px}
         .tool-btn{width:48px;height:48px;border:none;background:transparent;border-radius:8px;cursor:pointer;color:#ccc;display:flex;align-items:center;justify-content:center;transition:all .15s}
         .tool-btn:hover{background:#3d3d3d;color:#fff}
@@ -2592,9 +2592,10 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
                         ctx.lineCap = 'round'; ctx.lineJoin = 'round';
                         ctx.lineTo(p.x, p.y); ctx.stroke();
                     } else if (this.currentTool === 'eraser') {
-                        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = this.brushSize * 2;
+                        ctx.save(); ctx.globalCompositeOperation = 'destination-out';
+                        ctx.strokeStyle = 'rgba(0,0,0,1)'; ctx.lineWidth = this.brushSize * 2;
                         ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-                        ctx.lineTo(p.x, p.y); ctx.stroke();
+                        ctx.lineTo(p.x, p.y); ctx.stroke(); ctx.restore();
                     }
                     this.lastX = p.x; this.lastY = p.y;
                 },
