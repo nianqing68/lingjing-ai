@@ -2195,21 +2195,18 @@ function generateImageUrl(prompt, w, h, seed) {
 }
 
 function generateImageUrlV2(prompt, w, h, seed) {
+  let safePrompt = prompt;
+  try { safePrompt = encodeURIComponent(prompt).replace(/%20/g, '+'); } catch(e) {}
   const params = new URLSearchParams({
     width: w || 1024, height: h || 1024, nologo: 'true', enhance: 'true',
     seed: seed || Math.floor(Math.random()*999999)
   });
-  return 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?' + params.toString();
+  return IMG_API + '/' + safePrompt + '?' + params.toString();
 }
 
-// Preload image via <img> tag (no CORS restriction)
-function preloadImage(url, timeoutMs, retries) {
-  retries = retries || 1;
-  return new Promise(async (resolve) => {
-    for (let attempt = 0; attempt <= retries; attempt++) {
-      try {
-        const ok = await new Promise((res) => {
-          const timer = setTimeout(() => res(false), timeoutMs || 60000);
+
+
+() => res(false), timeoutMs || 60000);
           const img = new Image();
           img.onload = () => { clearTimeout(timer); res(true); };
           img.onerror = () => { clearTimeout(timer); res(false); };
