@@ -2184,6 +2184,16 @@ async function callLLM(messages, onChunk, onDone, onError) {
 
 // V2 fallback (no model param)
 
+function generateImageUrl(prompt, w, h, seed) {
+  let safePrompt = prompt;
+  try { safePrompt = encodeURIComponent(prompt).replace(/%20/g, '+'); } catch(e) {}
+  const params = new URLSearchParams({
+    width: w || 1024, height: h || 1024, nologo: 'true', enhance: 'true',
+    seed: seed || Math.floor(Math.random()*999999), model: 'flux-schnell'
+  });
+  return IMG_API + '/' + safePrompt + '?' + params.toString();
+}
+
 function generateImageUrlV2(prompt, w, h, seed) {
   const params = new URLSearchParams({
     width: w || 1024, height: h || 1024, nologo: 'true', enhance: 'true',
