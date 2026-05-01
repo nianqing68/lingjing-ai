@@ -1,4 +1,52 @@
-<!DOCTYPE html>
+<!DOCTYPE
+        <!-- AI画布 -->
+        <section id="page-canvas" class="page-view">
+            <div class="canvas-workspace">
+                <div class="canvas-toolbar">
+                    <div class="tool-group">
+                        <button class="tool-btn active" data-tool="brush" title="画笔 (B)"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3zm13.71-9.37l-1.34-1.34a.996.996 0 0 0-1.41 0L9 12.25 11.75 15l8.96-8.96a.996.996 0 0 0 0-1.41z"/></svg></button>
+                        <button class="tool-btn" data-tool="eraser" title="橡皮擦 (E)"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M15.14 3c-.51 0-1.02.2-1.41.59L2.59 14.73c-.78.78-.78 2.05 0 2.83l3.85 3.85c.39.39.9.59 1.41.59h9.72l4.85-4.85c.78-.78.78-2.05 0-2.83L10.27 6.27c-.39-.39-.9-.59-1.41-.59h-.01c-.51 0-1.02.2-1.41.59l-4.59 4.59-5.66-5.66c-.39-.39-.59-.9-.59-1.41 0-.51.2-1.02.59-1.41l.71-.71z"/></svg></button>
+                    </div>
+                    <div class="tool-divider"></div>
+                    <div class="tool-group">
+                        <button class="tool-btn" data-tool="line" title="直线 (L)"><svg viewBox="0 0 24 24" width="20" height="20"><line x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="2"/><circle cx="4" cy="20" r="2" fill="currentColor"/><circle cx="20" cy="4" r="2" fill="currentColor"/></svg></button>
+                        <button class="tool-btn" data-tool="rect" title="矩形 (R)"><svg viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="5" width="18" height="14" rx="1" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+                        <button class="tool-btn" data-tool="circle" title="圆形 (C)"><svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+                        <button class="tool-btn" data-tool="fill-rect" title="填充矩形"><svg viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="5" width="18" height="14" rx="1" fill="currentColor"/></svg></button>
+                        <button class="tool-btn" data-tool="fill-circle" title="填充圆形"><svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="9" fill="currentColor"/></svg></button>
+                    </div>
+                    <div class="tool-divider"></div>
+                    <div class="tool-group">
+                        <button class="tool-btn" id="btn-clear" title="清空画布"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+                    </div>
+                    <div class="tool-divider"></div>
+                    <div class="color-section">
+                        <div class="color-row"><label>颜色</label><input type="color" id="stroke-color" value="#3B82F6"></div>
+                        <div class="color-row"><label>填充</label><input type="color" id="fill-color" value="#ffffff"><button class="no-fill-btn" id="btn-no-fill" title="无填充">&#x2610;</button></div>
+                        <div class="color-row"><label>粗细</label><input type="range" id="brush-size" min="1" max="50" value="4"><span id="brush-size-val">4px</span></div>
+                    </div>
+                    <div class="tool-divider"></div>
+                    <div class="tool-group">
+                        <button class="tool-btn" id="btn-undo" title="撤销 (Ctrl+Z)"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg></button>
+                        <button class="tool-btn" id="btn-redo" title="重做 (Ctrl+Y)"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg></button>
+                    </div>
+                </div>
+                <div class="canvas-area" id="canvas-area">
+                    <div class="canvas-scroll" id="canvas-scroll">
+                        <div class="canvas-container" id="canvas-container"></div>
+                    </div>
+                </div>
+                <div class="layer-panel">
+                    <div class="layer-header"><span>图层</span><button class="layer-add-btn" id="btn-add-layer" title="新建图层">+</button></div>
+                    <div class="layer-list" id="layer-list"></div>
+                    <div class="layer-footer">
+                        <button class="export-btn" id="btn-export-png">导出 PNG</button>
+                        <button class="export-btn export-jpg" id="btn-export-jpg">导出 JPG</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+ html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -818,6 +866,45 @@ input, textarea { font-family: inherit; }
   .ai-image-grid { grid-template-columns: repeat(2, 1fr); }
   .ai-message { max-width: 92%; }
 }
+
+        /* AI画布 */
+        .canvas-workspace{display:flex;height:calc(100vh - 120px);background:#1e1e1e;overflow:hidden}
+        .canvas-toolbar{width:72px;background:#2d2d2d;border-right:1px solid #404040;display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:2px;overflow-y:auto;flex-shrink:0}
+        .tool-group{display:flex;flex-direction:column;gap:2px;width:100%;padding:0 6px}
+        .tool-btn{width:48px;height:48px;border:none;background:transparent;border-radius:8px;cursor:pointer;color:#ccc;display:flex;align-items:center;justify-content:center;transition:all .15s}
+        .tool-btn:hover{background:#3d3d3d;color:#fff}
+        .tool-btn.active{background:#3B82F6;color:#fff}
+        .tool-divider{width:40px;height:1px;background:#404040;margin:4px 0}
+        .color-section{padding:4px 6px;width:100%}
+        .color-row{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:6px}
+        .color-row label{font-size:9px;color:#888}
+        .color-row input[type="color"]{width:44px;height:28px;border:none;background:none;cursor:pointer;padding:0;border-radius:4px}
+        .color-row input[type="range"]{width:48px;height:4px;cursor:pointer}
+        #brush-size-val{font-size:9px;color:#888}
+        .no-fill-btn{background:transparent;border:1px solid #555;color:#888;font-size:10px;width:20px;height:20px;border-radius:3px;cursor:pointer;padding:0}
+        .no-fill-btn.no-fill{border-color:#3B82F6;color:#3B82F6}
+        .canvas-area{flex:1;display:flex;align-items:center;justify-content:center;background:#323232;overflow:auto;position:relative;background-image:radial-gradient(circle,#404040 1px,transparent 1px);background-size:20px 20px}
+        .canvas-scroll{position:relative}
+        .canvas-container{position:relative;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+        .layer-canvas{position:absolute;top:0;left:0;cursor:crosshair}
+        .layer-canvas.eraser-cursor{cursor:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="white" stroke="black" stroke-width="1"/></svg>') 12 12,crosshair}
+        .layer-panel{width:200px;background:#252526;border-left:1px solid #404040;display:flex;flex-direction:column;flex-shrink:0}
+        .layer-header{padding:10px 12px;font-size:12px;color:#ccc;font-weight:600;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #333}
+        .layer-add-btn{background:#3B82F6;border:none;color:#fff;width:24px;height:24px;border-radius:4px;cursor:pointer;font-size:16px;line-height:1}
+        .layer-list{flex:1;overflow-y:auto;padding:6px}
+        .layer-item{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;cursor:pointer;margin-bottom:2px;background:#2d2d2d;transition:all .15s}
+        .layer-item:hover{background:#3d3d3d}
+        .layer-item.active{background:#1a3a6e;border:1px solid #3B82F6}
+        .layer-item .layer-vis{width:16px;height:16px;background:#3B82F6;border-radius:3px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;flex-shrink:0}
+        .layer-item .layer-vis.hidden{background:#555;color:#888}
+        .layer-item .layer-name{flex:1;font-size:11px;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .layer-item .layer-del{background:transparent;border:none;color:#888;cursor:pointer;font-size:14px;padding:0 2px}
+        .layer-item .layer-del:hover{color:#f55}
+        .layer-footer{padding:8px;border-top:1px solid #333;display:flex;flex-direction:column;gap:4px}
+        .export-btn{width:100%;padding:8px;background:#3B82F6;border:none;color:#fff;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600}
+        .export-btn:hover{background:#2563EB}
+        .export-jpg{background:#059669}
+        .export-jpg:hover{background:#047857}
 </style>
 </head>
 <body>
@@ -1677,7 +1764,7 @@ function switchTool(tool) {
     'video-gen': 'video-gen',
     'fitment': 'fitment',
     'brand': 'brand'
-  };
+  }, "canvas": "page-canvas";
 
   const page = toolMap[tool];
   if (!page) return;
@@ -2363,6 +2450,239 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
     showToast('搜索：' + this.value.trim());
   }
 });
+
+
+        // AI Canvas App
+        ;(function() {
+            const CA = {
+                layers: [], activeLayerId: null,
+                history: [], historyIndex: -1,
+                currentTool: 'brush', strokeColor: '#3B82F6', fillColor: '#ffffff',
+                useFill: false, brushSize: 4, isDrawing: false,
+                lastX: 0, lastY: 0, startX: 0, startY: 0,
+                canvasWidth: 1024, canvasHeight: 768,
+                previewCvs: null, previewCtx: null,
+                init() {
+                    const cont = document.getElementById('canvas-container');
+                    if (!cont) return;
+                    cont.style.width = this.canvasWidth + 'px';
+                    cont.style.height = this.canvasHeight + 'px';
+                    this.previewCvs = document.createElement('canvas');
+                    this.previewCvs.width = this.canvasWidth;
+                    this.previewCvs.height = this.canvasHeight;
+                    Object.assign(this.previewCvs.style, { position: 'absolute', top: '0', left: '0', pointerEvents: 'none', zIndex: '0' });
+                    cont.appendChild(this.previewCvs);
+                    this.previewCtx = this.previewCvs.getContext('2d');
+                    this.addLayer('图层 1');
+                    this.bindEvents();
+                    this._inited = true;
+                },
+                addLayer(name) {
+                    const id = 'ly_' + Date.now();
+                    const cvs = document.createElement('canvas');
+                    cvs.className = 'layer-canvas';
+                    cvs.width = this.canvasWidth; cvs.height = this.canvasHeight;
+                    cvs.style.zIndex = this.layers.length + 1;
+                    cvs.dataset.lid = id;
+                    document.getElementById('canvas-container').appendChild(cvs);
+                    const layer = { id, name, visible: true, cvs, ctx: cvs.getContext('2d') };
+                    this.layers.push(layer);
+                    this.activeLayerId = id;
+                    this.renderLayerList();
+                    this.saveHistory();
+                },
+                deleteLayer(id) {
+                    if (this.layers.length <= 1) return;
+                    const idx = this.layers.findIndex(l => l.id === id);
+                    if (idx < 0) return;
+                    this.layers[idx].cvs.remove();
+                    this.layers.splice(idx, 1);
+                    if (this.activeLayerId === id) this.activeLayerId = this.layers[Math.max(0, idx - 1)].id;
+                    this.layers.forEach((l, i) => { l.cvs.style.zIndex = i + 1; });
+                    this.renderLayerList();
+                    this.saveHistory();
+                },
+                toggleLayer(id) {
+                    const l = this.layers.find(l => l.id === id);
+                    if (!l) return;
+                    l.visible = !l.visible;
+                    l.cvs.style.display = l.visible ? '' : 'none';
+                    this.renderLayerList();
+                },
+                setActive(id) { this.activeLayerId = id; this.renderLayerList(); },
+                renderLayerList() {
+                    const list = document.getElementById('layer-list');
+                    if (!list) return;
+                    list.innerHTML = '';
+                    for (let i = this.layers.length - 1; i >= 0; i--) {
+                        const l = this.layers[i];
+                        const item = document.createElement('div');
+                        item.className = 'layer-item' + (l.id === this.activeLayerId ? ' active' : '');
+                        item.innerHTML = '<div class="layer-vis' + (l.visible ? '' : ' hidden') + '">' + (l.visible ? '&#x2714;' : '&#x2716;') + '</div><span class="layer-name">' + l.name + '</span><button class="layer-del">&#x2715;</button>';
+                        item.querySelector('.layer-vis').onclick = () => this.toggleLayer(l.id);
+                        item.querySelector('.layer-del').onclick = e => { e.stopPropagation(); this.deleteLayer(l.id); };
+                        item.onclick = () => this.setActive(l.id);
+                        list.appendChild(item);
+                    }
+                },
+                getActive() { return this.layers.find(l => l.id === this.activeLayerId); },
+                saveHistory() {
+                    const state = this.layers.map(l => ({ id: l.id, name: l.name, visible: l.visible, data: l.ctx.canvas.toDataURL() }));
+                    this.history = this.history.slice(0, this.historyIndex + 1);
+                    this.history.push(state);
+                    this.historyIndex = Math.min(this.historyIndex + 1, 49);
+                    if (this.history.length > 50) { this.history.shift(); this.historyIndex--; }
+                },
+                undo() {
+                    if (this.historyIndex <= 0) return;
+                    this.historyIndex--;
+                    this.restore(this.history[this.historyIndex]);
+                },
+                redo() {
+                    if (this.historyIndex >= this.history.length - 1) return;
+                    this.historyIndex++;
+                    this.restore(this.history[this.historyIndex]);
+                },
+                restore(state) {
+                    state.forEach(s => {
+                        const l = this.layers.find(l => l.id === s.id);
+                        if (!l) return;
+                        l.name = s.name; l.visible = s.visible;
+                        l.cvs.style.display = l.visible ? '' : 'none';
+                        const img = new Image();
+                        img.onload = () => { l.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight); l.ctx.drawImage(img, 0, 0); };
+                        img.src = s.data;
+                    });
+                    this.renderLayerList();
+                },
+                clearCanvas() {
+                    const l = this.getActive();
+                    if (!l) return;
+                    l.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+                    this.saveHistory();
+                },
+                pos(e) {
+                    const l = this.getActive();
+                    if (!l) return { x: 0, y: 0 };
+                    const r = l.cvs.getBoundingClientRect();
+                    return { x: (e.clientX - r.left) * (this.canvasWidth / r.width), y: (e.clientY - r.top) * (this.canvasHeight / r.height) };
+                },
+                startDraw(e) {
+                    e.preventDefault();
+                    this.isDrawing = true;
+                    const p = this.pos(e);
+                    this.startX = p.x; this.startY = p.y;
+                    this.lastX = p.x; this.lastY = p.y;
+                    const ctx = this.getActive()?.ctx;
+                    if (ctx && (this.currentTool === 'brush' || this.currentTool === 'eraser')) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                    }
+                },
+                draw(e) {
+                    if (!this.isDrawing) return;
+                    e.preventDefault();
+                    const p = this.pos(e);
+                    const ctx = this.getActive()?.ctx;
+                    if (!ctx) return;
+                    if (this.currentTool === 'brush') {
+                        ctx.strokeStyle = this.strokeColor; ctx.lineWidth = this.brushSize;
+                        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                        ctx.lineTo(p.x, p.y); ctx.stroke();
+                    } else if (this.currentTool === 'eraser') {
+                        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = this.brushSize * 2;
+                        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                        ctx.lineTo(p.x, p.y); ctx.stroke();
+                    }
+                    this.lastX = p.x; this.lastY = p.y;
+                },
+                endDraw(e) {
+                    if (!this.isDrawing) return;
+                    this.isDrawing = false;
+                    const p = e ? this.pos(e) : { x: this.lastX, y: this.lastY };
+                    const ctx = this.getActive()?.ctx;
+                    if (!ctx) return;
+                    const s = this.currentTool, bc = this.brushSize, sc = this.strokeColor, fc = this.fillColor, uf = this.useFill;
+                    const sx = this.startX, sy = this.startY, ex = p.x, ey = p.y;
+                    if (s === 'line') {
+                        ctx.beginPath(); ctx.strokeStyle = sc; ctx.lineWidth = bc; ctx.lineCap = 'round';
+                        ctx.moveTo(sx, sy); ctx.lineTo(ex, ey); ctx.stroke();
+                    } else if (s === 'rect') {
+                        ctx.strokeStyle = sc; ctx.lineWidth = bc;
+                        ctx.strokeRect(sx, sy, ex - sx, ey - sy);
+                    } else if (s === 'circle') {
+                        const rx = Math.abs(ex - sx) / 2, ry = Math.abs(ey - sy) / 2;
+                        ctx.strokeStyle = sc; ctx.lineWidth = bc; ctx.beginPath();
+                        ctx.ellipse(sx + (ex - sx) / 2, sy + (ey - sy) / 2, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+                    } else if (s === 'fill-rect') {
+                        ctx.fillStyle = uf ? fc : sc; ctx.fillRect(sx, sy, ex - sx, ey - sy);
+                        if (!uf) { ctx.strokeStyle = sc; ctx.lineWidth = bc; ctx.strokeRect(sx, sy, ex - sx, ey - sy); }
+                    } else if (s === 'fill-circle') {
+                        const rx = Math.abs(ex - sx) / 2, ry = Math.abs(ey - sy) / 2;
+                        ctx.fillStyle = uf ? fc : sc; ctx.beginPath();
+                        ctx.ellipse(sx + (ex - sx) / 2, sy + (ey - sy) / 2, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+                        if (!uf) { ctx.strokeStyle = sc; ctx.lineWidth = bc; ctx.stroke(); }
+                    }
+                    this.saveHistory();
+                },
+                setTool(tool) {
+                    this.currentTool = tool;
+                    document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
+                    const l = this.getActive();
+                    if (l) l.cvs.classList.toggle('eraser-cursor', tool === 'eraser');
+                },
+                exportPNG() { this.exportImg('image/png'); },
+                exportJPG() { this.exportImg('image/jpeg', 0.92); },
+                exportImg(mime, q = 1) {
+                    const ec = document.createElement('canvas');
+                    ec.width = this.canvasWidth; ec.height = this.canvasHeight;
+                    const ecx = ec.getContext('2d');
+                    if (mime === 'image/jpeg') { ecx.fillStyle = '#fff'; ecx.fillRect(0, 0, this.canvasWidth, this.canvasHeight); }
+                    this.layers.forEach(l => { if (l.visible) ecx.drawImage(l.cvs, 0, 0); });
+                    const a = document.createElement('a');
+                    a.download = 'LingTwo_Canvas_' + Date.now() + (mime === 'image/jpeg' ? '.jpg' : '.png');
+                    a.href = ec.toDataURL(mime, q); a.click();
+                },
+                bindEvents() {
+                    document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.addEventListener('click', () => this.setTool(b.dataset.tool)));
+                    document.getElementById('btn-clear').addEventListener('click', () => this.clearCanvas());
+                    document.getElementById('btn-add-layer').addEventListener('click', () => {
+                        this.addLayer('图层 ' + (this.layers.length + 1));
+                    });
+                    document.getElementById('btn-undo').addEventListener('click', () => this.undo());
+                    document.getElementById('btn-redo').addEventListener('click', () => this.redo());
+                    document.getElementById('stroke-color').addEventListener('input', e => this.strokeColor = e.target.value);
+                    document.getElementById('fill-color').addEventListener('input', e => this.fillColor = e.target.value);
+                    const sIn = document.getElementById('brush-size'), sVal = document.getElementById('brush-size-val');
+                    sIn.addEventListener('input', e => { this.brushSize = parseInt(e.target.value); sVal.textContent = e.target.value + 'px'; });
+                    document.getElementById('btn-no-fill').addEventListener('click', () => {
+                        this.useFill = !this.useFill;
+                        document.getElementById('btn-no-fill').classList.toggle('no-fill', this.useFill);
+                    });
+                    document.getElementById('btn-export-png').addEventListener('click', () => this.exportPNG());
+                    document.getElementById('btn-export-jpg').addEventListener('click', () => this.exportJPG());
+                    document.addEventListener('keydown', e => {
+                        if (!document.getElementById('page-canvas')?.classList.contains('active')) return;
+                        if (e.ctrlKey && e.key === 'z') { e.preventDefault(); this.undo(); }
+                        if (e.ctrlKey && e.key === 'y') { e.preventDefault(); this.redo(); }
+                        if (e.key === 'b') this.setTool('brush');
+                        if (e.key === 'e') this.setTool('eraser');
+                        if (e.key === 'l') this.setTool('line');
+                        if (e.key === 'r') this.setTool('rect');
+                        if (e.key === 'c' && !e.ctrlKey) this.setTool('circle');
+                    });
+                    const cont = document.getElementById('canvas-container');
+                    cont.addEventListener('mousedown', e => this.startDraw(e));
+                    cont.addEventListener('mousemove', e => this.draw(e));
+                    cont.addEventListener('mouseup', e => this.endDraw(e));
+                    cont.addEventListener('mouseleave', e => this.endDraw(e));
+                    cont.addEventListener('touchstart', e => this.startDraw(e.touches[0]), { passive: false });
+                    cont.addEventListener('touchmove', e => this.draw(e.touches[0]), { passive: false });
+                    cont.addEventListener('touchend', e => this.endDraw(e.changedTouches[0]));
+                }
+            };
+            window.CA = CA;
+        })();
 </script>
 </body>
 </html>
