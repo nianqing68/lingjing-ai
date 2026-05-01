@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+<script>
+window.onerror=function(m,u,l){document.body.innerHTML='<div style="position:fixed;top:0;left:0;right:0;background:red;color:white;padding:20px;z-index:99999;font-size:18px;">JS ERROR Line '+l+': '+m+'</div>'+document.body.innerHTML;return false;};
+console.log('=== Error catcher v2 installed ===');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LINGTWO · AI 创作平台</title>
@@ -1139,6 +1143,11 @@ input, textarea { font-family: inherit; }
 
   <!-- ===== MAIN CONTENT ===== -->
   <main class="main-content">
+
+    <!-- DEBUG MARKER v5da4469-fix -->
+    <div style="background:#00ff88;color:#000;padding:20px;font-size:24px;font-weight:bold;text-align:center;z-index:99999;position:relative;">DEBUG: If you see this green bar, the page is loading correctly from latest commit (5da4469). JS is working.</div>
+
+
 
     <!-- ===== CREATION PAGE (Home) ===== -->
     <div class="page-view active" id="page-creation">
