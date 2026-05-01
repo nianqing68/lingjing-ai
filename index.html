@@ -1763,13 +1763,16 @@ function switchTool(tool) {
     'image-gen': 'image-gen',
     'video-gen': 'video-gen',
     'fitment': 'fitment',
-    'brand': 'brand'
-  }, "canvas": "page-canvas";
+    'brand': 'brand',
+    'canvas': 'page-canvas'
+  };
 
   const page = toolMap[tool];
   if (!page) return;
 
   switchPage(page);
+            if (tool === 'canvas' && window.CA && !CA._inited) { CA.init(); }
+
 
   // Set sidebar active
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
