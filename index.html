@@ -3447,6 +3447,22 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
                     this.bindEvents();
                     this._inited = true;
                 },
+                setCanvasSize(w, h) {
+                    this.canvasWidth = w;
+                    this.canvasHeight = h;
+                    const cont = document.getElementById('canvas-container');
+                    if (!cont) return;
+                    this.layers.forEach(l => l.cvs.remove());
+                    this.layers = [];
+                    cont.innerHTML = '';
+                    cont.style.width = w + 'px';
+                    cont.style.height = h + 'px';
+                    this.previewCvs.width = w;
+                    this.previewCvs.height = h;
+                    this.addLayer('图层 1');
+                    this.history = [];
+                    this.historyIndex = -1;
+                },
                 addLayer(name) {
                     const id = 'ly_' + Date.now();
                     const cvs = document.createElement('canvas');
@@ -3548,6 +3564,11 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
                     }
+                    // 文字工具
+                    if (this.currentTool === 'text') {
+                        this.isDrawing = false;
+                        this.showTextInput(p.x, p.y);
+                    }
                 },
                 draw(e) {
                     if (!this.isDrawing) return;
@@ -3601,6 +3622,48 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
                     document.querySelectorAll('.tool-btn[data-tool]').forEach(b => b.classList.toggle('active', b.dataset.tool === tool));
                     const l = this.getActive();
                     if (l) l.cvs.classList.toggle('eraser-cursor', tool === 'eraser');
+                },
+                showTextInput(x, y) {
+                    this.removeTextOverlay();
+                    const overlay = document.createElement('textarea');
+                    overlay.className = 'text-input-overlay';
+                    overlay.style.left = (x * 1) + 'px';
+                    overlay.style.top = (y * 1) + 'px';
+                    overlay.style.color = this.strokeColor;
+                    overlay.style.fontSize = (this.brushSize || 4) * 4 + 'px';
+                    overlay.placeholder = '输入文字...';
+                    overlay.addEventListener('blur', () => {
+                        const text = overlay.value.trim();
+                        if (text) {
+                            this.drawText(x, y, text, overlay.style.fontSize);
+                        }
+                        setTimeout(() => this.removeTextOverlay(), 100);
+                    });
+                    overlay.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            overlay.blur();
+                        }
+                    });
+                    const cont = document.getElementById('canvas-container');
+                    if (cont) cont.appendChild(overlay);
+                    this.textOverlay = overlay;
+                    setTimeout(() => overlay.focus(), 50);
+                },
+                removeTextOverlay() {
+                    const existing = document.querySelector('.text-input-overlay');
+                    if (existing) existing.remove();
+                    this.textOverlay = null;
+                },
+                drawText(x, y, text, fontSize) {
+                    const l = this.getActive();
+                    if (!l) return;
+                    const ctx = l.ctx;
+                    ctx.fillStyle = this.strokeColor;
+                    ctx.font = fontSize ? fontSize + ' sans-serif' : '16px sans-serif';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(text, x, y);
+                    this.saveHistory();
                 },
                 exportPNG() { this.exportImg('image/png'); },
                 exportJPG() { this.exportImg('image/jpeg', 0.92); },
