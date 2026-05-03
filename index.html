@@ -11,7 +11,7 @@
    DESIGN TOKENS
    ============================================ */
 :root {
-  --color-bg:        #0c0f14;
+    --color-bg:        #0c0f14;
   --color-surface:   #141820;
   --color-surface-2: #1a1f2b;
   --color-accent:    #5eead4;
@@ -26,7 +26,7 @@
   --color-success:   #34d399;
   --color-danger:    #f87171;
   --color-info:      #60a5fa;
-  --color-warning:   #fbbf24;
+  --color-warning:   #ff9947;
 
   --font-body:   -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
   --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -37,11 +37,10 @@
   --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --nav-height: 52px;
-  --sidebar-width: 200px;
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.4);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.5), 0 0 0 1px rgba(94,234,212,0.03);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.5), 0 0 0 1px rgba(94,234,212,0.04);
-  --shadow-lg: 0 12px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(94,234,212,0.05);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.04);
 }
 
 /* ============================================
@@ -184,13 +183,13 @@ input, textarea { font-family: inherit; }
 }
 .topnav-logo-icon svg {
   width: 100%; height: 100%;
-  filter: drop-shadow(0 0 6px rgba(94,234,212,0.4));
+  filter: drop-shadow(0 0 6px rgba(94,234,212,0.40));
 }
 .topnav-logo-icon::after {
   content: '';
   position: absolute; inset: -4px;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(94,234,212,0.2), rgba(129,140,248,0.25), rgba(167,139,250,0.15));
+  background: linear-gradient(135deg, rgba(94,234,212,0.21), rgba(129,140,248,0.25), rgba(167,139,250,0.15));
   background-size: 200% 200%;
   animation: logo-border-glow 4s ease-in-out infinite;
   z-index: -1; opacity: 0.5;
@@ -229,65 +228,6 @@ input, textarea { font-family: inherit; }
    MAIN LAYOUT
    ============================================ */
 .app-layout { display: flex; height: 100vh; padding-top: var(--nav-height); }
-
-/* ============================================
-   SIDEBAR (200px)
-   ============================================ */
-.sidebar {
-  width: var(--sidebar-width); background: var(--color-surface);
-  border-right: 1px solid var(--color-border);
-  display: flex; flex-direction: column; flex-shrink: 0;
-  overflow-y: auto; overflow-x: hidden;
-  z-index: 100; position: relative;
-}
-.sidebar::-webkit-scrollbar { width: 0; }
-.sidebar-section { padding: var(--space-sm) 0; }
-.sidebar-section + .sidebar-section { border-top: 1px solid var(--color-border-light); }
-.sidebar-section-label {
-  padding: var(--space-xs) var(--space-lg); margin-bottom: 2px;
-  font-size: 11px; font-weight: 600; color: var(--color-text-muted);
-  text-transform: uppercase; letter-spacing: 0.05em;
-}
-.sidebar-item {
-  display: flex; align-items: center; gap: var(--space-sm);
-  padding: 8px var(--space-lg); margin: 1px 6px;
-  border-radius: var(--radius-md); cursor: pointer;
-  transition: all 0.15s var(--ease-out); position: relative; user-select: none;
-}
-.sidebar-item:hover { background: rgba(255,255,255,0.05); }
-.sidebar-item.active { background: var(--color-accent-light); color: var(--color-accent); }
-.sidebar-item.active::before {
-  content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-  width: 3px; height: 20px; background: var(--color-accent);
-  border-radius: 0 3px 3px 0;
-}
-.sidebar-icon {
-  width: 32px; height: 32px; border-radius: var(--radius-sm);
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.sidebar-icon svg { width: 18px; height: 18px; }
-.sidebar-label {
-  font-size: 13px; font-weight: 500; color: var(--color-text-secondary);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  transition: color 0.15s;
-}
-.sidebar-item.active .sidebar-label { color: var(--color-accent); font-weight: 600; }
-.sidebar-item:hover .sidebar-label { color: var(--color-text); }
-
-/* Sidebar Agent special */
-.sidebar-agent {
-  display: flex; align-items: center; gap: var(--space-sm);
-  padding: 10px var(--space-lg); margin: var(--space-sm) 6px 2px;
-  border-radius: var(--radius-md); cursor: pointer;
-  background: var(--color-accent-light);
-  border: 1px solid rgba(94,234,212,0.12);
-  transition: all 0.2s var(--ease-out);
-}
-.sidebar-agent:hover { border-color: rgba(94,234,212,0.25); }
-.sidebar-agent .sidebar-icon {
-  background: var(--color-accent); border-radius: var(--radius-md); color: #0c0f14;
-}
-.sidebar-agent .sidebar-label { color: var(--color-accent); font-weight: 700; font-size: 13px; }
 
 /* ============================================
    MAIN CONTENT AREA
@@ -337,12 +277,12 @@ input, textarea { font-family: inherit; }
 
 .hero-title-avatar:hover {
   transform: scale(1.05) !important;
-  filter: drop-shadow(0 6px 24px rgba(94,234,212,0.4));
+  filter: drop-shadow(0 6px 24px rgba(94,234,212,0.40));
 }
 .hero-title-avatar.peeking {
   opacity: 1;
   transform: translateY(-20px) scale(1.15);
-  filter: drop-shadow(0 4px 16px rgba(94,234,212,0.3)) drop-shadow(0 0 30px rgba(129,140,248,0.2));
+  filter: drop-shadow(0 4px 16px rgba(94,234,212,0.30)) drop-shadow(0 0 30px rgba(129,140,248,0.2));
 }
 .home-hero-title {
   position: relative;
@@ -418,7 +358,7 @@ input, textarea { font-family: inherit; }
   border-radius: var(--radius-lg); overflow: hidden; cursor: pointer;
   transition: all 0.25s var(--ease-out);
 }
-.recommend-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: rgba(94,234,212,0.15); }
+.recommend-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); border-color: rgba(94,234,212,0.14); }
 .recommend-card-cover {
   height: 100px; display: flex; align-items: center; justify-content: center;
   position: relative; overflow: hidden;
@@ -493,7 +433,7 @@ input, textarea { font-family: inherit; }
 .tool-workspace-icon {
   width: 64px; height: 64px; border-radius: var(--radius-lg);
   background: var(--color-accent-light); display: flex; align-items: center; justify-content: center;
-  border: 1px solid rgba(94,234,212,0.1);
+  border: 1px solid rgba(94,234,212,0.10);
 }
 .tool-workspace-icon svg { width: 32px; height: 32px; color: var(--color-accent); }
 .tool-workspace-title { font-family: var(--font-display); font-size: 17px; font-weight: 700; }
@@ -511,7 +451,7 @@ input, textarea { font-family: inherit; }
 .upload-zone-icon svg { width: 32px; height: 32px; }
 .upload-zone-text { font-size: 14px; color: var(--color-text-secondary); margin-bottom: var(--space-sm); }
 .upload-zone-hint { font-size: 12px; color: var(--color-text-muted); }
-.upload-zone.drag-over { border-color: var(--color-accent); background: rgba(94,234,212,0.08); }
+.upload-zone.drag-over { border-color: var(--color-accent); background: rgba(94,234,212,0.09); }
 .upload-zone.has-file { border-style: solid; border-color: var(--color-accent); }
 
 /* Edit page */
@@ -583,7 +523,7 @@ input, textarea { font-family: inherit; }
   background: var(--color-surface);
 }
 .explore-filter:hover { color: var(--color-text-secondary); }
-.explore-filter.active { color: var(--color-accent); background: var(--color-accent-light); border-color: rgba(94,234,212,0.2); }
+.explore-filter.active { color: var(--color-accent); background: var(--color-accent-light); border-color: rgba(94,234,212,0.21); }
 
 .explore-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -698,7 +638,7 @@ input, textarea { font-family: inherit; }
   border: 1px solid var(--color-border); transition: all 0.25s var(--ease-out);
   animation: fadeUp 0.4s var(--ease-out);
 }
-.ai-image-card:hover { border-color: rgba(94,234,212,0.2); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.ai-image-card:hover { border-color: rgba(94,234,212,0.21); transform: translateY(-2px); box-shadow: var(--shadow-md); }
 .ai-image-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--color-bg); }
 .ai-image-card .ai-image-actions {
   padding: var(--space-sm); display: flex; justify-content: space-between; align-items: center;
@@ -781,14 +721,10 @@ input, textarea { font-family: inherit; }
 }
 
 /* Focus visible for keyboard users */
-.btn:focus-visible, .topnav-link:focus-visible, .sidebar-item:focus-visible,
-.home-tag:focus-visible, .prompt-suggestion:focus-visible, .explore-filter:focus-visible {
+.btn:focus-visible, .topnav-link:focus-visible, .home-tag:focus-visible, .prompt-suggestion:focus-visible, .explore-filter:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
-
-/* Smooth sidebar label color transition */
-.sidebar-label { transition: color 0.15s var(--ease-out); }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -807,7 +743,7 @@ input, textarea { font-family: inherit; }
   .recommend-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
-  .sidebar { display: none; }
+  
   .topnav-links { display: none; }
   .topnav-search { display: none; }
   .recommend-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1442,7 +1378,6 @@ input, textarea { font-family: inherit; }
   .tool-btn { width: 36px; height: 36px; }
 }
 
-
 /* ===== AI画布全屏修复 ===== */
 #page-canvas.page-view.active {
   display: flex !important;
@@ -1459,6 +1394,396 @@ input, textarea { font-family: inherit; }
 #page-canvas.page-view.active .canvas-workspace-canvas {
   height: 100% !important;
 }
+
+/* ===== DeepSeek-style Agent Chat ===== */
+.ds-chat-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: calc(100vh - 60px);
+  position: relative;
+  background: var(--color-bg);
+}
+.ds-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 16px 140px;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+.ds-chat-messages::-webkit-scrollbar { width: 4px; }
+.ds-chat-messages::-webkit-scrollbar-track { background: transparent; }
+.ds-chat-messages::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+
+/* Welcome screen */
+.ds-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px 20px;
+  text-align: center;
+}
+.ds-welcome-icon {
+  width: 72px; height: 72px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(94,234,212,0.14), rgba(59,130,246,0.1));
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 20px;
+  color: var(--color-accent);
+}
+.ds-welcome-title {
+  font-size: 22px; font-weight: 700;
+  margin-bottom: 8px;
+  font-family: var(--font-display);
+}
+.ds-welcome-desc {
+  font-size: 14px; color: var(--color-text-muted);
+  max-width: 400px; line-height: 1.6;
+  margin-bottom: 32px;
+}
+.ds-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  max-width: 420px;
+  width: 100%;
+}
+.ds-quick-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+}
+.ds-quick-card:hover {
+  border-color: var(--color-accent);
+  background: var(--color-accent-light);
+  transform: translateY(-1px);
+}
+.ds-quick-icon { font-size: 18px; }
+.ds-quick-text { color: var(--color-text); }
+
+/* Chat messages */
+.ds-chat-messages .ai-message {
+  display: flex; gap: 10px;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto 16px;
+}
+.ds-chat-messages .ai-message.user {
+  flex-direction: row-reverse;
+}
+.ds-avatar {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  flex-shrink: 0;
+}
+.ds-avatar.ai-av {
+  background: linear-gradient(135deg, #5eead4, #3b82f6);
+  color: #0c0f14;
+}
+.ds-avatar.user-av {
+  background: var(--color-accent);
+  color: #0c0f14;
+}
+.ds-bubble {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.7;
+  max-width: 600px;
+  word-break: break-word;
+}
+.ai-message.user .ds-bubble {
+  background: var(--color-accent);
+  color: #0c0f14;
+  border-bottom-right-radius: 4px;
+}
+.ai-message.ai .ds-bubble {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-bottom-left-radius: 4px;
+  color: var(--color-text);
+}
+
+/* Input area */
+.ds-input-area {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 16px 16px;
+  background: linear-gradient(to top, var(--color-bg) 80%, transparent);
+}
+.ds-input-box {
+  max-width: 720px;
+  margin: 0 auto;
+  position: relative;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 12px 48px 12px 16px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.ds-input-box:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-glow), 0 2px 12px rgba(0,0,0,0.15);
+}
+.ds-input-box textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.5;
+  resize: none;
+  min-height: 24px;
+  max-height: 160px;
+  font-family: inherit;
+  scrollbar-width: thin;
+}
+.ds-input-box textarea::placeholder {
+  color: var(--color-text-muted);
+}
+.ds-send-btn {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 32px; height: 32px;
+  border-radius: 10px;
+  background: var(--color-accent);
+  color: #0c0f14;
+  display: flex; align-items: center; justify-content: center;
+  border: none; cursor: pointer;
+  transition: all 0.2s;
+}
+.ds-send-btn:hover {
+  background: var(--color-accent-hover);
+  transform: scale(1.05);
+}
+.ds-send-btn:disabled {
+  opacity: 0.4; cursor: not-allowed; transform: none;
+}
+.ds-input-footer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 8px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#page-agent .main-inner { display: none; }
+#page-agent > .ds-chat-layout { height: calc(100vh - 60px); }
+
+
+/* ===== EXPLORE MASONRY ===== */
+.explore-masonry {
+  column-count: 4;
+  column-gap: 16px;
+}
+@media (max-width: 1100px) { .explore-masonry { column-count: 3; } }
+@media (max-width: 768px) { .explore-masonry { column-count: 2; } }
+@media (max-width: 480px) { .explore-masonry { column-count: 1; } }
+
+.explore-item {
+  break-inside: avoid;
+  margin-bottom: 16px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
+}
+.explore-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-accent);
+}
+.explore-item img {
+  width: 100%;
+  display: block;
+}
+.explore-item-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 12px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.75));
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.explore-item:hover .explore-item-overlay { opacity: 1; }
+.explore-item-title { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.explore-item-meta { font-size: 11px; color: rgba(255,255,255,0.65); display: flex; align-items: center; gap: 8px; }
+.explore-item-prompt {
+  font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 6px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.explore-item-actions {
+  position: absolute; top: 8px; right: 8px; display: flex; gap: 4px;
+  opacity: 0; transition: opacity 0.2s;
+}
+.explore-item:hover .explore-item-actions { opacity: 1; }
+.explore-action-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  border: none; color: #fff; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; font-size: 13px;
+  transition: background 0.15s;
+}
+.explore-action-btn:hover { background: var(--color-accent); }
+.explore-badge {
+  position: absolute; top: 8px; left: 8px;
+  padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600;
+  background: var(--color-accent); color: #0c0f14;
+}
+
+/* ===== MY PAGE TABS ===== */
+.my-tabs {
+  display: flex; gap: 4px; margin-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--color-border); padding-bottom: 0;
+}
+.my-tab {
+  display: flex; align-items: center; gap: 6px;
+  padding: 10px 16px; font-size: 13px; font-weight: 500;
+  color: var(--color-text-muted); cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all 0.2s;
+}
+.my-tab:hover { color: var(--color-text-secondary); }
+.my-tab.active { color: var(--color-accent); border-bottom-color: var(--color-accent); }
+.my-panel { display: none; }
+.my-panel.active { display: block; }
+.my-empty {
+  text-align: center; padding: 48px 24px;
+  color: var(--color-text-muted); font-size: 15px;
+}
+.my-work-add {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; font-size: 13px; color: var(--color-text-muted); cursor: pointer;
+}
+.my-work-add svg { color: var(--color-text-muted); }
+
+/* ===== MY HISTORY ===== */
+.my-history-list { display: flex; flex-direction: column; gap: 8px; }
+.my-history-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: var(--radius-md);
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  cursor: pointer; transition: border-color 0.2s;
+}
+.my-history-item:hover { border-color: var(--color-accent); }
+.my-history-thumb {
+  width: 48px; height: 48px; border-radius: 8px;
+  object-fit: cover; flex-shrink: 0;
+  background: var(--color-surface-2);
+}
+.my-history-info { flex: 1; min-width: 0; }
+.my-history-prompt { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.my-history-time { font-size: 11px; color: var(--color-text-muted); margin-top: 2px; }
+.my-history-tool { font-size: 11px; color: var(--color-accent); margin-top: 2px; }
+
+/* ===== MY SETTINGS ===== */
+.my-settings-section { margin-bottom: var(--space-xl); }
+.my-settings-title {
+  font-size: 14px; font-weight: 600; color: var(--color-text);
+  margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--color-border);
+}
+.my-settings-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; font-size: 13px;
+}
+.my-settings-label { color: var(--color-text-secondary); }
+.my-settings-value { display: flex; align-items: center; gap: 8px; color: var(--color-text); }
+.my-avatar-sm { width: 32px; height: 32px; font-size: 14px; }
+.my-select {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); padding: 4px 8px; font-size: 13px;
+  color: var(--color-text); outline: none; cursor: pointer;
+}
+.my-select:focus { border-color: var(--color-accent); }
+
+/* Toggle Switch */
+.my-toggle { position: relative; display: inline-block; width: 40px; height: 22px; cursor: pointer; }
+.my-toggle input { opacity: 0; width: 0; height: 0; }
+.my-toggle-slider {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--color-border); border-radius: 11px; transition: 0.2s;
+}
+.my-toggle-slider::before {
+  content: ''; position: absolute; width: 16px; height: 16px;
+  left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.2s;
+}
+.my-toggle input:checked + .my-toggle-slider { background: var(--color-accent); }
+.my-toggle input:checked + .my-toggle-slider::before { transform: translateX(18px); }
+
+/* ===== LOGIN MODAL ===== */
+.login-modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  z-index: 9999; display: flex; align-items: center; justify-content: center;
+  animation: fadeIn 0.2s;
+}
+.login-modal {
+  background: var(--color-surface); border-radius: 16px;
+  padding: 32px; width: 360px; max-width: 90vw;
+  border: 1px solid var(--color-border); position: relative;
+}
+.login-modal h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.login-modal p { font-size: 13px; color: var(--color-text-muted); margin-bottom: 20px; }
+.login-modal-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 28px; height: 28px; border-radius: 50%; border: none;
+  background: var(--color-surface-2); color: var(--color-text-muted);
+  cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;
+}
+.login-modal-close:hover { background: var(--color-border); }
+.login-field {
+  width: 100%; padding: 10px 14px; border-radius: var(--radius-md);
+  border: 1px solid var(--color-border); background: var(--color-bg);
+  color: var(--color-text); font-size: 14px; margin-bottom: 12px; outline: none;
+  box-sizing: border-box;
+}
+.login-field:focus { border-color: var(--color-accent); }
+.login-btn {
+  width: 100%; padding: 10px; border-radius: var(--radius-md);
+  border: none; background: var(--color-accent); color: #0c0f14;
+  font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 4px;
+  transition: background 0.2s;
+}
+.login-btn:hover { background: var(--color-accent-hover); }
+.login-divider {
+  text-align: center; margin: 16px 0; font-size: 12px;
+  color: var(--color-text-muted); position: relative;
+}
+.login-divider::before, .login-divider::after {
+  content: ''; position: absolute; top: 50%; width: 40%;
+  border-top: 1px solid var(--color-border);
+}
+.login-divider::before { left: 0; }
+.login-divider::after { right: 0; }
+.login-social {
+  display: flex; gap: 12px; justify-content: center; margin-top: 12px;
+}
+.login-social-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--color-border); background: var(--color-bg);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; transition: border-color 0.2s;
+}
+.login-social-btn:hover { border-color: var(--color-accent); }
 
 </style>
 </head>
@@ -1500,104 +1825,6 @@ input, textarea { font-family: inherit; }
 <!-- ==================== APP LAYOUT ==================== -->
 <div class="app-layout">
 
-  <!-- ===== SIDEBAR (200px) ===== -->
-  <aside class="sidebar">
-    <div class="sidebar-section">
-      <div class="sidebar-agent" onclick="switchTool('agent')">
-        <div class="sidebar-icon"><img src="https://nianqing68.github.io/LingTwo-ai/images/agent-icon.png?v=2" alt="Agent" style="width: 28px; height: 28px; border-radius: 6px; object-fit: cover;">
-        </div>
-        <span class="sidebar-label">Agent 智能体</span>
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">AI 创作</div>
-      <div class="sidebar-item" onclick="switchTool('image-gen')" data-tool="image-gen">
-        <div class="sidebar-icon" style="color:#6366F1">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        </div>
-        <span class="sidebar-label">图片生成</span>
-      </div>
-      <div class="sidebar-item" onclick="switchTool('video-gen')" data-tool="video-gen">
-        <div class="sidebar-icon" style="color:#EC4899">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        </div>
-        <span class="sidebar-label">视频生成</span>
-      </div>
-      <div class="sidebar-item" onclick="switchTool('ecommerce')" data-tool="ecommerce">
-        <div class="sidebar-icon" style="color:#F59E0B">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        </div>
-        <span class="sidebar-label">AI 电商</span>
-      </div>
-    </div>
-
-    <div class="sidebar-section">
-      <div class="sidebar-section-label">创作工具</div>
-      <div class="sidebar-item" onclick="switchTool('canvas')" data-tool="canvas">
-        <div class="sidebar-icon" style="color:#8B5CF6">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
-        </div>
-        <span class="sidebar-label">AI 画布</span>
-      </div>
-      <div class="sidebar-item" onclick="switchTool('image')" data-tool="image">
-        <div class="sidebar-icon" style="color:#3B82F6">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        </div>
-        <span class="sidebar-label">AI 图像</span>
-      </div>
-      <div class="sidebar-item" onclick="switchTool('edit')" data-tool="edit">
-        <div class="sidebar-icon" style="color:#14B8A6">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </div>
-        <span class="sidebar-label">AI 改图</span>
-      </div>
-      <div class="sidebar-item" onclick="switchTool('text')" data-tool="text">
-        <div class="sidebar-icon" style="color:#EF4444">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-        </div>
-        <span class="sidebar-label">AI 改字</span>
-      </div>
-      <div class="sidebar-item" onclick="switchTool('portrait')" data-tool="portrait">
-        <div class="sidebar-icon" style="color:#A855F7">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        </div>
-        <span class="sidebar-label">AI 形象照</span>
-      </div>
-      <div class="sidebar-item" onclick="switchTool('brand')" data-tool="brand">
-        <div class="sidebar-icon" style="color:#F97316">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
-        </div>
-        <span class="sidebar-label">品牌设计</span>
-      </div>
-      <div class="sidebar-item" onclick="switchTool('fitment')" data-tool="fitment">
-        <div class="sidebar-icon" style="color:#0EA5E9">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </div>
-        <span class="sidebar-label">展位设计</span>
-      </div>
-      <div class="sidebar-item" onclick="switchTool('video')" data-tool="video">
-        <div class="sidebar-icon" style="color:#EC4899">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><polygon points="10 8 16 12 10 16"/></svg>
-        </div>
-        <span class="sidebar-label">AI 视频</span>
-      </div>
-      <div class="sidebar-item" onclick="switchTool('skillhub')" data-tool="skillhub">
-        <div class="sidebar-icon" style="color:#6B7280">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="14" width="8" height="8" rx="2"/><rect x="2" y="14" width="8" height="8" rx="2"/><rect x="8" y="2" width="8" height="8" rx="2"/><line x1="12" y1="6" x2="12" y2="14"/><line x1="6" y1="18" x2="18" y2="18"/><line x1="6" y1="14" x2="6" y2="18"/></svg>
-        </div>
-        <span class="sidebar-label">Skill Hub</span>
-      </div>
-    </div>
-  
-      <div class="sidebar-item" onclick="window.open('https://www.mindvideo.ai/invitation-landing?utm_source=invitation&invite_code=RWUADKYO', '_blank')" style="cursor:pointer">
-        <div class="sidebar-icon" style="color:#10B981">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-        </div>
-        <span class="sidebar-label">MindVideo AI</span>
-      </div>
-</aside>
-
   <!-- ===== MAIN CONTENT ===== -->
   <main class="main-content">
 
@@ -1634,115 +1861,74 @@ input, textarea { font-family: inherit; }
         <div class="recommend-grid">
           <div class="recommend-card" onclick="switchTool('agent')">
             <div class="recommend-card-cover" style="background:linear-gradient(135deg,#5eead4,#3b82f6)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6l-.7.5V18a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2.5l-.7-.5A7 7 0 0 1 12 2z"/><path d="M9 22h6"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6l-.7.5V18a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2.5l-.7-.5A7 7 0 0 1 12 2z"/><path d="M9 22h6"/></svg>
             </div>
             <div class="recommend-card-body">
               <div class="recommend-card-title">Agent 智能体</div>
-              <div class="recommend-card-desc">一句话描述需求，AI 自动拆解任务、调配工具链完成创作</div>
+              <div class="recommend-card-desc">AI 自动拆解任务、调配工具链完成创作</div>
             </div>
           </div>
-          <div class="recommend-card" onclick="switchTool('image-gen')">
-            <div class="recommend-card-cover" style="background:linear-gradient(135deg,#a78bfa,#f472b6)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <div class="recommend-card" onclick="window.open('https://chat.deepseek.com/', '_blank')">
+            <div class="recommend-card-cover" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
             <div class="recommend-card-body">
-              <div class="recommend-card-title">图片生成</div>
-              <div class="recommend-card-desc">文字描述即刻生成高清图像，支持写实、插画、3D 等多种风格</div>
+              <div class="recommend-card-title">DeepSeek</div>
+              <div class="recommend-card-desc">深度推理，智能对话</div>
             </div>
           </div>
-          <div class="recommend-card" onclick="switchTool('video-gen')">
-            <div class="recommend-card-cover" style="background:linear-gradient(135deg,#fb923c,#f472b6)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <div class="recommend-card" onclick="window.open('https://www.doubao.com/', '_blank')">
+            <div class="recommend-card-cover" style="background:linear-gradient(135deg,#fb923c,#f97316)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
             </div>
             <div class="recommend-card-body">
-              <div class="recommend-card-title">视频生成</div>
-              <div class="recommend-card-desc">从文案到视频，AI 自动完成分镜、画面生成、配音配乐</div>
+              <div class="recommend-card-title">豆包</div>
+              <div class="recommend-card-desc">字节跳动 AI 助手</div>
             </div>
           </div>
-          <div class="recommend-card" onclick="switchTool('ecommerce')">
+          <div class="recommend-card" onclick="window.open('https://aistudio.tencent.com/', '_blank')">
+            <div class="recommend-card-cover" style="background:linear-gradient(135deg,#34d399,#10b981)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            <div class="recommend-card-body">
+              <div class="recommend-card-title">腾讯混元</div>
+              <div class="recommend-card-desc">腾讯自研多模态大模型</div>
+            </div>
+          </div>
+          <div class="recommend-card" onclick="switchTool('canvas')">
+            <div class="recommend-card-cover" style="background:linear-gradient(135deg,#a855f7,#7c3aed)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/></svg>
+            </div>
+            <div class="recommend-card-body">
+              <div class="recommend-card-title">AI 画布</div>
+              <div class="recommend-card-desc">融合 AI 与手动编辑的画板工具</div>
+            </div>
+          </div>
+          <div class="recommend-card" onclick="window.open('https://svgco.de/', '_blank')">
+            <div class="recommend-card-cover" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            </div>
+            <div class="recommend-card-body">
+              <div class="recommend-card-title">AI 矢量图</div>
+              <div class="recommend-card-desc">在线 SVG 矢量图编辑</div>
+            </div>
+          </div>
+          <div class="recommend-card" onclick="window.open('https://usoftclub.com/ai', '_blank')">
             <div class="recommend-card-cover" style="background:linear-gradient(135deg,#34d399,#5eead4)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </div>
             <div class="recommend-card-body">
-              <div class="recommend-card-title">AI 电商</div>
-              <div class="recommend-card-desc">专为电商打造，覆盖商品图精修、场景替换、详情页全链路</div>
+              <div class="recommend-card-title">AI 改图</div>
+              <div class="recommend-card-desc">背景替换、局部修改</div>
             </div>
           </div>
-        </div>
-
-        <!-- All Tools -->
-        <div class="section-title">全部工具</div>
-        <div class="tools-grid">
-          <div class="tool-card" onclick="switchTool('canvas')">
-            <div class="tool-card-icon" style="background:rgba(168,85,247,0.12);color:#a855f7">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/></svg>
+          <div class="recommend-card" onclick="window.open('https://mindvideo.ai/?ref=RWUADKYO', '_blank')">
+            <div class="recommend-card-cover" style="background:linear-gradient(135deg,#f472b6,#ec4899)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             </div>
-            <div class="tool-card-info">
-              <div class="tool-card-title">AI 画布</div>
-              <div class="tool-card-desc">融合 AI 与手动编辑</div>
-            </div>
-          </div>
-          <div class="tool-card" onclick="switchTool('image')">
-            <div class="tool-card-icon" style="background:rgba(94,234,212,0.1);color:#5eead4">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-            </div>
-            <div class="tool-card-info">
-              <div class="tool-card-title">AI 图像</div>
-              <div class="tool-card-desc">精准还原你的想象力</div>
-            </div>
-          </div>
-          <div class="tool-card" onclick="switchTool('edit')">
-            <div class="tool-card-icon" style="background:rgba(52,211,153,0.1);color:#34d399">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            </div>
-            <div class="tool-card-info">
-              <div class="tool-card-title">AI 改图</div>
-              <div class="tool-card-desc">背景替换、局部修改</div>
-            </div>
-          </div>
-          <div class="tool-card" onclick="switchTool('text')">
-            <div class="tool-card-icon" style="background:rgba(248,113,113,0.1);color:#f87171">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-            </div>
-            <div class="tool-card-info">
-              <div class="tool-card-title">AI 改字</div>
-              <div class="tool-card-desc">智能识别替换文字</div>
-            </div>
-          </div>
-          <div class="tool-card" onclick="switchTool('portrait')">
-            <div class="tool-card-icon" style="background:rgba(244,114,182,0.1);color:#f472b6">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            </div>
-            <div class="tool-card-info">
-              <div class="tool-card-title">AI 形象照</div>
-              <div class="tool-card-desc">自拍生成专业形象照</div>
-            </div>
-          </div>
-          <div class="tool-card" onclick="switchTool('brand')">
-            <div class="tool-card-icon" style="background:rgba(251,146,60,0.1);color:#fb923c">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
-            </div>
-            <div class="tool-card-info">
-              <div class="tool-card-title">品牌设计</div>
-              <div class="tool-card-desc">Logo、IP、视觉系统</div>
-            </div>
-          </div>
-          <div class="tool-card" onclick="switchTool('fitment')">
-            <div class="tool-card-icon" style="background:rgba(96,165,250,0.1);color:#60a5fa">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            </div>
-            <div class="tool-card-info">
-              <div class="tool-card-title">展位设计</div>
-              <div class="tool-card-desc">空间规划一站式方案</div>
-            </div>
-          </div>
-          <div class="tool-card" onclick="switchTool('skillhub')">
-            <div class="tool-card-icon" style="background:rgba(255,255,255,0.04);color:#5f6572">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="14" width="8" height="8" rx="2"/><rect x="2" y="14" width="8" height="8" rx="2"/><rect x="8" y="2" width="8" height="8" rx="2"/><line x1="12" y1="6" x2="12" y2="14"/><line x1="6" y1="18" x2="18" y2="18"/></svg>
-            </div>
-            <div class="tool-card-info">
-              <div class="tool-card-title">Skill Hub</div>
-              <div class="tool-card-desc">AI 技能插件市场</div>
+            <div class="recommend-card-body">
+              <div class="recommend-card-title">MindVideo AI</div>
+              <div class="recommend-card-desc">AI 视频生成创作平台</div>
             </div>
           </div>
         </div>
@@ -1750,46 +1936,32 @@ input, textarea { font-family: inherit; }
         <!-- Inspiration -->
         <div class="section-title">灵感推荐</div>
         <div class="inspiration-scroll">
-          <div class="inspiration-card" onclick="goToAgent('帮我设计一张春日限定美妆海报')">
-            <img src="https://picsum.photos/seed/lingjing01/400/300" alt="春日限定海报" loading="lazy">
+          <div class="inspiration-card" onclick="window.open('https://aigc.xinpianchang.com/', '_blank')">
+            <img src="https://picsum.photos/seed/xinpianchang/400/300" alt="新片场 AIGC" loading="lazy">
             <div class="inspiration-card-info">
-              <div class="inspiration-card-title">春日限定美妆海报</div>
-              <div class="inspiration-card-meta">by 小艺 &middot; 2.3K 浏览</div>
+              <div class="inspiration-card-title">新片场 AIGC</div>        
+<div class="inspiration-card-meta">AI创意内容社区</div>
             </div>
           </div>
-          <div class="inspiration-card" onclick="goToAgent('帮我设计一套极简咖啡馆品牌VI')">
-            <img src="https://picsum.photos/seed/lingjing02/400/300" alt="极简品牌VI" loading="lazy">
+          <div class="inspiration-card" onclick="window.open('https://www.zcool.com.cn/ai/prompt', '_blank')">
+            <img src="https://picsum.photos/seed/zcool/400/300" alt="站酷 AI" loading="lazy">
             <div class="inspiration-card-info">
-              <div class="inspiration-card-title">极简咖啡馆 VI</div>
-              <div class="inspiration-card-meta">by 设计师阿文 &middot; 1.8K 浏览</div>
+              <div class="inspiration-card-title">站酷 AI</div>
+              <div class="inspiration-card-meta">AI设计提示词库</div>
             </div>
           </div>
-          <div class="inspiration-card" onclick="goToAgent('帮我制作一段15秒产品宣传短视频')">
-            <img src="https://picsum.photos/seed/lingjing03/400/300" alt="产品宣传片" loading="lazy">
+          <div class="inspiration-card" onclick="window.open('https://www.xingliu.art/?sourceid=005351', '_blank')">
+            <img src="https://picsum.photos/seed/xingliu/400/300" alt="星流 AI" loading="lazy">
             <div class="inspiration-card-info">
-              <div class="inspiration-card-title">产品 15 秒宣传片</div>
-              <div class="inspiration-card-meta">by 视频组 &middot; 4.5K 浏览</div>
+              <div class="inspiration-card-title">星流 AI</div>
+              <div class="inspiration-card-meta">AI艺术创作平台</div>
             </div>
           </div>
-          <div class="inspiration-card" onclick="goToAgent('帮我设计一款护肤品礼盒包装')">
-            <img src="https://picsum.photos/seed/lingjing04/400/300" alt="护肤品礼盒" loading="lazy">
+          <div class="inspiration-card" onclick="window.open('https://ai.58pic.com/?mid=4775', '_blank')">
+            <img src="https://picsum.photos/seed/58pic/400/300" alt="58图 AI" loading="lazy">
             <div class="inspiration-card-info">
-              <div class="inspiration-card-title">护肤品礼盒设计</div>
-              <div class="inspiration-card-meta">by 包包设计 &middot; 3.1K 浏览</div>
-            </div>
-          </div>
-          <div class="inspiration-card" onclick="goToAgent('帮我设计一套零食包装全案')">
-            <img src="https://picsum.photos/seed/lingjing05/400/300" alt="零食包装" loading="lazy">
-            <div class="inspiration-card-info">
-              <div class="inspiration-card-title">零食包装全案</div>
-              <div class="inspiration-card-meta">by 食品设计 &middot; 1.2K 浏览</div>
-            </div>
-          </div>
-          <div class="inspiration-card" onclick="goToAgent('帮我创作一张梦幻写实风格的插画')">
-            <img src="https://picsum.photos/seed/lingjing06/400/300" alt="梦幻插画" loading="lazy">
-            <div class="inspiration-card-info">
-              <div class="inspiration-card-title">梦幻写实插画</div>
-              <div class="inspiration-card-meta">by 画画的小鱼 &middot; 5.7K 浏览</div>
+              <div class="inspiration-card-title">58图 AI</div>
+              <div class="inspiration-card-meta">AI图片生成工具</div>
             </div>
           </div>
         </div>
@@ -1799,32 +1971,45 @@ input, textarea { font-family: inherit; }
 
     <!-- ===== AGENT PAGE ===== -->
     <div class="page-view" id="page-agent">
-      <div class="main-inner">
-        <div class="tool-page-header">
-          <h2>Agent 智能体</h2>
-          <p>描述你的需求，AI Agent 自动理解意图、拆解任务、调配工具链，一站式完成创作</p>
+      <div class="ds-chat-layout">
+        <!-- Chat messages area -->
+        <div class="ds-chat-messages" id="agentChat">
+          <div class="ds-welcome">
+            <div class="ds-welcome-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6l-.7.5V18a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2.5l-.7-.5A7 7 0 0 1 12 2z"/><path d="M9 22h6"/></svg>
+            </div>
+            <div class="ds-welcome-title">你好，我是 LINGTWO Agent</div>
+            <div class="ds-welcome-desc">告诉我你想创作什么，我会帮你自动选择合适的工具完成任务</div>
+            <div class="ds-quick-actions">
+              <div class="ds-quick-card" onclick="fillPrompt('帮我设计一张春季美妆产品海报')">
+                <div class="ds-quick-icon">🎨</div>
+                <div class="ds-quick-text">春季美妆海报</div>
+              </div>
+              <div class="ds-quick-card" onclick="fillPrompt('生成一个科技感品牌Logo')">
+                <div class="ds-quick-icon">✨</div>
+                <div class="ds-quick-text">品牌Logo</div>
+              </div>
+              <div class="ds-quick-card" onclick="fillPrompt('制作一段15秒产品宣传短视频')">
+                <div class="ds-quick-icon">🎬</div>
+                <div class="ds-quick-text">产品短视频</div>
+              </div>
+              <div class="ds-quick-card" onclick="fillPrompt('帮我精修一张商品图')">
+                <div class="ds-quick-icon">🖼️</div>
+                <div class="ds-quick-text">商品精修</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="tool-workspace">
-          <div class="tool-workspace-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6l-.7.5V18a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2.5l-.7-.5A7 7 0 0 1 12 2z"/><path d="M9 22h6"/></svg>
+
+        <!-- Input area fixed at bottom -->
+        <div class="ds-input-area">
+          <div class="ds-input-box">
+            <textarea id="agentPrompt" placeholder="描述你的创作需求..." rows="1" oninput="autoResizeTextarea(this)"></textarea>
+            <button class="ds-send-btn" id="agentSendBtn" onclick="sendAgentPrompt()" title="发送">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg>
+            </button>
           </div>
-          <div class="tool-workspace-title">你好，我是LINGTWO Agent</div>
-          <div class="tool-workspace-desc">告诉我你想创作什么，我会帮你自动选择合适的工具完成任务</div>
-          <div class="prompt-area">
-            <div class="prompt-input-wrap">
-              <textarea placeholder="描述你的创作需求，例如：帮我做一张春日美妆产品海报..." id="agentPrompt"></textarea>
-              <button class="prompt-send-btn" id="agentSendBtn" onclick="sendAgentPrompt()">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 8h10M8 4l4 4-4 4"/></svg>
-              </button>
-            </div>
-            <div class="prompt-suggestions">
-              <div class="prompt-suggestion" onclick="fillPrompt('帮我设计一张春季美妆产品海报')">春季美妆海报</div>
-              <div class="prompt-suggestion" onclick="fillPrompt('生成一个科技感品牌Logo')">品牌Logo</div>
-              <div class="prompt-suggestion" onclick="fillPrompt('制作一段15秒产品宣传短视频')">产品短视频</div>
-              <div class="prompt-suggestion" onclick="fillPrompt('帮我精修一张商品图')">商品精修</div>
-            </div>
-          </div>
-          <div class="ai-chat-container" id="agentChat"></div>
+          <div class="ds-input-footer">LINGTWO Agent 可能会产生不准确的信息，请注意甄别</div>
         </div>
       </div>
     </div>
@@ -1963,7 +2148,6 @@ input, textarea { font-family: inherit; }
     </div>
   </div>
 </section>
-    </div>
 
     <!-- ===== SKILL HUB PAGE ===== -->
     <div class="page-view" id="page-skillhub">
@@ -2018,7 +2202,7 @@ input, textarea { font-family: inherit; }
         <div class="tool-workspace">
           <div class="upload-zone" onclick="showToast('图片上传功能开发中')">
             <div class="upload-zone-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             </div>
             <div class="upload-zone-text">拖拽或点击上传商品图片</div>
             <div class="upload-zone-hint">支持 JPG / PNG / WEBP，最大 20MB</div>
@@ -2042,13 +2226,13 @@ input, textarea { font-family: inherit; }
         </div>
         <div class="tool-workspace">
           <div class="tool-workspace-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><polygon points="10 8 16 12 10 16"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="3"/><polygon points="10 8 16 12 10 16"/></svg>
           </div>
           <div class="tool-workspace-title">文字描述或上传素材</div>
           <div class="tool-workspace-desc">输入文案或上传图片素材，AI 将自动生成短视频</div>
           <div class="video-key-bar" id="videoKeyBar">
             <div class="video-key-left">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
               <span>视频生成需要 API Key</span>
             </div>
             <div class="video-key-right">
@@ -2083,7 +2267,7 @@ input, textarea { font-family: inherit; }
         </div>
         <div class="tool-workspace">
           <div class="tool-workspace-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
           </div>
           <div class="tool-workspace-title">描述你想要的画面</div>
           <div class="tool-workspace-desc">支持写实、插画、3D、国风等多种风格</div>
@@ -2116,7 +2300,7 @@ input, textarea { font-family: inherit; }
         <div class="tool-workspace">
           <div class="upload-zone" onclick="showToast('照片上传功能开发中')">
             <div class="upload-zone-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
             </div>
             <div class="upload-zone-text">上传一张正面自拍</div>
             <div class="upload-zone-hint">建议使用清晰的正面照，效果更佳</div>
@@ -2144,7 +2328,7 @@ input, textarea { font-family: inherit; }
             <label class="upload-zone" id="editUploadZone">
               <input type="file" id="editFileInput" accept="image/jpeg,image/png,image/webp" style="position:fixed;left:-9999px;opacity:0;width:1px;height:1px">
               <div class="upload-zone-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
               </div>
               <div class="upload-zone-text">拖拽或点击上传图片</div>
               <div class="upload-zone-hint">支持 JPG / PNG / WEBP，最大 20MB</div>
@@ -2192,7 +2376,7 @@ input, textarea { font-family: inherit; }
         <div class="tool-workspace">
           <div class="upload-zone" onclick="showToast('图片上传功能开发中')">
             <div class="upload-zone-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
             </div>
             <div class="upload-zone-text">上传含文字的图片</div>
             <div class="upload-zone-hint">支持海报、Banner、包装等设计稿</div>
@@ -2206,6 +2390,8 @@ input, textarea { font-family: inherit; }
       </div>
     </div>
 
+
+
     <!-- ===== IMAGE GEN (Quick) PAGE ===== -->
     <div class="page-view" id="page-image-gen">
       <div class="main-inner">
@@ -2215,7 +2401,7 @@ input, textarea { font-family: inherit; }
         </div>
         <div class="tool-workspace">
           <div class="tool-workspace-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
           </div>
           <div class="tool-workspace-title">快速生成图片</div>
           <div class="prompt-area">
@@ -2240,12 +2426,12 @@ input, textarea { font-family: inherit; }
         </div>
         <div class="tool-workspace">
           <div class="tool-workspace-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </div>
           <div class="tool-workspace-title">快速生成视频</div>
           <div class="video-key-bar" id="quickVideoKeyBar">
             <div class="video-key-left">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
               <span>视频生成需要 API Key</span>
             </div>
             <div class="video-key-right">
@@ -2268,87 +2454,203 @@ input, textarea { font-family: inherit; }
 
     <!-- ===== EXPLORE PAGE ===== -->
     <div class="page-view" id="page-explore">
-      <div class="main-inner">
+      <div class="main-inner" style="max-width:1200px;">
         <div class="tool-page-header">
           <h2>发现</h2>
-          <p>探索社区创作的优秀作品，获取灵感</p>
+          <p>探索 AI 创意灵感，发现优秀作品与提示词</p>
         </div>
-        <div class="explore-filters" style="margin-bottom: var(--space-xl);">
-          <div class="explore-filter active">全部</div>
-          <div class="explore-filter">电商设计</div>
-          <div class="explore-filter">品牌视觉</div>
-          <div class="explore-filter">社交媒体</div>
-          <div class="explore-filter">短视频</div>
-          <div class="explore-filter">插画艺术</div>
+
+        <!-- Filter Tabs -->
+        <div class="explore-filters">
+          <div class="explore-filter active" onclick="filterExplore('all',this)">全部</div>
+          <div class="explore-filter" onclick="filterExplore('image',this)">AI 图片</div>
+          <div class="explore-filter" onclick="filterExplore('design',this)">品牌视觉</div>
+          <div class="explore-filter" onclick="filterExplore('social',this)">社交素材</div>
+          <div class="explore-filter" onclick="filterExplore('video',this)">短视频</div>
+          <div class="explore-filter" onclick="filterExplore('painting',this)">绘画插画</div>
         </div>
-        <div class="explore-grid">
-          <div class="explore-card" onclick="showToast('作品详情页开发中')">
-            <img class="explore-card-img" src="https://picsum.photos/seed/explore01/300/400" alt="春日限定美妆海报" loading="lazy">
-            <div class="explore-card-info"><div class="explore-card-title">春日限定美妆海报</div><div class="explore-card-author">by 小艺 &middot; 2.3K 浏览</div></div>
-          </div>
-          <div class="explore-card" onclick="showToast('作品详情页开发中')">
-            <img class="explore-card-img" src="https://picsum.photos/seed/explore02/300/400" alt="极简咖啡馆 VI" loading="lazy">
-            <div class="explore-card-info"><div class="explore-card-title">极简咖啡馆 VI</div><div class="explore-card-author">by 设计师阿文 &middot; 1.8K 浏览</div></div>
-          </div>
-          <div class="explore-card" onclick="showToast('作品详情页开发中')">
-            <img class="explore-card-img" src="https://picsum.photos/seed/explore03/300/400" alt="产品宣传片" loading="lazy">
-            <div class="explore-card-info"><div class="explore-card-title">产品 15 秒宣传片</div><div class="explore-card-author">by 视频组 &middot; 4.5K 浏览</div></div>
-          </div>
-          <div class="explore-card" onclick="showToast('作品详情页开发中')">
-            <img class="explore-card-img" src="https://picsum.photos/seed/explore04/300/400" alt="护肤品礼盒" loading="lazy">
-            <div class="explore-card-info"><div class="explore-card-title">护肤品礼盒设计</div><div class="explore-card-author">by 包包设计 &middot; 3.1K 浏览</div></div>
-          </div>
-          <div class="explore-card" onclick="showToast('作品详情页开发中')">
-            <img class="explore-card-img" src="https://picsum.photos/seed/explore05/300/400" alt="零食包装" loading="lazy">
-            <div class="explore-card-info"><div class="explore-card-title">零食包装全案</div><div class="explore-card-author">by 食品设计 &middot; 1.2K 浏览</div></div>
-          </div>
-          <div class="explore-card" onclick="showToast('作品详情页开发中')">
-            <img class="explore-card-img" src="https://picsum.photos/seed/explore06/300/400" alt="梦幻写实插画" loading="lazy">
-            <div class="explore-card-info"><div class="explore-card-title">梦幻写实插画</div><div class="explore-card-author">by 画画的小鱼 &middot; 5.7K 浏览</div></div>
-          </div>
-          <div class="explore-card" onclick="showToast('作品详情页开发中')">
-            <img class="explore-card-img" src="https://picsum.photos/seed/explore07/300/400" alt="618大促" loading="lazy">
-            <div class="explore-card-info"><div class="explore-card-title">618 大促主视觉</div><div class="explore-card-author">by 电商设计组 &middot; 8.9K 浏览</div></div>
-          </div>
-          <div class="explore-card" onclick="showToast('作品详情页开发中')">
-            <img class="explore-card-img" src="https://picsum.photos/seed/explore08/300/400" alt="科技品牌Logo" loading="lazy">
-            <div class="explore-card-info"><div class="explore-card-title">科技品牌 Logo</div><div class="explore-card-author">by Brand Lab &middot; 2.6K 浏览</div></div>
-          </div>
+
+        <!-- Masonry Grid -->
+        <div class="explore-masonry" id="exploreMasonry">
+          <!-- Cards will be injected by JS -->
+        </div>
+
+        <!-- Load More -->
+        <div style="text-align:center;padding:32px 0;">
+          <button class="btn btn-ghost" onclick="loadMoreExplore()" id="btnLoadMore" style="padding:10px 32px;">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px;"><path d="M2 8h12M8 2v12"/></svg>
+            加载更多
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- ===== MY PAGE ===== -->
     <div class="page-view" id="page-my">
-      <div class="main-inner">
+      <div class="main-inner" style="max-width:900px;">
+        <!-- Profile Header -->
         <div class="my-header">
-          <div class="my-avatar">U</div>
+          <div class="my-avatar" id="myAvatar">U</div>
           <div class="my-info">
-            <h3>创作者</h3>
-            <p>登录后查看你的作品和数据</p>
+            <h3 id="myName">未登录</h3>
+            <p id="myBio">登录后查看您的作品和收藏</p>
           </div>
-          <div style="margin-left:auto;">
-            <button class="btn btn-primary btn-sm" onclick="showToast('登录功能开发中')">登录 / 注册</button>
+          <div style="margin-left:auto;display:flex;gap:8px;">
+            <button class="btn btn-ghost btn-sm" onclick="showLoginModal()">登录</button>
+            <button class="btn btn-primary btn-sm" onclick="showLoginModal()">注册</button>
           </div>
         </div>
+
+        <!-- Stats Row -->
         <div class="my-stats">
-          <div class="my-stat"><div class="my-stat-value">0</div><div class="my-stat-label">作品</div></div>
-          <div class="my-stat"><div class="my-stat-value">0</div><div class="my-stat-label">收藏</div></div>
-          <div class="my-stat"><div class="my-stat-value">0</div><div class="my-stat-label">获赞</div></div>
+          <div class="my-stat" onclick="switchMyTab('works')">
+            <div class="my-stat-value" id="statWorks">0</div>
+            <div class="my-stat-label">作品</div>
+          </div>
+          <div class="my-stat" onclick="switchMyTab('favorites')">
+            <div class="my-stat-value" id="statFavorites">0</div>
+            <div class="my-stat-label">收藏</div>
+          </div>
+          <div class="my-stat" onclick="switchMyTab('history')">
+            <div class="my-stat-value" id="statHistory">0</div>
+            <div class="my-stat-label">历史</div>
+          </div>
         </div>
-        <div class="section-title" style="margin-top: var(--space-xl);">我的作品</div>
-        <div class="my-grid">
-          <div class="my-work" style="cursor:pointer;" onclick="showToast('创建新作品')">
-            <div style="text-align:center;">
-              <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--color-text-muted);margin-bottom:6px"><line x1="14" y1="7" x2="14" y2="21"/><line x1="7" y1="14" x2="21" y2="14"/></svg>
-              <div style="font-size:13px; color:var(--color-text-muted);">创建作品</div>
+
+        <!-- Tab Navigation -->
+        <div class="my-tabs">
+          <div class="my-tab active" onclick="switchMyTab('works',this)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+            我的作品
+          </div>
+          <div class="my-tab" onclick="switchMyTab('favorites',this)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 14s-6-4.35-6-8.5A3.5 3.5 0 0 1 8 3.5 3.5 3.5 0 0 1 14 5.5C14 9.65 8 14 8 14z"/></svg>
+            我的收藏
+          </div>
+          <div class="my-tab" onclick="switchMyTab('history',this)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg>
+            历史记录
+          </div>
+          <div class="my-tab" onclick="switchMyTab('settings',this)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>
+            设置
+          </div>
+        </div>
+
+        <!-- Tab Content Panels -->
+        <div class="my-tab-content" id="myTabContent">
+          <!-- Works Tab (default) -->
+          <div class="my-panel active" id="panel-works">
+            <div class="my-grid" id="myWorksGrid">
+              <div class="my-work my-work-add" onclick="switchTool('agent')">
+                <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><line x1="14" y1="7" x2="14" y2="21"/><line x1="7" y1="14" x2="21" y2="14"/></svg>
+                <div>创建作品</div>
+              </div>
+            </div>
+            <div class="my-empty" id="worksEmpty" style="display:none;">
+              <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--color-text-muted);margin-bottom:12px;"><rect x="6" y="6" width="36" height="36" rx="4"/><path d="M6 30l10-10 8 8 6-6 12 12"/></svg>
+              <p>还没有作品</p>
+              <p style="font-size:13px;color:var(--color-text-muted);">使用 AI 工具开始创作吧</p>
+              <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="switchTool('agent')">开始创作</button>
+            </div>
+          </div>
+
+          <!-- Favorites Tab -->
+          <div class="my-panel" id="panel-favorites">
+            <div class="my-grid" id="myFavoritesGrid"></div>
+            <div class="my-empty" id="favoritesEmpty">
+              <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--color-text-muted);margin-bottom:12px;"><path d="M24 42s-18-13-18-25.5A10.5 10.5 0 0 1 24 10.5 10.5 10.5 0 0 1 42 16.5C42 29 24 42 24 42z"/></svg>
+              <p>还没有收藏</p>
+              <p style="font-size:13px;color:var(--color-text-muted);">浏览发现页，收藏喜欢的作品</p>
+              <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="switchPage('explore')">去发现</button>
+            </div>
+          </div>
+
+          <!-- History Tab -->
+          <div class="my-panel" id="panel-history">
+            <div class="my-history-list" id="myHistoryList"></div>
+            <div class="my-empty" id="historyEmpty">
+              <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--color-text-muted);margin-bottom:12px;"><circle cx="24" cy="24" r="18"/><path d="M24 12v12l7.5 7.5"/></svg>
+              <p>还没有历史记录</p>
+              <p style="font-size:13px;color:var(--color-text-muted);">使用工具后记录会出现在这里</p>
+            </div>
+          </div>
+
+          <!-- Settings Tab -->
+          <div class="my-panel" id="panel-settings">
+            <div class="my-settings-section">
+              <div class="my-settings-title">账号设置</div>
+              <div class="my-settings-item">
+                <div class="my-settings-label">头像</div>
+                <div class="my-settings-value">
+                  <div class="my-avatar my-avatar-sm" id="settingsAvatar">U</div>
+                  <button class="btn btn-ghost btn-sm" onclick="showToast('头像上传功能开发中')">更换</button>
+                </div>
+              </div>
+              <div class="my-settings-item">
+                <div class="my-settings-label">昵称</div>
+                <div class="my-settings-value">
+                  <span id="settingsName">未设置</span>
+                  <button class="btn btn-ghost btn-sm" onclick="showToast('昵称修改功能开发中')">修改</button>
+                </div>
+              </div>
+              <div class="my-settings-item">
+                <div class="my-settings-label">邮箱</div>
+                <div class="my-settings-value">
+                  <span id="settingsEmail">未绑定</span>
+                  <button class="btn btn-ghost btn-sm" onclick="showToast('邮箱绑定功能开发中')">绑定</button>
+                </div>
+              </div>
+            </div>
+            <div class="my-settings-section">
+              <div class="my-settings-title">偏好设置</div>
+              <div class="my-settings-item">
+                <div class="my-settings-label">默认图片风格</div>
+                <div class="my-settings-value">
+                  <select class="my-select" id="defaultStyle">
+                    <option value="auto">自动</option>
+                    <option value="realistic">写实</option>
+                    <option value="anime">动漫</option>
+                    <option value="3d">3D渲染</option>
+                    <option value="illustration">插画</option>
+                  </select>
+                </div>
+              </div>
+              <div class="my-settings-item">
+                <div class="my-settings-label">图片质量</div>
+                <div class="my-settings-value">
+                  <select class="my-select" id="defaultQuality">
+                    <option value="standard">标准</option>
+                    <option value="hd">高清</option>
+                  </select>
+                </div>
+              </div>
+              <div class="my-settings-item">
+                <div class="my-settings-label">保存历史记录</div>
+                <div class="my-settings-value">
+                  <label class="my-toggle"><input type="checkbox" id="saveHistory" checked><span class="my-toggle-slider"></span></label>
+                </div>
+              </div>
+            </div>
+            <div class="my-settings-section">
+              <div class="my-settings-title">关于</div>
+              <div class="my-settings-item">
+                <div class="my-settings-label">版本</div>
+                <div class="my-settings-value">LINGTWO AI v1.0</div>
+              </div>
+              <div class="my-settings-item">
+                <div class="my-settings-label">反馈</div>
+                <div class="my-settings-value"><button class="btn btn-ghost btn-sm" onclick="showToast('反馈功能开发中')">提交反馈</button></div>
+              </div>
+              <div class="my-settings-item">
+                <div class="my-settings-label">清除缓存</div>
+                <div class="my-settings-value"><button class="btn btn-ghost btn-sm" onclick="clearMyCache()">清除</button></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ===== FITMENT PAGE ===== -->
     <div class="page-view" id="page-fitment">
       <div class="main-inner">
         <div class="tool-page-header">
@@ -2358,7 +2660,7 @@ input, textarea { font-family: inherit; }
         <div class="tool-workspace">
           <div class="upload-zone" onclick="showToast('平面图上传功能开发中')">
             <div class="upload-zone-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             </div>
             <div class="upload-zone-text">上传店铺平面图或展位尺寸</div>
             <div class="upload-zone-hint">AI 将根据空间自动生成装修方案</div>
@@ -2376,7 +2678,7 @@ input, textarea { font-family: inherit; }
         </div>
         <div class="tool-workspace">
           <div class="tool-workspace-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
           </div>
           <div class="tool-workspace-title">描述你的品牌</div>
           <div class="tool-workspace-desc">输入品牌名称、行业和风格偏好，AI 将生成完整的品牌设计方案</div>
@@ -2393,7 +2695,8 @@ input, textarea { font-family: inherit; }
       </div>
     </div>
 
-  </main>
+  
+    </main>
 </div>
 
 <!-- TOAST -->
@@ -2415,15 +2718,11 @@ function switchPage(page) {
   const navLink = document.querySelector('.topnav-link[data-page="' + page + '"]');
   if (navLink) navLink.classList.add('active');
 
-  // Clear sidebar active
-  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-
-  // Scroll to top
+    // Scroll to top
   document.querySelector('.main-content').scrollTop = 0;
   currentPage = page;
 }
 
-// ===== TOOL SIDEBAR SWITCHING =====
 function switchTool(tool) {
   // Map tool to page
   const toolMap = {
@@ -2448,12 +2747,7 @@ function switchTool(tool) {
   switchPage(page);
             if (tool === 'canvas' && window.CA && !CA._inited) { CA.init(); }
 
-
-  // Set sidebar active
-  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  const sidebarItem = document.querySelector('.sidebar-item[data-tool="' + tool + '"]');
-  if (sidebarItem) sidebarItem.classList.add('active');
-}
+  }
 
 // ===== HOME SEARCH =====
 function goToAgent(text) {
@@ -2535,15 +2829,20 @@ function sendAgentPrompt() {
   }
   const prompt = textarea.value.trim();
   textarea.value = '';
+  textarea.style.height = 'auto';
   const chat = document.getElementById('agentChat');
   const sendBtn = document.getElementById('agentSendBtn');
 
+  // Remove welcome screen on first message
+  const welcome = chat.querySelector('.ds-welcome');
+  if (welcome) welcome.remove();
+
   // Add user message
-  chat.innerHTML += '<div class="ai-message user"><div class="ai-avatar">U</div><div class="ai-bubble">' + escapeHtml(prompt) + '</div></div>';
+  chat.innerHTML += '<div class="ai-message user"><div class="ds-avatar user-av">U</div><div class="ds-bubble">' + escapeHtml(prompt) + '</div></div>';
 
   // Add loading bubble
   const loadingId = 'loading-' + Date.now();
-  chat.innerHTML += '<div class="ai-message ai" id="' + loadingId + '"><div class="ai-avatar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6l-.7.5V18a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2.5l-.7-.5A7 7 0 0 1 12 2z"/><path d="M9 22h6"/></svg></div><div class="ai-bubble"><div class="ai-loading-dots"><span></span><span></span><span></span></div></div></div>';
+  chat.innerHTML += '<div class="ai-message ai" id="' + loadingId + '"><div class="ds-avatar ai-av"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.3 6l-.7.5V18a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2.5l-.7-.5A7 7 0 0 1 12 2z"/><path d="M9 22h6"/></svg></div><div class="ds-bubble"><div class="ai-loading-dots"><span></span><span></span><span></span></div></div></div>';
   chat.scrollTop = chat.scrollHeight;
 
   // Disable send
@@ -2553,7 +2852,7 @@ function sendAgentPrompt() {
   const history = [];
   chat.querySelectorAll('.ai-message').forEach(msg => {
     const role = msg.classList.contains('user') ? 'user' : 'assistant';
-    const text = msg.querySelector('.ai-bubble');
+    const text = msg.querySelector('.ds-bubble');
     if (text && !msg.id.startsWith('loading')) {
       history.push({ role, content: text.textContent });
     }
@@ -2566,7 +2865,7 @@ function sendAgentPrompt() {
     // onChunk: append text to loading bubble
     const el = document.getElementById(loadingId);
     if (el) {
-      const bubble = el.querySelector('.ai-bubble');
+      const bubble = el.querySelector('.ds-bubble');
       if (bubble.querySelector('.ai-loading-dots')) bubble.innerHTML = '';
       bubble.textContent += chunk;
       chat.scrollTop = chat.scrollHeight;
@@ -2577,7 +2876,7 @@ function sendAgentPrompt() {
   }, function(err) {
     // onError
     const el = document.getElementById(loadingId);
-    if (el) el.querySelector('.ai-bubble').textContent = '抱歉，生成失败了，请重试。';
+    if (el) el.querySelector('.ds-bubble').textContent = '抱歉，生成失败了，请重试。';
     if (sendBtn) sendBtn.disabled = false;
   });
 }
@@ -2633,14 +2932,14 @@ async function callLLM(messages, onChunk, onDone, onError) {
 }
 
 // Image generation
-function generateImageUrl(prompt, w, h, seed) {
+async function generateImageUrl(prompt, w, h, seed) {
   const params = new URLSearchParams({
     width: w || 1024, height: h || 1024, nologo: 'true', enhance: 'true',
     seed: seed || Math.floor(Math.random()*999999), model: 'flux-schnell'
   });
   return IMG_API + '/' + encodeURIComponent(prompt) + '?' + params.toString();
 }
-function generateImageUrlV2(prompt, w, h, seed) {
+async function generateImageUrlV2(prompt, w, h, seed) {
   const params = new URLSearchParams({
     width: w || 1024, height: h || 1024, nologo: 'true', enhance: 'true',
     seed: seed || Math.floor(Math.random()*999999)
@@ -2649,7 +2948,7 @@ function generateImageUrlV2(prompt, w, h, seed) {
 }
 
 // Preload image via <img> tag (no CORS restriction)
-function preloadImage(url, timeoutMs, retries) {
+async function preloadImage(url, timeoutMs, retries) {
   retries = retries || 1;
   return new Promise(async (resolve) => {
     for (let attempt = 0; attempt <= retries; attempt++) {
@@ -2803,7 +3102,7 @@ function handleEditFile(file) {
   reader.readAsDataURL(file);
 }
 
-function resetEditUpload() {
+async function resetEditUpload() {
   editImageData = null;
   document.getElementById('editUploadSection').style.display = 'block';
   document.getElementById('editWorkSection').style.display = 'none';
@@ -2813,7 +3112,7 @@ function resetEditUpload() {
   if (input) input.value = '';
 }
 
-function setEditMode(mode) {
+async function setEditMode(mode) {
   var ta = document.getElementById('editPrompt');
   if (!ta) return;
   var templates = {
@@ -2986,7 +3285,7 @@ function clearVideoKey() {
 }
 
 // Init video key bars on page load
-function initVideoKeyBars() {
+async function initVideoKeyBars() {
   if (VIDEO_API_KEY) {
     document.querySelectorAll('.video-key-bar').forEach(function(bar) {
       bar.classList.add('key-saved');
@@ -3084,13 +3383,7 @@ async function sendBrandPrompt() {
 }
 
 // ===== TOAST =====
-function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  clearTimeout(toast._timer);
-  toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
-}
+
 
 // ===== SEARCH =====
 
@@ -3104,13 +3397,13 @@ function showToast(msg) {
   avatar.style.opacity = '1';
 
   var actions = [
-    function() { /* head turn right to greet */ avatar.style.transition='all 0.4s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-8px) translateX(5px) scale(1.1) rotate(8deg)'; avatar.style.filter='drop-shadow(0 6px 20px rgba(94,234,212,0.5))'; setTimeout(function(){ avatar.style.transform='translateY(-8px) translateX(-5px) scale(1.1) rotate(-8deg)'; }, 600); setTimeout(function(){ avatar.style.transform='translateY(0) translateX(0) scale(1) rotate(0deg)'; avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))'; }, 1200); },
+    function() { /* head turn right to greet */ avatar.style.transition='all 0.4s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-8px) translateX(5px) scale(1.1) rotate(8deg)'; avatar.style.filter='drop-shadow(0 6px 20px rgba(94,234,212,0.50))'; setTimeout(function(){ avatar.style.transform='translateY(-8px) translateX(-5px) scale(1.1) rotate(-8deg)'; }, 600); setTimeout(function(){ avatar.style.transform='translateY(0) translateX(0) scale(1) rotate(0deg)'; avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))'; }, 1200); },
     function() { /* nod and greet */ avatar.style.transition='all 0.35s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-12px) scale(1.12)'; avatar.style.filter='drop-shadow(0 6px 20px rgba(167,139,250,0.5))'; setTimeout(function(){ avatar.style.transform='translateY(2px) scale(1.05)'; }, 350); setTimeout(function(){ avatar.style.transform='translateY(-6px) scale(1.08)'; }, 650); setTimeout(function(){ avatar.style.transform='translateY(0) scale(1)'; avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))'; }, 1000); },
     function() { /* ear wiggle greet */ avatar.style.transition='all 0.3s ease'; avatar.style.transform='translateY(-5px) scale(1.05) rotate(-6deg)'; setTimeout(function(){ avatar.style.transform='translateY(-5px) scale(1.05) rotate(6deg)'; }, 200); setTimeout(function(){ avatar.style.transform='translateY(-5px) scale(1.05) rotate(-4deg)'; }, 400); setTimeout(function(){ avatar.style.transform='translateY(-5px) scale(1.05) rotate(4deg)'; }, 600); setTimeout(function(){ avatar.style.transform='translateY(0) scale(1) rotate(0deg)'; }, 900); },
-    function() { /* look up attentively */ avatar.style.transition='all 0.5s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-15px) scale(1.15)'; avatar.style.filter='drop-shadow(0 8px 24px rgba(94,234,212,0.6))'; setTimeout(function(){ avatar.style.transform='translateY(-10px) scale(1.12) rotate(-3deg)'; }, 500); setTimeout(function(){ avatar.style.transform='translateY(-10px) scale(1.12) rotate(3deg)'; }, 800); setTimeout(function(){ avatar.style.transform='translateY(0) scale(1) rotate(0deg)'; avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))'; }, 1100); },
+    function() { /* look up attentively */ avatar.style.transition='all 0.5s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-15px) scale(1.15)'; avatar.style.filter='drop-shadow(0 8px 24px rgba(94,234,212,0.60))'; setTimeout(function(){ avatar.style.transform='translateY(-10px) scale(1.12) rotate(-3deg)'; }, 500); setTimeout(function(){ avatar.style.transform='translateY(-10px) scale(1.12) rotate(3deg)'; }, 800); setTimeout(function(){ avatar.style.transform='translateY(0) scale(1) rotate(0deg)'; avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))'; }, 1100); },
     function() { /* happy bounce greet */ avatar.style.transition='all 0.4s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-10px) scale(1.1)'; avatar.style.filter='drop-shadow(0 6px 20px rgba(167,139,250,0.4))'; setTimeout(function(){ avatar.style.transform='translateY(0px) scale(1.02)'; }, 300); setTimeout(function(){ avatar.style.transform='translateY(-8px) scale(1.08)'; }, 550); setTimeout(function(){ avatar.style.transform='translateY(0) scale(1)'; avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))'; }, 850); },
-    function() { /* sideways peek greeting */ avatar.style.transition='all 0.5s ease'; avatar.style.transform='translateY(-5px) translateX(15px) scale(1.05) rotate(10deg)'; avatar.style.filter='drop-shadow(0 4px 16px rgba(94,234,212,0.4))'; setTimeout(function(){ avatar.style.transform='translateY(-5px) translateX(-15px) scale(1.05) rotate(-10deg)'; }, 500); setTimeout(function(){ avatar.style.transform='translateY(-5px) translateX(8px) scale(1.05) rotate(5deg)'; }, 1000); setTimeout(function(){ avatar.style.transform='translateY(0) translateX(0) scale(1) rotate(0deg)'; avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))'; }, 1400); },
-    function() { /* shy peek then full look */ avatar.style.transition='all 0.4s ease'; avatar.style.transform='translateY(5px) scale(0.9) rotate(-5deg)'; avatar.style.opacity='0.7'; setTimeout(function(){ avatar.style.transition='all 0.4s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-10px) translateX(5px) scale(1.12) rotate(3deg)'; avatar.style.opacity='1'; avatar.style.filter='drop-shadow(0 6px 20px rgba(94,234,212,0.5))'; }, 400); setTimeout(function(){ avatar.style.transform='translateY(0) translateX(0) scale(1) rotate(0deg)'; avatar.style.opacity='1'; avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))'; }, 1000); },
+    function() { /* sideways peek greeting */ avatar.style.transition='all 0.5s ease'; avatar.style.transform='translateY(-5px) translateX(15px) scale(1.05) rotate(10deg)'; avatar.style.filter='drop-shadow(0 4px 16px rgba(94,234,212,0.40))'; setTimeout(function(){ avatar.style.transform='translateY(-5px) translateX(-15px) scale(1.05) rotate(-10deg)'; }, 500); setTimeout(function(){ avatar.style.transform='translateY(-5px) translateX(8px) scale(1.05) rotate(5deg)'; }, 1000); setTimeout(function(){ avatar.style.transform='translateY(0) translateX(0) scale(1) rotate(0deg)'; avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))'; }, 1400); },
+    function() { /* shy peek then full look */ avatar.style.transition='all 0.4s ease'; avatar.style.transform='translateY(5px) scale(0.9) rotate(-5deg)'; avatar.style.opacity='0.7'; setTimeout(function(){ avatar.style.transition='all 0.4s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-10px) translateX(5px) scale(1.12) rotate(3deg)'; avatar.style.opacity='1'; avatar.style.filter='drop-shadow(0 6px 20px rgba(94,234,212,0.50))'; }, 400); setTimeout(function(){ avatar.style.transform='translateY(0) translateX(0) scale(1) rotate(0deg)'; avatar.style.opacity='1'; avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))'; }, 1000); },
     function() { /* big wave */ avatar.style.transition='all 0.3s cubic-bezier(0.34,1.56,0.64,1)'; avatar.style.transform='translateY(-8px) scale(1.1) rotate(-15deg)'; avatar.style.filter='drop-shadow(0 6px 20px rgba(167,139,250,0.5))'; setTimeout(function(){ avatar.style.transform='translateY(-8px) scale(1.1) rotate(15deg)'; }, 250); setTimeout(function(){ avatar.style.transform='translateY(-8px) scale(1.1) rotate(-10deg)'; }, 500); setTimeout(function(){ avatar.style.transform='translateY(-8px) scale(1.1) rotate(10deg)'; }, 750); setTimeout(function(){ avatar.style.transform='translateY(-8px) scale(1.1) rotate(-5deg)'; }, 1000); setTimeout(function(){ avatar.style.transform='translateY(0) scale(1) rotate(0deg)'; avatar.style.filter='drop-shadow(0 2px 8px rgba(0,0,0,0.5))'; }, 1200); }
   ];
   var lastAction = -1;
@@ -3128,7 +3421,6 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
     showToast('搜索：' + this.value.trim());
   }
 });
-
 
         // AI Canvas App
         ;(function() {
@@ -3394,638 +3686,15 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
             };
             window.CA = CA;
         })();
+
+function autoResizeTextarea(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+}
+
 </script>
 <script>
-// ===== 优化后的画布应用 =====
-const CA = {
-  layers: [],
-  activeLayerId: null,
-  history: [],
-  historyIndex: -1,
-  currentTool: 'brush',
-  strokeColor: '#3B82F6',
-  fillColor: '#ffffff',
-  useFill: false,
-  brushSize: 4,
-  isDrawing: false,
-  lastX: 0,
-  lastY: 0,
-  startX: 0,
-  startY: 0,
-  canvasWidth: 1024,
-  canvasHeight: 768,
-  zoom: 1,
-  previewCvs: null,
-  previewCtx: null,
-  isTextMode: false,
-  textOverlay: null,
 
-  init() {
-    const cont = document.getElementById('canvas-container');
-    if (!cont) return;
-    cont.style.width = this.canvasWidth + 'px';
-    cont.style.height = this.canvasHeight + 'px';
-
-    // 创建预览画布
-    this.previewCvs = document.createElement('canvas');
-    this.previewCvs.width = this.canvasWidth;
-    this.previewCvs.height = this.canvasHeight;
-    Object.assign(this.previewCvs.style, {
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      pointerEvents: 'none',
-      zIndex: '0'
-    });
-    cont.appendChild(this.previewCvs);
-    this.previewCtx = this.previewCvs.getContext('2d');
-
-    this.addLayer('图层 1');
-    this.bindEvents();
-    this._inited = true;
-    this.updateZoom();
-  },
-
-  // 设置画布尺寸
-  setCanvasSize(w, h) {
-    this.canvasWidth = w;
-    this.canvasHeight = h;
-    const cont = document.getElementById('canvas-container');
-    if (cont) {
-      cont.style.width = w + 'px';
-      cont.style.height = h + 'px';
-    }
-    this.layers.forEach(l => {
-      l.cvs.width = w;
-      l.cvs.height = h;
-    });
-    if (this.previewCvs) {
-      this.previewCvs.width = w;
-      this.previewCvs.height = h;
-    }
-    this.saveHistory();
-  },
-
-  // 缩放控制
-  setZoom(level) {
-    this.zoom = Math.max(0.1, Math.min(5, level));
-    const scroll = document.getElementById('canvas-scroll');
-    if (scroll) {
-      scroll.style.transform = `scale(${this.zoom})`;
-    }
-    const zoomEl = document.getElementById('zoom-level');
-    if (zoomEl) zoomEl.textContent = Math.round(this.zoom * 100) + '%';
-  },
-
-  updateZoom() {
-    this.setZoom(this.zoom);
-  },
-
-  zoomIn() {
-    this.setZoom(this.zoom + 0.1);
-  },
-
-  zoomOut() {
-    this.setZoom(this.zoom - 0.1);
-  },
-
-  zoomReset() {
-    this.setZoom(1);
-  },
-
-  addLayer(name) {
-    const id = 'ly_' + Date.now();
-    const cvs = document.createElement('canvas');
-    cvs.className = 'layer-canvas';
-    cvs.width = this.canvasWidth;
-    cvs.height = this.canvasHeight;
-    cvs.style.zIndex = this.layers.length + 1;
-    cvs.dataset.lid = id;
-    document.getElementById('canvas-container').appendChild(cvs);
-
-    const layer = {
-      id,
-      name,
-      visible: true,
-      opacity: 1,
-      cvs,
-      ctx: cvs.getContext('2d')
-    };
-    this.layers.push(layer);
-    this.activeLayerId = id;
-    this.renderLayerList();
-    this.saveHistory();
-  },
-
-  deleteLayer(id) {
-    if (this.layers.length <= 1) return;
-    const idx = this.layers.findIndex(l => l.id === id);
-    if (idx < 0) return;
-    this.layers[idx].cvs.remove();
-    this.layers.splice(idx, 1);
-    if (this.activeLayerId === id) {
-      this.activeLayerId = this.layers[Math.max(0, idx - 1)].id;
-    }
-    this.layers.forEach((l, i) => { l.cvs.style.zIndex = i + 1; });
-    this.renderLayerList();
-    this.saveHistory();
-  },
-
-  toggleLayer(id) {
-    const l = this.layers.find(l => l.id === id);
-    if (!l) return;
-    l.visible = !l.visible;
-    l.cvs.style.display = l.visible ? '' : 'none';
-    this.renderLayerList();
-  },
-
-  setActive(id) {
-    this.activeLayerId = id;
-    this.renderLayerList();
-    this.updateOpacityControl();
-  },
-
-  setOpacity(val) {
-    const l = this.getActive();
-    if (!l) return;
-    l.opacity = val / 100;
-    l.cvs.style.opacity = l.opacity;
-    const valEl = document.getElementById('layer-opacity-val');
-    if (valEl) valEl.textContent = val + '%';
-  },
-
-  updateOpacityControl() {
-    const l = this.getActive();
-    const panel = document.getElementById('layer-opacity');
-    if (!panel || !l) return;
-    panel.style.display = 'block';
-    const slider = document.getElementById('layer-opacity-slider');
-    if (slider) slider.value = Math.round(l.opacity * 100);
-    const valEl = document.getElementById('layer-opacity-val');
-    if (valEl) valEl.textContent = Math.round(l.opacity * 100) + '%';
-  },
-
-  renderLayerList() {
-    const list = document.getElementById('layer-list');
-    if (!list) return;
-    list.innerHTML = '';
-    for (let i = this.layers.length - 1; i >= 0; i--) {
-      const l = this.layers[i];
-      const item = document.createElement('div');
-      item.className = 'layer-item' + (l.id === this.activeLayerId ? ' active' : '');
-      
-      const visClass = l.visible ? 'visible' : 'hidden';
-      const visIcon = l.visible ? '✓' : '✕';
-      
-      item.innerHTML = `
-        <div class="layer-vis ${visClass}" data-id="${l.id}">${visIcon}</div>
-        <span class="layer-name">${l.name}</span>
-        <button class="layer-del" data-id="${l.id}">✕</button>
-      `;
-      
-      // 绑定事件
-      item.querySelector('.layer-vis').addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.toggleLayer(l.id);
-      });
-      item.querySelector('.layer-del').addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.deleteLayer(l.id);
-      });
-      item.addEventListener('click', () => this.setActive(l.id));
-      
-      list.appendChild(item);
-    }
-  },
-
-  getActive() {
-    return this.layers.find(l => l.id === this.activeLayerId);
-  },
-
-  saveHistory() {
-    const state = this.layers.map(l => ({
-      id: l.id,
-      name: l.name,
-      visible: l.visible,
-      opacity: l.opacity,
-      data: l.ctx.canvas.toDataURL()
-    }));
-    this.history = this.history.slice(0, this.historyIndex + 1);
-    this.history.push(state);
-    this.historyIndex = Math.min(this.historyIndex + 1, 49);
-    if (this.history.length > 50) {
-      this.history.shift();
-      this.historyIndex--;
-    }
-  },
-
-  undo() {
-    if (this.historyIndex <= 0) return;
-    this.historyIndex--;
-    this.restore(this.history[this.historyIndex]);
-  },
-
-  redo() {
-    if (this.historyIndex >= this.history.length - 1) return;
-    this.historyIndex++;
-    this.restore(this.history[this.historyIndex]);
-  },
-
-  restore(state) {
-    state.forEach(s => {
-      const l = this.layers.find(l => l.id === s.id);
-      if (!l) return;
-      l.name = s.name;
-      l.visible = s.visible;
-      l.opacity = s.opacity || 1;
-      l.cvs.style.display = l.visible ? '' : 'none';
-      l.cvs.style.opacity = l.opacity;
-      const img = new Image();
-      img.onload = () => {
-        l.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-        l.ctx.drawImage(img, 0, 0);
-      };
-      img.src = s.data;
-    });
-    this.renderLayerList();
-    this.updateOpacityControl();
-  },
-
-  clearCanvas() {
-    const l = this.getActive();
-    if (!l) return;
-    l.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-    this.saveHistory();
-  },
-
-  pos(e) {
-    const l = this.getActive();
-    if (!l) return { x: 0, y: 0 };
-    const r = l.cvs.getBoundingClientRect();
-    return {
-      x: (e.clientX - r.left) * (this.canvasWidth / r.width),
-      y: (e.clientY - r.top) * (this.canvasHeight / r.height)
-    };
-  },
-
-  startDraw(e) {
-    e.preventDefault();
-    this.isDrawing = true;
-    const p = this.pos(e);
-    this.startX = p.x;
-    this.startY = p.y;
-    this.lastX = p.x;
-    this.lastY = p.y;
-
-    const ctx = this.getActive()?.ctx;
-    if (ctx && (this.currentTool === 'brush' || this.currentTool === 'eraser')) {
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
-    }
-
-    // 文字工具
-    if (this.currentTool === 'text') {
-      this.isDrawing = false;
-      this.showTextInput(p.x, p.y);
-    }
-  },
-
-  showTextInput(x, y) {
-    this.removeTextOverlay();
-    
-    const overlay = document.createElement('textarea');
-    overlay.className = 'text-input-overlay';
-    overlay.style.left = (x * this.zoom) + 'px';
-    overlay.style.top = (y * this.zoom) + 'px';
-    overlay.style.color = this.strokeColor;
-    overlay.style.fontSize = this.brushSize * 4 + 'px';
-    overlay.placeholder = '输入文字...';
-    
-    overlay.addEventListener('blur', () => {
-      const text = overlay.value.trim();
-      if (text) {
-        this.drawText(x, y, text, overlay.style.fontSize);
-      }
-      setTimeout(() => this.removeTextOverlay(), 100);
-    });
-
-    overlay.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        overlay.blur();
-      }
-    });
-
-    const cont = document.getElementById('canvas-container');
-    if (cont) cont.appendChild(overlay);
-    this.textOverlay = overlay;
-    setTimeout(() => overlay.focus(), 50);
-  },
-
-  removeTextOverlay() {
-    if (this.textOverlay) {
-      this.textOverlay.remove();
-      this.textOverlay = null;
-    }
-  },
-
-  drawText(x, y, text, fontSize) {
-    const l = this.getActive();
-    if (!l) return;
-    const ctx = l.ctx;
-    ctx.fillStyle = this.strokeColor;
-    ctx.font = `${fontSize || '16px'} sans-serif`;
-    ctx.textBaseline = 'top';
-    ctx.fillText(text, x, y);
-    this.saveHistory();
-  },
-
-  draw(e) {
-    if (!this.isDrawing) return;
-    e.preventDefault();
-    const p = this.pos(e);
-    const ctx = this.getActive()?.ctx;
-    if (!ctx) return;
-
-    if (this.currentTool === 'brush') {
-      ctx.strokeStyle = this.strokeColor;
-      ctx.lineWidth = this.brushSize;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.lineTo(p.x, p.y);
-      ctx.stroke();
-    } else if (this.currentTool === 'eraser') {
-      ctx.save();
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.strokeStyle = 'rgba(0,0,0,1)';
-      ctx.lineWidth = this.brushSize * 2;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.lineTo(p.x, p.y);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    this.lastX = p.x;
-    this.lastY = p.y;
-  },
-
-  endDraw(e) {
-    if (!this.isDrawing) return;
-    this.isDrawing = false;
-    const p = e ? this.pos(e) : { x: this.lastX, y: this.lastY };
-    const ctx = this.getActive()?.ctx;
-    if (!ctx) return;
-
-    const s = this.currentTool;
-    const bc = this.brushSize;
-    const sc = this.strokeColor;
-    const fc = this.fillColor;
-    const uf = this.useFill;
-    const sx = this.startX;
-    const sy = this.startY;
-    const ex = p.x;
-    const ey = p.y;
-
-    if (s === 'line') {
-      ctx.beginPath();
-      ctx.strokeStyle = sc;
-      ctx.lineWidth = bc;
-      ctx.lineCap = 'round';
-      ctx.moveTo(sx, sy);
-      ctx.lineTo(ex, ey);
-      ctx.stroke();
-    } else if (s === 'rect') {
-      ctx.strokeStyle = sc;
-      ctx.lineWidth = bc;
-      ctx.strokeRect(sx, sy, ex - sx, ey - sy);
-    } else if (s === 'circle') {
-      const rx = Math.abs(ex - sx) / 2;
-      const ry = Math.abs(ey - sy) / 2;
-      ctx.strokeStyle = sc;
-      ctx.lineWidth = bc;
-      ctx.beginPath();
-      ctx.ellipse(sx + (ex - sx) / 2, sy + (ey - sy) / 2, rx, ry, 0, 0, Math.PI * 2);
-      ctx.stroke();
-    } else if (s === 'fill-rect') {
-      ctx.fillStyle = uf ? fc : sc;
-      ctx.fillRect(sx, sy, ex - sx, ey - sy);
-      if (!uf) {
-        ctx.strokeStyle = sc;
-        ctx.lineWidth = bc;
-        ctx.strokeRect(sx, sy, ex - sx, ey - sy);
-      }
-    } else if (s === 'fill-circle') {
-      const rx = Math.abs(ex - sx) / 2;
-      const ry = Math.abs(ey - sy) / 2;
-      ctx.fillStyle = uf ? fc : sc;
-      ctx.beginPath();
-      ctx.ellipse(sx + (ex - sx) / 2, sy + (ey - sy) / 2, rx, ry, 0, 0, Math.PI * 2);
-      ctx.fill();
-      if (!uf) {
-        ctx.strokeStyle = sc;
-        ctx.lineWidth = bc;
-        ctx.stroke();
-      }
-    }
-
-    this.saveHistory();
-  },
-
-  setTool(tool) {
-    this.currentTool = tool;
-    document.querySelectorAll('.tool-btn[data-tool]').forEach(b => {
-      b.classList.toggle('active', b.dataset.tool === tool);
-    });
-    const l = this.getActive();
-    if (l) {
-      l.cvs.classList.toggle('eraser-cursor', tool === 'eraser');
-      l.cvs.style.cursor = tool === 'text' ? 'text' : 'crosshair';
-    }
-    this.removeTextOverlay();
-  },
-
-  exportPNG() { this.exportImg('image/png'); },
-  exportJPG() { this.exportImg('image/jpeg', 0.92); },
-
-  exportImg(mime, q = 1) {
-    const ec = document.createElement('canvas');
-    ec.width = this.canvasWidth;
-    ec.height = this.canvasHeight;
-    const ecx = ec.getContext('2d');
-    if (mime === 'image/jpeg') {
-      ecx.fillStyle = '#fff';
-      ecx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-    }
-    this.layers.forEach(l => {
-      if (l.visible) {
-        ecx.globalAlpha = l.opacity;
-        ecx.drawImage(l.cvs, 0, 0);
-      }
-    });
-    const a = document.createElement('a');
-    a.download = 'LingTwo_Canvas_' + Date.now() + (mime === 'image/jpeg' ? '.jpg' : '.png');
-    a.href = ec.toDataURL(mime, q);
-    a.click();
-  },
-
-  bindEvents() {
-    // 工具按钮
-    document.querySelectorAll('.tool-btn[data-tool]').forEach(b => {
-      b.addEventListener('click', () => this.setTool(b.dataset.tool));
-    });
-
-    // 清空
-    document.getElementById('btn-clear')?.addEventListener('click', () => {
-      if (confirm('确定要清空当前图层吗？')) {
-        this.clearCanvas();
-      }
-    });
-
-    // 添加图层
-    document.getElementById('btn-add-layer')?.addEventListener('click', () => {
-      this.addLayer('图层 ' + (this.layers.length + 1));
-    });
-
-    // 导入图片
-    document.getElementById('btn-import-img')?.addEventListener('click', () => {
-      document.getElementById('img-import-input')?.click();
-    });
-
-    document.getElementById('img-import-input')?.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const img = new Image();
-        img.onload = () => {
-          const id = 'ly_' + Date.now();
-          const cvs = document.createElement('canvas');
-          cvs.className = 'layer-canvas';
-          cvs.width = this.canvasWidth;
-          cvs.height = this.canvasHeight;
-          cvs.style.zIndex = this.layers.length + 1;
-          cvs.dataset.lid = id;
-          document.getElementById('canvas-container').appendChild(cvs);
-          
-          const layer = {
-            id,
-            name: file.name.substring(0, 20),
-            visible: true,
-            opacity: 1,
-            cvs,
-            ctx: cvs.getContext('2d')
-          };
-          this.layers.push(layer);
-          this.activeLayerId = id;
-
-          const scale = Math.min(
-            this.canvasWidth / img.width,
-            this.canvasHeight / img.height
-          );
-          const dw = img.width * scale;
-          const dh = img.height * scale;
-          const dx = (this.canvasWidth - dw) / 2;
-          const dy = (this.canvasHeight - dh) / 2;
-          layer.ctx.drawImage(img, dx, dy, dw, dh);
-
-          this.renderLayerList();
-          this.saveHistory();
-          document.getElementById('img-import-input').value = '';
-        };
-        img.src = ev.target.result;
-      };
-      reader.readAsDataURL(file);
-    });
-
-    // 撤销/重做
-    document.getElementById('btn-undo')?.addEventListener('click', () => this.undo());
-    document.getElementById('btn-redo')?.addEventListener('click', () => this.redo());
-
-    // 颜色
-    document.getElementById('stroke-color')?.addEventListener('input', (e) => {
-      this.strokeColor = e.target.value;
-    });
-    document.getElementById('fill-color')?.addEventListener('input', (e) => {
-      this.fillColor = e.target.value;
-    });
-
-    // 画笔大小
-    const sIn = document.getElementById('brush-size');
-    const sVal = document.getElementById('brush-size-val');
-    sIn?.addEventListener('input', (e) => {
-      this.brushSize = parseInt(e.target.value);
-      if (sVal) sVal.textContent = e.target.value + 'px';
-    });
-
-    // 填充开关
-    document.getElementById('btn-no-fill')?.addEventListener('click', () => {
-      this.useFill = !this.useFill;
-      document.getElementById('btn-no-fill')?.classList.toggle('no-fill', this.useFill);
-    });
-
-    // 导出
-    document.getElementById('btn-export-png')?.addEventListener('click', () => this.exportPNG());
-    document.getElementById('btn-export-jpg')?.addEventListener('click', () => this.exportJPG());
-
-    // 缩放
-    document.getElementById('btn-zoom-in')?.addEventListener('click', () => this.zoomIn());
-    document.getElementById('btn-zoom-out')?.addEventListener('click', () => this.zoomOut());
-    document.getElementById('btn-zoom-reset')?.addEventListener('click', () => this.zoomReset());
-
-    // 图层透明度
-    document.getElementById('layer-opacity-slider')?.addEventListener('input', (e) => {
-      this.setOpacity(parseInt(e.target.value));
-    });
-
-    // 键盘快捷键
-    document.addEventListener('keydown', (e) => {
-      if (!document.getElementById('page-canvas')?.classList.contains('active')) return;
-      if (e.ctrlKey && e.key === 'z') { e.preventDefault(); this.undo(); }
-      if (e.ctrlKey && e.key === 'y') { e.preventDefault(); this.redo(); }
-      if (e.key === 'b' && !e.ctrlKey) this.setTool('brush');
-      if (e.key === 'e' && !e.ctrlKey) this.setTool('eraser');
-      if (e.key === 't' && !e.ctrlKey) this.setTool('text');
-      if (e.key === 'l' && !e.ctrlKey) this.setTool('line');
-      if (e.key === 'r' && !e.ctrlKey) this.setTool('rect');
-      if (e.key === 'c' && !e.ctrlKey) this.setTool('circle');
-      if (e.key === '=' || e.key === '+') this.zoomIn();
-      if (e.key === '-') this.zoomOut();
-    });
-
-    // 鼠标滚轮缩放
-    document.getElementById('canvas-area')?.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      if (e.deltaY < 0) this.zoomIn();
-      else this.zoomOut();
-    }, { passive: false });
-
-    // 画布鼠标事件
-    const cont = document.getElementById('canvas-container');
-    if (cont) {
-      cont.addEventListener('mousedown', (e) => this.startDraw(e));
-      cont.addEventListener('mousemove', (e) => this.draw(e));
-      cont.addEventListener('mouseup', (e) => this.endDraw(e));
-      cont.addEventListener('mouseleave', (e) => this.endDraw(e));
-      
-      // 触摸事件
-      cont.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        this.startDraw(e.touches[0]);
-      }, { passive: false });
-      cont.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        this.draw(e.touches[0]);
-      }, { passive: false });
-      cont.addEventListener('touchend', (e) => {
-        this.endDraw(e.changedTouches[0]);
-      });
-    }
-  }
-};
-
-// 导出到全局
-window.CA = CA;
 
 // 画布尺寸选择对话框
 function showSizeDialog() {
@@ -4127,6 +3796,245 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 300);
   }
 });
+
+// ===== EXPLORE PAGE =====
+const exploreData = [
+  { id:1, title:'赛博朋克少女', author:'创意工坊', likes:2340, category:'image', prompt:'cyberpunk girl, neon lights, futuristic city, detailed face, 8k', img:'https://image.pollinations.ai/prompt/cyberpunk%20girl%20neon%20lights%20futuristic%20city%20detailed%20face%208k?width=400&height=560&nologo=true&seed=1', height:560 },
+  { id:2, title:'极简品牌 VI 设计', author:'设计大师', likes:1820, category:'design', prompt:'minimalist brand identity, clean lines, corporate VI, geometric shapes', img:'https://image.pollinations.ai/prompt/minimalist%20brand%20identity%20clean%20lines%20corporate%20VI%20geometric%20shapes?width=400&height=300&nologo=true&seed=2', height:300 },
+  { id:3, title:'国风水墨山水', author:'丹青手', likes:4560, category:'painting', prompt:'chinese ink painting, mountain landscape, mist, traditional art style, elegant', img:'https://image.pollinations.ai/prompt/chinese%20ink%20painting%20mountain%20landscape%20mist%20traditional%20art%20elegant?width=400&height=520&nologo=true&seed=3', height:520 },
+  { id:4, title:'社交海报模板', author:'营销达人', likes:1200, category:'social', prompt:'social media poster template, modern gradient, bold typography, vibrant colors', img:'https://image.pollinations.ai/prompt/social%20media%20poster%20template%20modern%20gradient%20bold%20typography%20vibrant?width=400&height=400&nologo=true&seed=4', height:400 },
+  { id:5, title:'美食摄影大片', author:'食光记', likes:3100, category:'image', prompt:'food photography, gourmet dish, studio lighting, shallow depth of field, professional', img:'https://image.pollinations.ai/prompt/food%20photography%20gourmet%20dish%20studio%20lighting%20shallow%20depth%20professional?width=400&height=350&nologo=true&seed=5', height:350 },
+  { id:6, title:'3D 角色设计', author:'数字雕塑', likes:5700, category:'painting', prompt:'3D character design, stylized, vibrant colors, detailed render, octane render', img:'https://image.pollinations.ai/prompt/3D%20character%20design%20stylized%20vibrant%20colors%20detailed%20render%20octane?width=400&height=500&nologo=true&seed=6', height:500 },
+  { id:7, title:'咖啡品牌全案', author:'品牌设计师', likes:2100, category:'design', prompt:'coffee brand identity, logo, packaging, warm tones, artisan feel', img:'https://image.pollinations.ai/prompt/coffee%20brand%20identity%20logo%20packaging%20warm%20tones%20artisan?width=400&height=320&nologo=true&seed=7', height:320 },
+  { id:8, title:'日系动漫少女', author:'二次元画师', likes:6800, category:'painting', prompt:'anime girl, japanese art style, sakura, school uniform, detailed eyes, soft lighting', img:'https://image.pollinations.ai/prompt/anime%20girl%20japanese%20art%20sakura%20school%20uniform%20detailed%20eyes%20soft%20lighting?width=400&height=580&nologo=true&seed=8', height:580 },
+  { id:9, title:'短视频封面合集', author:'内容工厂', likes:980, category:'video', prompt:'video thumbnail design, eye-catching, bold text, dynamic composition', img:'https://image.pollinations.ai/prompt/video%20thumbnail%20design%20eye%20catching%20bold%20text%20dynamic%20composition?width=400&height=280&nologo=true&seed=9', height:280 },
+  { id:10, title:'宠物写真风格', author:'萌宠摄影', likes:4200, category:'image', prompt:'pet portrait, golden retriever, studio lighting, soft bokeh, professional pet photography', img:'https://image.pollinations.ai/prompt/pet%20portrait%20golden%20retriever%20studio%20lighting%20soft%20bokeh%20professional?width=400&height=450&nologo=true&seed=10', height:450 },
+  { id:11, title:'潮牌视觉设计', author:'街头艺术家', likes:3400, category:'design', prompt:'streetwear brand visual, urban graffiti style, bold graphics, edgy design', img:'https://image.pollinations.ai/prompt/streetwear%20brand%20visual%20urban%20graffiti%20bold%20graphics%20edgy%20design?width=400&height=400&nologo=true&seed=11', height:400 },
+  { id:12, title:'产品展示场景', author:'电商视觉', likes:2600, category:'social', prompt:'product showcase scene, luxury cosmetics, marble surface, soft lighting, commercial', img:'https://image.pollinations.ai/prompt/product%20showcase%20luxury%20cosmetics%20marble%20surface%20soft%20lighting%20commercial?width=400&height=380&nologo=true&seed=12', height:380 },
+];
+
+let exploreCurrentFilter = 'all';
+let exploreLoadedCount = 0;
+
+function renderExploreItems(filter) {
+  const container = document.getElementById('exploreMasonry');
+  if (!container) return;
+  const items = filter === 'all' ? exploreData : exploreData.filter(d => d.category === filter);
+  container.innerHTML = items.map((item, i) => `
+    <div class="explore-item" onclick="viewExploreItem(${item.id})" style="animation: fadeUp 0.4s ${i * 0.05}s var(--ease-out) both;">
+      <img src="${item.img}" alt="${item.title}" loading="lazy" style="min-height:${item.height * 0.5}px;">
+      ${item.category !== 'all' ? `<span class="explore-badge">${{'image':'图片','design':'设计','social':'社交','video':'视频','painting':'绘画'}[item.category] || item.category}</span>` : ''}
+      <div class="explore-item-overlay">
+        <div class="explore-item-title">${item.title}</div>
+        <div class="explore-item-meta">
+          <span>by ${item.author}</span>
+          <span>♥ ${(item.likes/1000).toFixed(1)}K</span>
+        </div>
+        <div class="explore-item-prompt">${item.prompt}</div>
+      </div>
+      <div class="explore-item-actions">
+        <button class="explore-action-btn" onclick="event.stopPropagation();toggleFavorite(${item.id})" title="收藏">♥</button>
+        <button class="explore-action-btn" onclick="event.stopPropagation();copyPrompt('${item.prompt.replace(/'/g, "\'")}')" title="复制提示词">⎘</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterExplore(filter, el) {
+  exploreCurrentFilter = filter;
+  document.querySelectorAll('.explore-filter').forEach(f => f.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderExploreItems(filter);
+}
+
+function viewExploreItem(id) {
+  const item = exploreData.find(d => d.id === id);
+  if (!item) return;
+  showToast('查看作品: ' + item.title + ' - 功能开发中');
+}
+
+function toggleFavorite(id) {
+  const item = exploreData.find(d => d.id === id);
+  if (!item) return;
+  let favs = JSON.parse(localStorage.getItem('lingtwo_favorites') || '[]');
+  const idx = favs.findIndex(f => f.id === id);
+  if (idx >= 0) {
+    favs.splice(idx, 1);
+    showToast('已取消收藏');
+  } else {
+    favs.push({ id: item.id, title: item.title, img: item.img, prompt: item.prompt, time: Date.now() });
+    showToast('已收藏: ' + item.title);
+  }
+  localStorage.setItem('lingtwo_favorites', JSON.stringify(favs));
+  updateMyStats();
+}
+
+function copyPrompt(prompt) {
+  navigator.clipboard.writeText(prompt).then(() => {
+    showToast('提示词已复制到剪贴板');
+  }).catch(() => {
+    showToast('复制失败，请手动复制');
+  });
+}
+
+function loadMoreExplore() {
+  showToast('更多作品加载中...');
+}
+
+// ===== MY PAGE =====
+function switchMyTab(tab, el) {
+  document.querySelectorAll('.my-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.my-panel').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  else {
+    document.querySelectorAll('.my-tab').forEach(t => {
+      if (t.textContent.trim().includes({'works':'作品','favorites':'收藏','history':'历史','settings':'设置'}[tab] || '')) t.classList.add('active');
+    });
+  }
+  const panel = document.getElementById('panel-' + tab);
+  if (panel) panel.classList.add('active');
+  if (tab === 'favorites') renderFavorites();
+  if (tab === 'history') renderHistory();
+}
+
+function renderFavorites() {
+  const favs = JSON.parse(localStorage.getItem('lingtwo_favorites') || '[]');
+  const grid = document.getElementById('myFavoritesGrid');
+  const empty = document.getElementById('favoritesEmpty');
+  if (!grid) return;
+  if (favs.length === 0) {
+    grid.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  grid.innerHTML = favs.map(f => `
+    <div class="my-work" style="cursor:pointer;" onclick="showToast('查看: ${f.title.replace(/'/g, "\'")}')">
+      <img src="${f.img}" alt="${f.title}" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-md);" loading="lazy">
+    </div>
+  `).join('');
+}
+
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem('lingtwo_history') || '[]');
+  const list = document.getElementById('myHistoryList');
+  const empty = document.getElementById('historyEmpty');
+  if (!list) return;
+  if (history.length === 0) {
+    list.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  list.innerHTML = history.map(h => `
+    <div class="my-history-item" onclick="showToast('重新打开: ${h.prompt ? h.prompt.substring(0,20) : '未命名'}...')">
+      ${h.img ? `<img class="my-history-thumb" src="${h.img}" alt="" loading="lazy">` : '<div class="my-history-thumb" style="display:flex;align-items:center;justify-content:center;font-size:18px;">🎨</div>'}
+      <div class="my-history-info">
+        <div class="my-history-prompt">${h.prompt || '未命名'}</div>
+        <div class="my-history-tool">${h.tool || 'AI工具'}</div>
+        <div class="my-history-time">${h.time ? new Date(h.time).toLocaleString('zh-CN') : ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showLoginModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'login-modal-overlay';
+  overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `
+    <div class="login-modal">
+      <button class="login-modal-close" onclick="this.closest('.login-modal-overlay').remove()">✕</button>
+      <h3>登录 LINGTWO</h3>
+      <p>登录后可保存作品、收藏和历史记录</p>
+      <input class="login-field" type="text" placeholder="手机号 / 邮箱" id="loginAccount">
+      <input class="login-field" type="password" placeholder="密码" id="loginPassword">
+      <button class="login-btn" onclick="handleLogin()">登 录</button>
+      <div class="login-divider">或</div>
+      <div class="login-social">
+        <button class="login-social-btn" onclick="showToast('微信登录开发中')" title="微信">💬</button>
+        <button class="login-social-btn" onclick="showToast('QQ登录开发中')" title="QQ">🐧</button>
+        <button class="login-social-btn" onclick="showToast('GitHub登录开发中')" title="GitHub">🐙</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function handleLogin() {
+  const account = document.getElementById('loginAccount').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+  if (!account || !password) {
+    showToast('请输入账号和密码');
+    return;
+  }
+  // Mock login - store in localStorage
+  const user = { name: account, loggedIn: true, time: Date.now() };
+  localStorage.setItem('lingtwo_user', JSON.stringify(user));
+  document.getElementById('myName').textContent = account;
+  document.getElementById('myBio').textContent = '欢迎回来！';
+  document.getElementById('myAvatar').textContent = account.charAt(0).toUpperCase();
+  const settingsAvatar = document.getElementById('settingsAvatar');
+  if (settingsAvatar) settingsAvatar.textContent = account.charAt(0).toUpperCase();
+  const settingsName = document.getElementById('settingsName');
+  if (settingsName) settingsName.textContent = account;
+  document.querySelector('.login-modal-overlay').remove();
+  showToast('登录成功！欢迎 ' + account);
+}
+
+function clearMyCache() {
+  localStorage.removeItem('lingtwo_favorites');
+  localStorage.removeItem('lingtwo_history');
+  updateMyStats();
+  showToast('缓存已清除');
+}
+
+function updateMyStats() {
+  const favs = JSON.parse(localStorage.getItem('lingtwo_favorites') || '[]');
+  const history = JSON.parse(localStorage.getItem('lingtwo_history') || '[]');
+  const works = JSON.parse(localStorage.getItem('lingtwo_works') || '[]');
+  const el1 = document.getElementById('statWorks');
+  const el2 = document.getElementById('statFavorites');
+  const el3 = document.getElementById('statHistory');
+  if (el1) el1.textContent = works.length;
+  if (el2) el2.textContent = favs.length;
+  if (el3) el3.textContent = history.length;
+}
+
+function addToHistory(tool, prompt, img) {
+  let history = JSON.parse(localStorage.getItem('lingtwo_history') || '[]');
+  history.unshift({ tool, prompt, img, time: Date.now() });
+  if (history.length > 50) history = history.slice(0, 50);
+  localStorage.setItem('lingtwo_history', JSON.stringify(history));
+  updateMyStats();
+}
+
+// Init on page load
+function initMyPage() {
+  const user = JSON.parse(localStorage.getItem('lingtwo_user') || 'null');
+  if (user && user.loggedIn) {
+    const nameEl = document.getElementById('myName');
+    const bioEl = document.getElementById('myBio');
+    const avatarEl = document.getElementById('myAvatar');
+    if (nameEl) nameEl.textContent = user.name;
+    if (bioEl) bioEl.textContent = '欢迎回来！';
+    if (avatarEl) avatarEl.textContent = user.name.charAt(0).toUpperCase();
+    const settingsAvatar = document.getElementById('settingsAvatar');
+    if (settingsAvatar) settingsAvatar.textContent = user.name.charAt(0).toUpperCase();
+    const settingsName = document.getElementById('settingsName');
+    if (settingsName) settingsName.textContent = user.name;
+  }
+  updateMyStats();
+}
+
+// Init explore on page switch
+const origSwitchPage = switchPage;
+switchPage = function(page) {
+  origSwitchPage(page);
+  if (page === 'explore') renderExploreItems(exploreCurrentFilter);
+  if (page === 'my') initMyPage();
+};
+
 </script>
 </body>
 </html>
